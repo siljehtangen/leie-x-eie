@@ -12,6 +12,7 @@ import type { Inputs, Mode, Lang, CalculationResult } from './types'
 const DEFAULT_INPUTS: Inputs = {
   // Quick – Rent
   monthlyRent: 12000,
+  rentIncrease: 2,
   // Quick – Buy
   purchasePrice: 4000000,
   downPayment: 600000,
@@ -23,7 +24,6 @@ const DEFAULT_INPUTS: Inputs = {
   // Quick – Time & Market
   years: 10,
   appreciationRate: 2.5,
-  rentGrowth: 2,
   investmentReturn: 5,
   // Advanced – Rent extras
   contentsInsurance: 2400,
