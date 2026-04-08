@@ -7,8 +7,9 @@ import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
 import { calculate } from './utils/calculations'
+import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
-const DEFAULT_INPUTS = {
+const DEFAULT_INPUTS: Inputs = {
   // Quick – Rent
   monthlyRent: 12000,
   // Quick – Buy
@@ -44,26 +45,24 @@ const DEFAULT_INPUTS = {
 
 export default function App() {
   const { t, i18n } = useTranslation()
-  const [lang, setLang] = useState('no')
-  const [mode, setMode] = useState('quick')
-  const [inputs, setInputs] = useState(DEFAULT_INPUTS)
-  const [results, setResults] = useState(null)
-  const resultsRef = useRef(null)
+  const [lang, setLang] = useState<Lang>('no')
+  const [mode, setMode] = useState<Mode>('quick')
+  const [inputs, setInputs] = useState<Inputs>(DEFAULT_INPUTS)
+  const [results, setResults] = useState<CalculationResult | null>(null)
+  const resultsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     document.title = t('header.pageTitle')
   }, [lang, t])
 
-  const handleLangChange = (newLang) => {
+  const handleLangChange = (newLang: Lang) => {
     setLang(newLang)
     i18n.changeLanguage(newLang)
   }
 
-  const handleInputChange = (name, value) => {
+  const handleInputChange = (name: keyof Inputs, value: number) => {
     setInputs(prev => {
       const next = { ...prev, [name]: value }
-      // Auto-update dokumentavgift when purchasePrice changes,
-      // unless the user has manually set it to something other than the standard 2.5%
       if (name === 'purchasePrice' && prev.stampDuty === Math.round(prev.purchasePrice * 0.025)) {
         next.stampDuty = Math.round(value * 0.025)
       }
