@@ -158,13 +158,15 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           {field('stampDuty',       { unit: 'kr',         min: 0,   step: 10000 })}
           {field('brokerSellingFee',{ unit: 'kr',         min: 0,   step: 10000 })}
           {isAdvanced && <>
-            {field('otherClosingCosts', { unit: 'kr',       min: 0, step: 1000  })}
-            {field('sharedDebt',        { unit: 'kr',       min: 0, step: 10000 })}
-            {field('municipalFees',     { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('renovationPct',     { unit: '%',        min: 0, max: 5, step: 0.1 })}
-            {field('homeInsurance',     { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('propertyTax',       { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('hoaFeeIncrease',    { unit: '%',        min: 0, max: 10, step: 0.1 })}
+            {field('otherClosingCosts',  { unit: 'kr',       min: 0, step: 1000  })}
+            {field('sharedDebt',         { unit: 'kr',       min: 0, step: 10000 })}
+            {field('sharedDebtRate',     { unit: '%',        min: 0, max: 15, step: 0.1 })}
+            {field('interestOnlyYears',  { unit: t('units.years'), min: 0, max: 10, step: 1 })}
+            {field('municipalFees',      { unit: 'kr / år',  min: 0, step: 500   })}
+            {field('renovationPct',      { unit: '%',        min: 0, max: 5, step: 0.1 })}
+            {field('homeInsurance',      { unit: 'kr / år',  min: 0, step: 500   })}
+            {field('propertyTax',        { unit: 'kr / år',  min: 0, step: 500   })}
+            {field('hoaFeeIncrease',     { unit: '%',        min: 0, max: 10, step: 0.1 })}
           </>}
         </div>
       </Section>
@@ -182,8 +184,10 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor="#6B3FA0" stripe="fin">
           <div className="input-grid">
-            {field('interestDeduction', { unit: '%', min: 0, max: 50, step: 0.5 })}
-            {field('inflation',         { unit: '%', min: 0, max: 10, step: 0.1 })}
+            {field('interestDeduction', { unit: '%',  min: 0,   max: 50,  step: 0.5 })}
+            {field('investmentTaxRate', { unit: '%',  min: 0,   max: 60,  step: 0.5 })}
+            {field('wealthTaxRate',     { unit: '%',  min: 0,   max: 2,   step: 0.1 })}
+            {field('inflation',         { unit: '%',  min: 0,   max: 10,  step: 0.1 })}
           </div>
         </Section>
       )}

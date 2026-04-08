@@ -43,6 +43,10 @@
     "propertyTax": "Property Tax (Eiendomsskatt)",
     "hoaFeeIncrease": "Annual HOA Fee Increase",
     "interestDeduction": "Tax Deduction on Interest (Rentefradrag)",
+    "sharedDebtRate": "Fellesgjeld Interest Rate",
+    "interestOnlyYears": "Interest-Only Period (Avdragsfrihet)",
+    "investmentTaxRate": "Investment Return Tax Rate",
+    "wealthTaxRate": "Wealth Tax Rate (Formuesskatt)",
     "inflation": "Inflation Rate",
     "wageGrowth": "Expected Wage Growth"
   },
@@ -72,6 +76,10 @@
     "internet": "Annual broadband cost. Typically around 4,000–6,000 kr/year in Norway.",
     "parking": "Monthly parking costs if applicable. Leave at 0 if included in rent or not relevant.",
     "interestDeduction": "In Norway, you can deduct 22% of your mortgage interest from taxable income.",
+    "sharedDebtRate": "The interest rate on the housing cooperative's shared debt (fellesgjeld). This interest is included in monthly HOA fees and is also tax-deductible. Typically close to the current mortgage rate.",
+    "interestOnlyYears": "Number of years paying interest only (avdragsfrihet), with no principal repayment. After this period the full loan amortises over the remaining term. Many Norwegian banks offer up to 5 years.",
+    "investmentTaxRate": "Effective tax rate on investment returns (e.g. 37.84% for shares in a regular account under Norway's shareholder model). Use a lower rate if investing via Aksjesparekonto (ASK), where gains are tax-deferred until withdrawal. Home appreciation on a primary residence is tax-free.",
+    "wealthTaxRate": "Norway's wealth tax (formuesskatt) rate — currently 1.0% above the ~1.7M NOK threshold. Primary residences are valued at only 25% of market value, while financial assets are valued at 80%. This is a major structural advantage for homeowners.",
     "inflation": "General price growth used to convert future amounts to today's money. Norwegian long-run target is 2%.",
     "wageGrowth": "Expected annual growth in your income. Used to assess affordability over time."
   },

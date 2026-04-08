@@ -43,6 +43,10 @@
     "propertyTax": "Eiendomsskatt",
     "hoaFeeIncrease": "Årlig økning i felleskostnader",
     "interestDeduction": "Rentefradrag",
+    "sharedDebtRate": "Rente på fellesgjeld",
+    "interestOnlyYears": "Avdragsfri periode",
+    "investmentTaxRate": "Skatt på investeringsavkastning",
+    "wealthTaxRate": "Formuesskattesats",
     "inflation": "Inflasjon",
     "wageGrowth": "Forventet lønnsvekst"
   },
@@ -72,6 +76,10 @@
     "internet": "Årlig kostnad for bredbånd. Typisk rundt 4 000–6 000 kr/år i Norge.",
     "parking": "Månedlig parkeringskostnad hvis aktuelt. La stå på 0 hvis inkludert i husleien.",
     "interestDeduction": "I Norge kan du trekke fra 22% av rentekostnader på skatten.",
+    "sharedDebtRate": "Rentesatsen på borettslagets fellesgjeld. Denne renten inngår i felleskostnadene og er fradragsberettiget. Tilsvarer vanligvis gjeldende boliglånsrente.",
+    "interestOnlyYears": "Antall år med avdragsfrihet — kun rentebetalinger, ingen nedbetaling av hovedstol. Etter perioden amortiseres lånet over resterende løpetid. Mange norske banker tilbyr inntil 5 år.",
+    "investmentTaxRate": "Effektiv skattesats på investeringsavkastning (f.eks. 37,84% for aksjer i ordinær konto under aksjonærmodellen). Bruk lavere sats hvis du investerer via Aksjesparekonto (ASK), der gevinst skattlegges ved uttak. Boligprisgevinst på primærbolig er skattefri.",
+    "wealthTaxRate": "Norsk formuesskattesats — for tiden 1,0% over bunnfradraget (~1,7 mill. kr). Primærbolig verdsettes til kun 25% av markedsverdi, mens finansielle eiendeler verdsettes til 80%. Dette er en betydelig strukturell fordel for boligeiere.",
     "inflation": "Generell prisvekst brukt til å omregne fremtidige beløp til dagens pengeverdi. Norges Banks langsiktige mål er 2%.",
     "wageGrowth": "Forventet årlig inntektsvekst. Brukes til å vurdere betalingsevne over tid."
   },

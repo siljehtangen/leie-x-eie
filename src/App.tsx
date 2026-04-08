@@ -38,8 +38,13 @@ const DEFAULT_INPUTS: Inputs = {
   homeInsurance: 5000,
   propertyTax: 0,
   hoaFeeIncrease: 3,
+  // Advanced – Buy
+  sharedDebtRate: 5.0,
+  interestOnlyYears: 0,
   // Advanced – Financial
   interestDeduction: 22,
+  investmentTaxRate: 37.84,
+  wealthTaxRate: 1.0,
   inflation: 2.5,
 }
 

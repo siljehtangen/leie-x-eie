@@ -5,8 +5,16 @@ A rent-vs-buy calculator tailored for the Norwegian housing market. Enter your n
 ## Features
 
 - **Quick mode** — core inputs: rent, purchase price, down payment, mortgage rate, HOA fee, and time horizon
-- **Advanced mode** — adds shared debt, tax deduction on interest, maintenance, municipal fees, home insurance, property tax, contents insurance, electricity, internet, and parking
-- Inflation-adjusted net worth comparison over time
+- **Advanced mode** — full Norwegian financial model:
+  - Fellesgjeld (shared debt) as permanent liability with its own tax-deductible interest
+  - Interest-only period (avdragsfrihet) with recalculated amortisation after
+  - Maintenance costs inflation-adjusted year-over-year
+  - Municipal fees, home insurance, property tax
+  - Contents insurance, electricity, internet, parking (electricity/internet applied to both sides to avoid asymmetry)
+  - Security deposit opportunity cost (3 months rent, returned at face value at end)
+  - **Formuesskatt (wealth tax)**: primary residence valued at 25% vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway
+  - **After-tax investment returns**: configurable effective tax rate (default 37.84% under aksjonærmodellen); home appreciation remains tax-free
+- Inflation-deflated net worth comparison (real kroner)
 - Breakeven year detection
 - Interactive charts (Recharts)
 - Norwegian and English UI (i18next)
@@ -15,9 +23,9 @@ A rent-vs-buy calculator tailored for the Norwegian housing market. Enter your n
 
 The calculator models two scenarios side by side:
 
-**Buyer** — pays mortgage + HOA + optional extras. Builds equity as the property appreciates.
+**Buyer** — pays mortgage (with optional interest-only period) + HOA + all ownership costs. Builds equity as the property appreciates tax-free. Taxed on wealth at 25% of home value (vs. 80% for financial assets).
 
-**Renter** — invests the down payment and closing costs upfront, then invests any monthly surplus vs. the buyer's costs. Portfolio grows at the specified investment return rate.
+**Renter** — invests the down payment and closing costs upfront (minus a 3-month security deposit), then invests any monthly surplus vs. the buyer's costs. Investment returns are taxed annually at the configured rate. Portfolio taxed on wealth at 80% of market value.
 
 Both final net worths are deflated to today's kroner using the inflation rate. Whoever ends up with more wins.
 
