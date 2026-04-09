@@ -38,7 +38,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
       {open && (
         <div className="breakdown-panel">
 
-          {/* Download button */}
           <div className="breakdown-download-row">
             <PDFDownloadLink
               document={<CalculationPDF results={results} inputs={inputs} mode={mode} />}
@@ -54,7 +53,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
             </PDFDownloadLink>
           </div>
 
-          {/* ── Section 1: Key inputs ───────────────────────────────── */}
           <div className="bd-section">
             <h3 className="bd-section-title">{t('breakdown.inputs')}</h3>
             <div className="bd-input-grid">
@@ -82,10 +80,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
             </div>
           </div>
 
-          {/* ── Section 2 & 3: Buyer | Renter side by side ─────────── */}
           <div className="bd-two-col">
-
-            {/* Buyer */}
             <div className="bd-col bd-col-buy">
               <h3 className="bd-col-title">{t('breakdown.buyerCalc')}</h3>
 
@@ -156,7 +151,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
               </div>
             </div>
 
-            {/* Renter */}
             <div className="bd-col bd-col-rent">
               <h3 className="bd-col-title">{t('breakdown.renterCalc')}</h3>
 
@@ -221,7 +215,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
             </div>
           </div>
 
-          {/* ── Section 4: Year-by-year table ──────────────────────── */}
           <div className="bd-section">
             <h3 className="bd-section-title">{t('breakdown.yearTable')}</h3>
             <div className="bd-table-wrap">

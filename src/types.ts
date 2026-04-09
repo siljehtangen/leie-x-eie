@@ -16,12 +16,10 @@ export interface Inputs {
   appreciationRate: number
   investmentReturn: number
   inflation: number
-  // Advanced – Rent
   contentsInsurance: number
   electricity: number
   internet: number
   parking: number
-  // Advanced – Buy
   otherClosingCosts: number
   sharedDebt: number
   municipalFees: number
@@ -29,10 +27,8 @@ export interface Inputs {
   homeInsurance: number
   propertyTax: number
   hoaFeeIncrease: number
-  // Advanced – Buy
   sharedDebtRate: number
   interestOnlyYears: number
-  // Advanced – Financial
   savingsAccountBalance: number
   savingsAccountRate: number
   askRate: number

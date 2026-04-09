@@ -11,10 +11,8 @@ import { calculate } from './utils/calculations'
 import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
 const DEFAULT_INPUTS: Inputs = {
-  // Quick – Rent
   monthlyRent: 12000,
   rentIncrease: 2,
-  // Quick – Buy
   purchasePrice: 4000000,
   downPayment: 600000,
   mortgageRate: 5.5,
@@ -22,16 +20,13 @@ const DEFAULT_INPUTS: Inputs = {
   monthlyHoaFee: 3000,
   stampDuty: 100000,
   brokerSellingFee: 100000,
-  // Quick – Time & Market
   years: 10,
   appreciationRate: 2.5,
   investmentReturn: 5,
-  // Advanced – Rent extras
   contentsInsurance: 2400,
   electricity: 12000,
   internet: 6000,
   parking: 0,
-  // Advanced – Buy extras
   otherClosingCosts: 5000,
   sharedDebt: 0,
   municipalFees: 8000,
@@ -39,10 +34,8 @@ const DEFAULT_INPUTS: Inputs = {
   homeInsurance: 5000,
   propertyTax: 0,
   hoaFeeIncrease: 3,
-  // Advanced – Buy
   sharedDebtRate: 5.0,
   interestOnlyYears: 0,
-  // Advanced – Financial
   inflation: 2.5,
   savingsAccountBalance: 200000,
   savingsAccountRate: 4.0,

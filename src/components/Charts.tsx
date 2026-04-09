@@ -66,7 +66,6 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
 
   return (
     <div className="charts-section">
-      {/* ── Net Worth Over Time ──────────────────────────────────────────────── */}
       <div className="chart-card">
         <div className="chart-card-title">
           <BarChart2 size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: BUY_COLOR }} />
@@ -118,7 +117,6 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
         </div>
       </div>
 
-      {/* ── Monthly Cost Over Time ───────────────────────────────────────────── */}
       <div className="chart-card">
         <div className="chart-card-title">
           <TrendingDown size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: RENT_COLOR }} />

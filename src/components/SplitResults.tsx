@@ -52,7 +52,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
       <h2 className="results-title">{t('results.title')}</h2>
 
       <div className="split-screen">
-        {/* ── RENT CARD ──────────────────────────────────────────────────────── */}
         <div className="split-card rent">
           {recommendation === 'rent' && (
             <div className="winner-badge">
@@ -80,7 +79,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
 
         <div className="vs-badge-center">VS</div>
 
-        {/* ── BUY CARD ───────────────────────────────────────────────────────── */}
         <div className="split-card buy">
           {recommendation === 'buy' && (
             <div className="winner-badge">

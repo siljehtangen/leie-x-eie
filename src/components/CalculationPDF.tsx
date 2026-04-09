@@ -4,9 +4,6 @@ import {
 import { formatNOK } from '../utils/calculations'
 import type { CalculationResult, Inputs, Mode } from '../types'
 
-// Register Inter for full Unicode (incl. Norwegian æøå)
-// Note: react-pdf/pdfkit's TTFSubset breaks on woff2 (Brotli-reconstructed tables).
-// woff1 decompresses to raw TTF tables which the subsetter handles correctly.
 Font.register({
   family: 'Inter',
   fonts: [
@@ -151,7 +148,6 @@ const s = StyleSheet.create({
   result: { fontSize: 9, fontWeight: 700, marginTop: 4 },
   resultBuy: { color: C.buy },
   resultRent: { color: C.rent },
-  // Table
   tableHead: {
     flexDirection: 'row',
     backgroundColor: C.dark,
@@ -220,7 +216,6 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
 
   return (
     <Document title="LeieXEie – Leie vs Eie" author="LeieXEie">
-      {/* ── Page 1: Breakdown ─────────────────────────────────── */}
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <Text style={s.headerTitle}>LeieXEie</Text>
@@ -228,7 +223,6 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
         </View>
 
         <View style={s.body}>
-          {/* Recommendation banner */}
           <View style={[s.recBox, isBuy ? s.recBoxBuy : s.recBoxRent]}>
             <View>
               <Text style={s.recEyebrow}>Anbefaling etter {inputs.years} år</Text>
@@ -242,7 +236,6 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
             </View>
           </View>
 
-          {/* Metrics row */}
           <View style={s.metricsRow}>
             <View style={s.metricBox}>
               <Text style={s.metricLabel}>Kjøpers formue (år {inputs.years})</Text>
@@ -262,9 +255,7 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
             </View>
           </View>
 
-          {/* Two-column breakdown */}
           <View style={s.twoCol}>
-            {/* Buyer column */}
             <View style={s.col}>
               <Text style={[s.colTitle, s.colTitleBuy]}>Kjøperscenariet</Text>
 
@@ -326,7 +317,6 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
               </View>
             </View>
 
-            {/* Renter column */}
             <View style={s.col}>
               <Text style={[s.colTitle, s.colTitleRent]}>Leierscenariet</Text>
 
@@ -398,7 +388,6 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
         </View>
       </Page>
 
-      {/* ── Page 2: Year-by-year table ────────────────────────── */}
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <Text style={s.headerTitle}>År for år</Text>

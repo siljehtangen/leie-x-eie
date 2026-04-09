@@ -16,7 +16,6 @@ function formatNum(v: number): string {
   return parts.join('.')
 }
 
-// ── Input Field ────────────────────────────────────────────────────────────────
 interface InputFieldProps {
   label: string
   name: keyof Inputs
@@ -75,7 +74,6 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
   )
 }
 
-// ── Section ────────────────────────────────────────────────────────────────────
 interface SectionProps {
   id: string
   title: string
@@ -108,7 +106,6 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
   )
 }
 
-// ── Main Component ─────────────────────────────────────────────────────────────
 interface InputPanelProps {
   inputs: Inputs
   onInputChange: (name: keyof Inputs, value: number) => void
@@ -133,7 +130,6 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
   return (
     <div className="input-panel">
-      {/* ── Rent ──────────────────────────────────────────────────────────────── */}
       <Section id="rent" title={t('sections.rent')} icon={Home} iconColor="#C4522E" stripe="rent">
         <div className="input-grid">
           {field('monthlyRent',   { unit: 'kr / mnd', min: 0, step: 500 })}
@@ -147,7 +143,6 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      {/* ── Buy ───────────────────────────────────────────────────────────────── */}
       <Section id="buy" title={t('sections.buy')} icon={House} iconColor="#2952A3" stripe="buy">
         <div className="input-grid">
           {field('purchasePrice',   { unit: 'kr',         min: 0,   step: 100000 })}
@@ -171,7 +166,6 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      {/* ── Time & Market ─────────────────────────────────────────────────────── */}
       <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor="#1F7A5E" stripe="time">
         <div className="input-grid">
           {field('years',            { unit: t('units.years'), min: 1, max: 30, step: 1 })}
@@ -181,7 +175,6 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      {/* ── Financial ────────────────────────────────────────────────────────── */}
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor="#6B3FA0" stripe="fin">
           <div className="input-grid">
