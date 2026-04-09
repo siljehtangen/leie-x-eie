@@ -158,18 +158,18 @@ const s = StyleSheet.create({
     paddingRight: 6,
     marginBottom: 2,
   },
-  th: { fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.70)', textAlign: 'right' },
+  th: { flex: 1, fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.70)', textAlign: 'right' },
   thFirst: { textAlign: 'left' },
   tr: {
     flexDirection: 'row',
-    paddingTop: 3,
-    paddingBottom: 3,
+    paddingTop: 4,
+    paddingBottom: 4,
     paddingLeft: 6,
     paddingRight: 6,
     borderRadius: 3,
   },
   trAlt: { backgroundColor: C.surface },
-  td: { fontSize: 7, color: C.text, textAlign: 'right' },
+  td: { flex: 1, fontSize: 7.5, color: C.text, textAlign: 'right' },
   tdFirst: { textAlign: 'left', fontWeight: 700 },
   tdBuyWin: { color: C.buy, fontWeight: 700 },
   tdRentWin: { color: C.rent, fontWeight: 700 },
@@ -396,28 +396,28 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
 
         <View style={s.body}>
           <View style={s.tableHead}>
-            <Text style={[s.th, s.thFirst, { flex: 0.45 }]}>År</Text>
-            <Text style={s.th}>Kjøper/mnd</Text>
-            <Text style={s.th}>Leier/mnd</Text>
+            <Text style={[s.th, s.thFirst, { flex: 0.35 }]}>År</Text>
+            <Text style={[s.th, { flex: 0.9 }]}>Kjøper/mnd</Text>
+            <Text style={[s.th, { flex: 0.9 }]}>Leier/mnd</Text>
             <Text style={s.th}>Boligverdi</Text>
             <Text style={s.th}>Restgjeld</Text>
-            <Text style={[s.th, { color: 'rgba(105,144,212,0.95)' }]}>Kjøpers formue</Text>
-            <Text style={[s.th, { color: 'rgba(196,146,100,0.95)' }]}>Leiers formue</Text>
+            <Text style={[s.th, { flex: 1.2, color: 'rgba(105,144,212,0.95)' }]}>Kjøpers formue</Text>
+            <Text style={[s.th, { flex: 1.2, color: 'rgba(196,146,100,0.95)' }]}>Leiers formue</Text>
           </View>
 
           {yearlyData.map((row, idx) => {
             const buyerWins = row.buyerNetWorth >= row.renterNetWorth
             return (
               <View key={row.year} style={[s.tr, idx % 2 === 0 ? s.trAlt : {}]}>
-                <Text style={[s.td, s.tdFirst, { flex: 0.45 }]}>{row.year}</Text>
-                <Text style={s.td}>{formatNOK(row.buyerMonthlyCost, true)}</Text>
-                <Text style={s.td}>{formatNOK(row.renterMonthlyCost, true)}</Text>
+                <Text style={[s.td, s.tdFirst, { flex: 0.35 }]}>{row.year}</Text>
+                <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.buyerMonthlyCost, true)}</Text>
+                <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.renterMonthlyCost, true)}</Text>
                 <Text style={s.td}>{formatNOK(row.homeValue, true)}</Text>
                 <Text style={s.td}>{formatNOK(row.remainingMortgage, true)}</Text>
-                <Text style={[s.td, buyerWins ? s.tdBuyWin : {}]}>
+                <Text style={[s.td, { flex: 1.2 }, buyerWins ? s.tdBuyWin : {}]}>
                   {formatNOK(row.buyerNetWorth, true)}
                 </Text>
-                <Text style={[s.td, !buyerWins ? s.tdRentWin : {}]}>
+                <Text style={[s.td, { flex: 1.2 }, !buyerWins ? s.tdRentWin : {}]}>
                   {formatNOK(row.renterNetWorth, true)}
                 </Text>
               </View>

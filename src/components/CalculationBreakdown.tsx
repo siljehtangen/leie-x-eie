@@ -121,7 +121,37 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                   {mode === 'advanced' && (
                     <div className="bd-cost-row deduction">
                       <span>{t('breakdown.interestDeduction')} (22%)</span>
-                      <span>− {formatNOK(loanAmount * monthlyRate * 0.22)}</span>
+                      <span>− {formatNOK((loanAmount * monthlyRate + inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12) * 0.22)}</span>
+                    </div>
+                  )}
+                  {mode === 'advanced' && (inputs.electricity > 0 || inputs.internet > 0) && (
+                    <div className="bd-cost-row alt">
+                      <span>{t('inputs.electricity')} & {t('inputs.internet')}</span>
+                      <span>+ {formatNOK((inputs.electricity + inputs.internet) / 12)}</span>
+                    </div>
+                  )}
+                  {mode === 'advanced' && inputs.renovationPct > 0 && (
+                    <div className="bd-cost-row">
+                      <span>{t('inputs.renovationPct')}</span>
+                      <span>+ {formatNOK(inputs.purchasePrice * inputs.renovationPct / 100 / 12)}</span>
+                    </div>
+                  )}
+                  {mode === 'advanced' && inputs.municipalFees > 0 && (
+                    <div className="bd-cost-row alt">
+                      <span>{t('inputs.municipalFees')}</span>
+                      <span>+ {formatNOK(inputs.municipalFees / 12)}</span>
+                    </div>
+                  )}
+                  {mode === 'advanced' && inputs.homeInsurance > 0 && (
+                    <div className="bd-cost-row">
+                      <span>{t('inputs.homeInsurance')}</span>
+                      <span>+ {formatNOK(inputs.homeInsurance / 12)}</span>
+                    </div>
+                  )}
+                  {mode === 'advanced' && inputs.propertyTax > 0 && (
+                    <div className="bd-cost-row alt">
+                      <span>{t('inputs.propertyTax')}</span>
+                      <span>+ {formatNOK(inputs.propertyTax / 12)}</span>
                     </div>
                   )}
                   <div className="bd-cost-row total-buy">
@@ -139,6 +169,11 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-line">
                   − {t('breakdown.remainingMortgage')}: {formatNOK(finalYear.remainingMortgage)}
                 </div>
+                {inputs.sharedDebt > 0 && (
+                  <div className="bd-formula-line">
+                    − {t('inputs.sharedDebt')}: {formatNOK(inputs.sharedDebt)}
+                  </div>
+                )}
                 <div className="bd-formula-line">
                   − {t('inputs.brokerSellingFee')}: {formatNOK(inputs.brokerSellingFee)}
                 </div>
