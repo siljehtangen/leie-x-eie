@@ -42,10 +42,10 @@ const DEFAULT_INPUTS: Inputs = {
   sharedDebtRate: 5.0,
   interestOnlyYears: 0,
   // Advanced – Financial
-  interestDeduction: 22,
-  investmentTaxRate: 37.84,
-  wealthTaxRate: 1.0,
   inflation: 2.5,
+  savingsAccountBalance: 200000,
+  savingsAccountRate: 4.0,
+  askRate: 7.0,
 }
 
 export default function App() {
@@ -113,7 +113,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <span>DeciDwell</span>
+        <span>LeieXEie</span>
         <span className="footer-dot" />
         <span>{new Date().getFullYear()}</span>
         <span className="footer-dot" />

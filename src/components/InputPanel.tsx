@@ -176,7 +176,8 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         <div className="input-grid">
           {field('years',            { unit: t('units.years'), min: 1, max: 30, step: 1 })}
           {field('appreciationRate', { unit: '%', min: 0, max: 15, step: 0.1 })}
-          {field('investmentReturn', { unit: '%', min: 0, max: 20, step: 0.1 })}
+          {field('inflation',        { unit: '%', min: 0, max: 10, step: 0.1 })}
+          {!isAdvanced && field('investmentReturn', { unit: '%', min: 0, max: 20, step: 0.1 })}
         </div>
       </Section>
 
@@ -184,10 +185,9 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor="#6B3FA0" stripe="fin">
           <div className="input-grid">
-            {field('interestDeduction', { unit: '%',  min: 0,   max: 50,  step: 0.5 })}
-            {field('investmentTaxRate', { unit: '%',  min: 0,   max: 60,  step: 0.5 })}
-            {field('wealthTaxRate',     { unit: '%',  min: 0,   max: 2,   step: 0.1 })}
-            {field('inflation',         { unit: '%',  min: 0,   max: 10,  step: 0.1 })}
+            {field('savingsAccountBalance', { unit: 'kr',  min: 0, step: 10000 })}
+            {field('savingsAccountRate',    { unit: '%',  min: 0, max: 20, step: 0.1 })}
+            {field('askRate',               { unit: '%',  min: 0, max: 30, step: 0.1 })}
           </div>
         </Section>
       )}

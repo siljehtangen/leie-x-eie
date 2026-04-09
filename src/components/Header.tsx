@@ -19,9 +19,9 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
 
       <div className="header-inner">
         <div className="logo">
-          <div className="logo-icon">DD</div>
+          <div className="logo-icon">LXE</div>
           <span className="logo-text">
-            Deci<span>Dwell</span>
+            Leie<span>X</span>Eie
           </span>
         </div>
 

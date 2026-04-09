@@ -331,7 +331,6 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow-xs);
   border: 1px solid var(--border);
-  overflow: hidden;
   transition: box-shadow 0.25s ease, transform 0.2s ease;
 }
 
@@ -383,6 +382,7 @@ body {
 .section-stripe {
   height: 4px;
   width: 100%;
+  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .stripe-rent  { background: #C4522E; }
@@ -461,7 +461,7 @@ body {
   padding: 0.6rem 0.9rem;
   border-radius: 8px;
   width: 220px;
-  z-index: 100;
+  z-index: 9999;
   box-shadow: var(--shadow-lg);
   pointer-events: none;
   white-space: normal;
@@ -850,9 +850,24 @@ body {
   font-weight: 400;
 }
 
+.rec-breakeven-note {
+  font-size: 0.88rem;
+  opacity: 0.75;
+  margin-top: 0.6rem;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.rec-real-terms {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  margin-top: 1.25rem;
+  font-weight: 400;
+}
+
 .rec-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 2rem;
 }
@@ -928,6 +943,10 @@ body {
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .charts-section { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  .rec-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 720px) {

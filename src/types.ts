@@ -30,12 +30,12 @@ export interface Inputs {
   propertyTax: number
   hoaFeeIncrease: number
   // Advanced – Buy
-  sharedDebtRate: number 
+  sharedDebtRate: number
   interestOnlyYears: number
   // Advanced – Financial
-  interestDeduction: number
-  investmentTaxRate: number
-  wealthTaxRate: number 
+  savingsAccountBalance: number
+  savingsAccountRate: number
+  askRate: number
 }
 
 export interface YearlyDataPoint {

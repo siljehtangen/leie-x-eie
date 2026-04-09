@@ -1,9 +1,9 @@
 {
   "header": {
     "heroLine1": "Leie eller",
-    "heroHighlight": "kjøpe?",
-    "pageTitle": "DeciDwell – Leie eller kjøpe?",
-    "tagline": "Din smarte guide til å velge om du skal leie eller kjøpe bolig i Norge."
+    "heroHighlight": "eie?",
+    "pageTitle": "LeieXEie – Leie eller eie?",
+    "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge."
   },
   "mode": {
     "quick": "Rask",
@@ -42,12 +42,12 @@
     "homeInsurance": "Boligforsikring",
     "propertyTax": "Eiendomsskatt",
     "hoaFeeIncrease": "Årlig økning i felleskostnader",
-    "interestDeduction": "Rentefradrag",
     "sharedDebtRate": "Rente på fellesgjeld",
     "interestOnlyYears": "Avdragsfri periode",
-    "investmentTaxRate": "Skatt på investeringsavkastning",
-    "wealthTaxRate": "Formuesskattesats",
     "inflation": "Inflasjon",
+    "savingsAccountBalance": "Sparebeløp i sparekonto",
+    "savingsAccountRate": "Sparerente",
+    "askRate": "ASK-avkastning",
     "wageGrowth": "Forventet lønnsvekst"
   },
   "tooltips": {
@@ -70,17 +70,17 @@
     "years": "Hvor lenge du planlegger å bo der. Jo lenger du eier, jo mer fordeles oppstartskostnadene.",
     "appreciationRate": "Norsk boligprisvekst er gjennomsnittlig 2–4% per år.",
     "rentGrowth": "Hvor raskt husleiene stiger i ditt område. Brukes til å beregne leieutgifter over tid.",
-    "investmentReturn": "Forventet årlig avkastning dersom du investerer egenkapitalen og månedlig sparing. Aksjemarkedet gir historisk ~5–7%.",
+    "investmentReturn": "Forventet årlig avkastning på investeringen din (før skatt). Aksjemarkedet gir historisk ~7% per år. 37% skatt trekkes automatisk i beregningen.",
     "contentsInsurance": "Forsikring for innbo og løsøre. Typisk 1 500–3 000 kr/år som leietaker.",
     "electricity": "Årlige strøm- og oppvarmingskostnader. Varierer mye — ca. 15 000–30 000 kr/år for en leilighet.",
     "internet": "Årlig kostnad for bredbånd. Typisk rundt 4 000–6 000 kr/år i Norge.",
     "parking": "Månedlig parkeringskostnad hvis aktuelt. La stå på 0 hvis inkludert i husleien.",
-    "interestDeduction": "I Norge kan du trekke fra 22% av rentekostnader på skatten.",
     "sharedDebtRate": "Rentesatsen på borettslagets fellesgjeld. Denne renten inngår i felleskostnadene og er fradragsberettiget. Tilsvarer vanligvis gjeldende boliglånsrente.",
     "interestOnlyYears": "Antall år med avdragsfrihet — kun rentebetalinger, ingen nedbetaling av hovedstol. Etter perioden amortiseres lånet over resterende løpetid. Mange norske banker tilbyr inntil 5 år.",
-    "investmentTaxRate": "Effektiv skattesats på investeringsavkastning (f.eks. 37,84% for aksjer i ordinær konto under aksjonærmodellen). Bruk lavere sats hvis du investerer via Aksjesparekonto (ASK), der gevinst skattlegges ved uttak. Boligprisgevinst på primærbolig er skattefri.",
-    "wealthTaxRate": "Norsk formuesskattesats — for tiden 1,0% over bunnfradraget (~1,7 mill. kr). Primærbolig verdsettes til kun 25% av markedsverdi, mens finansielle eiendeler verdsettes til 80%. Dette er en betydelig strukturell fordel for boligeiere.",
     "inflation": "Generell prisvekst brukt til å omregne fremtidige beløp til dagens pengeverdi. Norges Banks langsiktige mål er 2%.",
+    "savingsAccountBalance": "Beløp du beholder i sparekonto som likvid buffer. Renten skattes løpende med 22% (automatisk). Resten av startkapitalen (egenkapital + kjøpsomkostninger) plasseres i Aksjesparekonto (ASK).",
+    "savingsAccountRate": "Rentesatsen på sparekontoen din. Sjekk din bank. 22% renteskatt trekkes automatisk i beregningen.",
+    "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk.",
     "wageGrowth": "Forventet årlig inntektsvekst. Brukes til å vurdere betalingsevne over tid."
   },
   "calculate": "Beregn",
@@ -108,18 +108,25 @@
     "downPayment": "Egenkapital",
     "closingCosts": "Dokumentavgift",
     "rent": "LEIE",
-    "buy": "KJØPE"
+    "buy": "EIE"
   },
   "recommendation": {
-    "buy": "Det lønner seg å kjøpe",
+    "buy": "Det lønner seg å eie",
     "rent": "Det lønner seg å leie",
-    "buyDesc": "Basert på dine tall vil det å kjøpe bolig gi deg {{amount}} mer i formue etter {{years}} år, sammenlignet med å leie og investere differansen.",
-    "rentDesc": "Basert på dine tall vil det å leie og investere differansen gi deg {{amount}} mer i formue etter {{years}} år, sammenlignet med å kjøpe.",
+    "buyDesc": "Etter {{years}} år er du {{amount}} bedre stilt ved å eie. Din boligegenkapital på {{equity}} er mer enn de {{portfolio}} du ville bygd opp ved å leie og investere differansen.",
+    "rentDesc": "Etter {{years}} år er du {{amount}} bedre stilt ved å leie og investere. Din investeringsportefølje på {{portfolio}} er større enn de {{equity}} i egenkapital du ville hatt som boligeier.",
+    "breakevenAt": "De to scenarioene er like gode ved år {{year}} — før det var det andre alternativet bedre.",
+    "noBreakevenBuy": "Kjøp er best gjennom hele {{years}}-årsperioden.",
+    "noBreakevenRent": "Leie er best gjennom hele {{years}}-årsperioden.",
+    "realTermsNote": "Alle beløp er i dagens pengeverdi — justert for inflasjon.",
+    "buyingCostsMore": "Kjøp koster mer per måned (år 1)",
+    "rentingCostsMore": "Leie koster mer per måned (år 1)",
+    "equityBuilt": "Kjøpers egenkapital etter {{years}} år",
+    "investmentGrowth": "Leietakers portefølje etter {{years}} år",
+    "breakevenYear": "Break-even år",
+    "year": "År",
     "disclaimer": "Dette er et estimat basert på dine inndata og forutsetninger om fremtidige markedsforhold. Konsulter alltid en kvalifisert finansrådgiver før større finansielle beslutninger.",
-    "keyFactors": "Nøkkeltall",
-    "mortgageVsRent": "Lånebetaling vs husleie",
-    "equityBuilt": "Egenkapital opparbeidet",
-    "investmentGrowth": "Investeringsvekst"
+    "keyFactors": "Nøkkeltall"
   },
   "language": {
     "en": "EN",

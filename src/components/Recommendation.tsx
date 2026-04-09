@@ -10,11 +10,25 @@ interface RecommendationProps {
 
 export default function Recommendation({ results, years }: RecommendationProps) {
   const { t } = useTranslation()
-  const { recommendation, difference, summary } = results
+  const { recommendation, difference, summary, breakevenYear } = results
   const isBuy = recommendation === 'buy'
 
   const diffFormatted = formatNOK(difference)
-  const mortgageDiff = summary.monthlyMortgagePayment - summary.initialMonthlyRent
+  const equityFormatted = formatNOK(summary.finalEquity)
+  const portfolioFormatted = formatNOK(summary.finalRenterPortfolio)
+
+  const mortgageDiff = summary.initialBuyerMonthly - summary.initialMonthlyRent
+  const buyingCostsMore = mortgageDiff > 0
+
+  const breakevenText = breakevenYear !== null
+    ? t('recommendation.breakevenAt', { year: breakevenYear })
+    : isBuy
+      ? t('recommendation.noBreakevenBuy', { years })
+      : t('recommendation.noBreakevenRent', { years })
+
+  const breakevenValue = breakevenYear !== null
+    ? t('recommendation.year') + ' ' + breakevenYear
+    : '—'
 
   return (
     <div className="recommendation-section">
@@ -34,28 +48,38 @@ export default function Recommendation({ results, years }: RecommendationProps) 
 
         <p className="rec-desc">
           {isBuy
-            ? t('recommendation.buyDesc',  { amount: diffFormatted, years })
-            : t('recommendation.rentDesc', { amount: diffFormatted, years })}
+            ? t('recommendation.buyDesc', { amount: diffFormatted, years, equity: equityFormatted, portfolio: portfolioFormatted })
+            : t('recommendation.rentDesc', { amount: diffFormatted, years, equity: equityFormatted, portfolio: portfolioFormatted })}
         </p>
+
+        <p className="rec-breakeven-note">{breakevenText}</p>
 
         <div className="rec-metrics">
           <div className="rec-metric">
-            <div className="rec-metric-label">{t('recommendation.mortgageVsRent')}</div>
+            <div className="rec-metric-label">
+              {buyingCostsMore
+                ? t('recommendation.buyingCostsMore')
+                : t('recommendation.rentingCostsMore')}
+            </div>
             <div className="rec-metric-value">
-              {mortgageDiff > 0
-                ? `+${formatNOK(mortgageDiff)} / mnd`
-                : `${formatNOK(mortgageDiff)} / mnd`}
+              {formatNOK(Math.abs(mortgageDiff))} {t('units.perMonth')}
             </div>
           </div>
           <div className="rec-metric">
-            <div className="rec-metric-label">{t('recommendation.equityBuilt')}</div>
-            <div className="rec-metric-value">{formatNOK(summary.finalEquity)}</div>
+            <div className="rec-metric-label">{t('recommendation.equityBuilt', { years })}</div>
+            <div className="rec-metric-value">{equityFormatted}</div>
           </div>
           <div className="rec-metric">
-            <div className="rec-metric-label">{t('recommendation.investmentGrowth')}</div>
-            <div className="rec-metric-value">{formatNOK(summary.finalRenterPortfolio)}</div>
+            <div className="rec-metric-label">{t('recommendation.investmentGrowth', { years })}</div>
+            <div className="rec-metric-value">{portfolioFormatted}</div>
+          </div>
+          <div className="rec-metric">
+            <div className="rec-metric-label">{t('recommendation.breakevenYear')}</div>
+            <div className="rec-metric-value">{breakevenValue}</div>
           </div>
         </div>
+
+        <p className="rec-real-terms">{t('recommendation.realTermsNote')}</p>
       </div>
 
       <p className="rec-disclaimer">

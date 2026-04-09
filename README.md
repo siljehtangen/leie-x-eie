@@ -1,4 +1,4 @@
-# DeciDwell
+# LeieXEie
 
 A rent-vs-buy calculator tailored for the Norwegian housing market. Enter your numbers and get a clear recommendation based on long-term net worth — not just monthly costs.
 

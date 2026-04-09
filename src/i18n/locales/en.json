@@ -1,9 +1,9 @@
 {
   "header": {
     "heroLine1": "Rent or",
-    "heroHighlight": "buy?",
-    "pageTitle": "DeciDwell – Rent or buy?",
-    "tagline": "Your smart guide to choosing whether to rent or buy in Norway."
+    "heroHighlight": "own?",
+    "pageTitle": "LeieXEie – Rent or own?",
+    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway."
   },
   "mode": {
     "quick": "Quick",
@@ -42,12 +42,12 @@
     "homeInsurance": "Home Insurance",
     "propertyTax": "Property Tax (Eiendomsskatt)",
     "hoaFeeIncrease": "Annual HOA Fee Increase",
-    "interestDeduction": "Tax Deduction on Interest (Rentefradrag)",
     "sharedDebtRate": "Fellesgjeld Interest Rate",
     "interestOnlyYears": "Interest-Only Period (Avdragsfrihet)",
-    "investmentTaxRate": "Investment Return Tax Rate",
-    "wealthTaxRate": "Wealth Tax Rate (Formuesskatt)",
     "inflation": "Inflation Rate",
+    "savingsAccountBalance": "Savings Account Balance",
+    "savingsAccountRate": "Savings Account Rate",
+    "askRate": "ASK (Equity ISA) Return",
     "wageGrowth": "Expected Wage Growth"
   },
   "tooltips": {
@@ -70,17 +70,17 @@
     "years": "How long you plan to stay. The longer you own, the more the upfront buying costs are spread out.",
     "appreciationRate": "Norwegian average home price growth is approximately 2–4% per year.",
     "rentGrowth": "How fast rents rise in your area. Used to project renting costs over time.",
-    "investmentReturn": "Expected annual return if you invest the down payment and monthly savings instead of buying. Stocks historically ~5–7%.",
+    "investmentReturn": "Expected annual investment return before tax. Stocks historically ~7% per year. 37% tax is automatically applied in the calculation.",
     "contentsInsurance": "Contents insurance covering your belongings. Typically 1,500–3,000 kr/year as a renter.",
     "electricity": "Annual electricity and heating costs. Varies widely — roughly 15,000–30,000 kr/year for an apartment.",
     "internet": "Annual broadband cost. Typically around 4,000–6,000 kr/year in Norway.",
     "parking": "Monthly parking costs if applicable. Leave at 0 if included in rent or not relevant.",
-    "interestDeduction": "In Norway, you can deduct 22% of your mortgage interest from taxable income.",
     "sharedDebtRate": "The interest rate on the housing cooperative's shared debt (fellesgjeld). This interest is included in monthly HOA fees and is also tax-deductible. Typically close to the current mortgage rate.",
     "interestOnlyYears": "Number of years paying interest only (avdragsfrihet), with no principal repayment. After this period the full loan amortises over the remaining term. Many Norwegian banks offer up to 5 years.",
-    "investmentTaxRate": "Effective tax rate on investment returns (e.g. 37.84% for shares in a regular account under Norway's shareholder model). Use a lower rate if investing via Aksjesparekonto (ASK), where gains are tax-deferred until withdrawal. Home appreciation on a primary residence is tax-free.",
-    "wealthTaxRate": "Norway's wealth tax (formuesskatt) rate — currently 1.0% above the ~1.7M NOK threshold. Primary residences are valued at only 25% of market value, while financial assets are valued at 80%. This is a major structural advantage for homeowners.",
     "inflation": "General price growth used to convert future amounts to today's money. Norwegian long-run target is 2%.",
+    "savingsAccountBalance": "Amount kept as a liquid buffer in a savings account. Interest is taxed annually at 22% (automatically applied). The rest of your starting capital goes into an Aksjesparekonto (ASK).",
+    "savingsAccountRate": "Interest rate on your savings account. Check with your bank. 22% tax on interest is automatically applied.",
+    "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
     "wageGrowth": "Expected annual growth in your income. Used to assess affordability over time."
   },
   "calculate": "Calculate",
@@ -108,18 +108,25 @@
     "downPayment": "Down Payment",
     "closingCosts": "Closing Costs",
     "rent": "RENT",
-    "buy": "BUY"
+    "buy": "OWN"
   },
   "recommendation": {
-    "buy": "Buying is Better for You",
+    "buy": "Owning is Better for You",
     "rent": "Renting is Better for You",
-    "buyDesc": "Based on your inputs, buying a home leaves you {{amount}} better off after {{years}} years compared to renting and investing.",
-    "rentDesc": "Based on your inputs, renting and investing the difference leaves you {{amount}} better off after {{years}} years compared to buying.",
+    "buyDesc": "After {{years}} years, owning puts you {{amount}} ahead. Your home equity of {{equity}} beats the {{portfolio}} you'd have built by renting and investing the difference.",
+    "rentDesc": "After {{years}} years, renting and investing puts you {{amount}} ahead. Your investment portfolio of {{portfolio}} grows larger than the {{equity}} equity you'd have built as a homeowner.",
+    "breakevenAt": "The two paths cross at year {{year}} — before that, the other option was ahead.",
+    "noBreakevenBuy": "Buying stays ahead for the entire {{years}}-year period.",
+    "noBreakevenRent": "Renting stays ahead for the entire {{years}}-year period.",
+    "realTermsNote": "All figures are in today's money — adjusted for inflation.",
+    "buyingCostsMore": "Buying costs more per month (year 1)",
+    "rentingCostsMore": "Renting costs more per month (year 1)",
+    "equityBuilt": "Buyer's home equity after {{years}} years",
+    "investmentGrowth": "Renter's portfolio after {{years}} years",
+    "breakevenYear": "Breakeven year",
+    "year": "Year",
     "disclaimer": "This is an estimate based on your inputs and assumptions about future market conditions. Always consult a qualified financial advisor before making major financial decisions.",
-    "keyFactors": "Key Factors",
-    "mortgageVsRent": "Mortgage vs Rent",
-    "equityBuilt": "Equity Built",
-    "investmentGrowth": "Investment Growth"
+    "keyFactors": "Key Factors"
   },
   "language": {
     "en": "EN",

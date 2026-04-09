@@ -1,9 +1,16 @@
 import type { Inputs, Mode, CalculationResult, YearlyDataPoint } from '../types'
 
-const WEALTH_TAX_THRESHOLD = 1_700_000     
-const PRIMARY_RESIDENCE_VALUATION = 0.25 
-const FINANCIAL_ASSET_VALUATION = 0.80    
-const SECURITY_DEPOSIT_MONTHS = 3   
+// ── Norwegian law constants (as of 2025) ─────────────────────────────────────
+const WEALTH_TAX_THRESHOLD = 1_700_000       // Bunnfradrag formuesskatt
+const WEALTH_TAX_RATE = 1.0                  // 1.0% (under 20 MNOK)
+const PRIMARY_RESIDENCE_VALUATION = 0.25     // Primærbolig verdsettes til 25%
+const SAVINGS_VALUATION = 1.0                // Bankinnskudd: 100% av markedsverdi
+const FINANCIAL_ASSET_VALUATION = 0.80       // Aksjer/ASK: 80% av markedsverdi
+const INTEREST_DEDUCTION = 0.22              // Rentefradrag: 22%
+const SAVINGS_TAX_RATE = 0.22               // Skatt på renteinntekter: 22%
+const ASK_TAX_RATE = 0.3784                 // Aksjonærmodellen: 37.84% ved uttak
+const QUICK_INVESTMENT_TAX = 0.37           // Approx. skatt i enkel modus
+const SECURITY_DEPOSIT_MONTHS = 3
 
 export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const {
@@ -31,22 +38,19 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     homeInsurance,
     propertyTax,
     hoaFeeIncrease,
-    interestDeduction,
     sharedDebtRate,
     interestOnlyYears,
-    investmentTaxRate,
-    wealthTaxRate,
+    savingsAccountBalance,
+    savingsAccountRate,
+    askRate,
   } = inputs
 
   const isAdvanced = mode === 'advanced'
 
   // ── Initial figures ──────────────────────────────────────────────────────────
-  // sharedDebt (fellesgjeld) inflates effective property value and stays as a permanent liability
   const effectivePrice = purchasePrice + sharedDebt
   const loanAmount = purchasePrice - downPayment
   const closingCosts = stampDuty + (isAdvanced ? otherClosingCosts : 0)
-
-  // Security deposit: renter ties up 3 months rent upfront; returned at face value at end
   const securityDeposit = isAdvanced ? monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
 
   // ── Mortgage ─────────────────────────────────────────────────────────────────
@@ -55,7 +59,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const numPayments = loanTermYears * 12
   const remainingTermMonths = numPayments - ioYears * 12
 
-  // Amortising payment applies after the interest-only period (or from day 1 if ioYears = 0)
   const monthlyAmortizingPayment =
     remainingTermMonths > 0
       ? monthlyRate > 0
@@ -65,36 +68,41 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         : loanAmount / remainingTermMonths
       : 0
 
-  // ── Investment return (after tax) ────────────────────────────────────────────
-  // In a regular brokerage account (not ASK), returns are taxed annually.
-  // Home appreciation is tax-free for primary residence (held 12/24 months rule).
-  const effectiveAnnualReturn = isAdvanced
-    ? investmentReturn * (1 - investmentTaxRate / 100)
-    : investmentReturn
-  const monthlyInvestmentReturn = effectiveAnnualReturn / 100 / 12
+  // ── Renter portfolio setup ───────────────────────────────────────────────────
+  const initialInvestment = downPayment + closingCosts - securityDeposit
+
+  // Quick mode: single portfolio with approximate 37% tax on returns
+  const quickMonthlyReturn = investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX)
+
+  // Advanced mode: split into savings account (sparekonto) + ASK
+  // Savings account: interest taxed annually at 22% (modelled as net monthly return)
+  // ASK: returns compound tax-free; capital gains tax (37.84%) applied at withdrawal
+  const savingsInitial = isAdvanced
+    ? Math.min(savingsAccountBalance, Math.max(0, initialInvestment))
+    : 0
+  const askInitial = isAdvanced ? Math.max(0, initialInvestment - savingsInitial) : 0
+
+  const savingsMonthlyReturn = savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
+  const askMonthlyReturn = askRate / 100 / 12
 
   // ── State ────────────────────────────────────────────────────────────────────
-  // Renter invests what the buyer spent upfront, minus the security deposit (locked up)
-  let renterPortfolio = downPayment + closingCosts - securityDeposit
+  let renterPortfolio = initialInvestment  // quick mode only
+  let savingsPortfolio = savingsInitial    // advanced mode
+  let askPortfolio = askInitial            // advanced mode (gross, pre-tax)
+  let askCostBasis = askInitial            // tracks net contributions for gains calc
+
   let remainingMortgage = loanAmount
   let currentMonthlyRent = monthlyRent
   let currentHoaFee = monthlyHoaFee
 
-  // Renter monthly extras (advanced): innboforsikring + electricity + internet + parking
   const advancedRentMonthly = isAdvanced
     ? (contentsInsurance + electricity + internet + parking * 12) / 12
     : 0
 
-  // Shared utilities (electricity + internet): both buyer and renter pay these equally.
-  // Adding them to the buyer neutralises the previous asymmetry; the diff is unchanged.
   const sharedUtilitiesMonthly = isAdvanced ? (electricity + internet) / 12 : 0
-
-  // Advanced buy extras — base values; some are inflation-adjusted per year
   const municipalFeesBase = isAdvanced ? municipalFees / 12 : 0
   const insuranceMonthly = isAdvanced ? homeInsurance / 12 : 0
   const propertyTaxMonthly = isAdvanced ? propertyTax / 12 : 0
-
-  // Fellesgjeld carries its own interest that is also tax-deductible (rentefradrag)
   const sharedDebtMonthlyInterest = isAdvanced
     ? sharedDebt * (sharedDebtRate / 100) / 12
     : 0
@@ -108,8 +116,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     let yearlyRenterCashflow = 0
 
     const isInterestOnly = ioYears > 0 && year <= ioYears
-
-    // Maintenance and municipal fees grow with inflation year-over-year
     const inflationMultiplier = Math.pow(1 + inflation / 100, year - 1)
     const maintenanceMonthly = isAdvanced
       ? (purchasePrice * renovationPct / 100 / 12) * inflationMultiplier
@@ -127,7 +133,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         effectiveMortgage = 0
         principalPayment = 0
       } else if (isInterestOnly) {
-        // Avdragsfrihet: pay interest only, no principal
         effectiveMortgage = interestPayment
         principalPayment = 0
       } else {
@@ -138,9 +143,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       let buyerMonthlyCost = effectiveMortgage + currentHoaFee + sharedUtilitiesMonthly
 
       if (isAdvanced) {
-        // Combined deductible interest: mortgage + fellesgjeld interest
         const taxDeductionMonthly =
-          (interestPayment + sharedDebtMonthlyInterest) * (interestDeduction / 100)
+          (interestPayment + sharedDebtMonthlyInterest) * INTEREST_DEDUCTION
         buyerMonthlyCost +=
           maintenanceMonthly +
           municipalFeesMonthly +
@@ -150,10 +154,17 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       }
 
       const renterMonthlyCost = currentMonthlyRent + advancedRentMonthly
-
-      // Positive diff → buyer pays more → renter saves & invests the difference
       const monthlyDiff = buyerMonthlyCost - renterMonthlyCost
-      renterPortfolio = renterPortfolio * (1 + monthlyInvestmentReturn) + monthlyDiff
+
+      if (isAdvanced) {
+        // Savings account grows independently each month (tax already baked in)
+        savingsPortfolio *= (1 + savingsMonthlyReturn)
+        // Monthly diff (positive = renter saves, negative = renter spends extra) → ASK
+        askPortfolio = askPortfolio * (1 + askMonthlyReturn) + monthlyDiff
+        askCostBasis += monthlyDiff
+      } else {
+        renterPortfolio = renterPortfolio * (1 + quickMonthlyReturn) + monthlyDiff
+      }
 
       if (remainingMortgage > 0) {
         remainingMortgage = Math.max(0, remainingMortgage - principalPayment)
@@ -163,58 +174,73 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       yearlyRenterCashflow += renterMonthlyCost
     }
 
-    // Home value appreciates on the full effective price (purchase + fellesgjeld)
     const homeValue = effectivePrice * Math.pow(1 + appreciationRate / 100, year)
     const isFinalYear = year === years
     const sellingCost = isFinalYear ? brokerSellingFee : 0
-    // Fellesgjeld stays as a liability — deducted from equity at sale
     const buyerEquity = homeValue - remainingMortgage - sharedDebt - sellingCost
 
     // ── Wealth tax (formuesskatt) — advanced only ────────────────────────────
-    // Primary residence is valued at 25% of market value; financial assets at 80%.
-    // This is one of the largest structural advantages of homeownership in Norway.
     if (isAdvanced) {
       const buyerTaxableWealth = Math.max(
         0,
         homeValue * PRIMARY_RESIDENCE_VALUATION - remainingMortgage - sharedDebt,
       )
       const buyerWealthTax =
-        Math.max(0, buyerTaxableWealth - WEALTH_TAX_THRESHOLD) * (wealthTaxRate / 100)
+        Math.max(0, buyerTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
 
-      const renterTaxableWealth = Math.max(0, renterPortfolio * FINANCIAL_ASSET_VALUATION)
+      // Renter's taxable wealth: savings at 100%, ASK at 80%
+      const renterTaxableWealth = Math.max(
+        0,
+        savingsPortfolio * SAVINGS_VALUATION + askPortfolio * FINANCIAL_ASSET_VALUATION,
+      )
       const renterWealthTax =
-        Math.max(0, renterTaxableWealth - WEALTH_TAX_THRESHOLD) * (wealthTaxRate / 100)
+        Math.max(0, renterTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
 
-      // Buyer wealth tax is an annual cash outflow → increases effective buyer costs.
-      // In the model this means the renter captures that saving (+buyerWealthTax),
-      // then pays their own higher wealth tax (-renterWealthTax).
+      // Buyer wealth tax → renter captures the saving (goes into ASK)
       yearlyBuyerCashflow += buyerWealthTax
-      renterPortfolio += buyerWealthTax
-      renterPortfolio -= renterWealthTax
+      askPortfolio += buyerWealthTax
+      askCostBasis += buyerWealthTax
+
+      // Renter pays own wealth tax — deduct from savings first, then ASK
+      const fromSavings = Math.min(renterWealthTax, savingsPortfolio)
+      savingsPortfolio -= fromSavings
+      const fromAsk = renterWealthTax - fromSavings
+      if (fromAsk > 0) {
+        askPortfolio -= fromAsk
+        askCostBasis -= fromAsk
+      }
     }
 
-    // Security deposit returned to renter at the end of the holding period (face value)
+    // Security deposit returned to renter at end of holding period
     if (isFinalYear && isAdvanced) {
-      renterPortfolio += securityDeposit
+      savingsPortfolio += securityDeposit
     }
 
     totalBuyerPaid += yearlyBuyerCashflow
     totalRenterPaid += yearlyRenterCashflow
 
-    // Deflate both net worths to real (today's kr) using inflation
     const inflationFactor = Math.pow(1 + inflation / 100, year)
+
+    // Renter net worth: savings (already net of tax) + ASK gross - deferred capital gains tax
+    let renterNetWorth: number
+    if (isAdvanced) {
+      const askGains = Math.max(0, askPortfolio - askCostBasis)
+      const askTax = askGains * ASK_TAX_RATE
+      renterNetWorth = (savingsPortfolio + askPortfolio - askTax) / inflationFactor
+    } else {
+      renterNetWorth = renterPortfolio / inflationFactor
+    }
 
     yearlyData.push({
       year,
       buyerMonthlyCost: yearlyBuyerCashflow / 12,
       renterMonthlyCost: yearlyRenterCashflow / 12,
       buyerNetWorth: buyerEquity / inflationFactor,
-      renterNetWorth: renterPortfolio / inflationFactor,
+      renterNetWorth,
       homeValue,
       remainingMortgage,
     })
 
-    // Update annually
     currentMonthlyRent *= 1 + rentIncrease / 100
     currentHoaFee *= 1 + (isAdvanced ? hoaFeeIncrease : 2) / 100
   }
@@ -236,7 +262,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     }
   }
 
-  // Initial monthly mortgage for summary display (interest-only if applicable)
   const initialMonthlyMortgage =
     ioYears > 0 ? loanAmount * monthlyRate : monthlyAmortizingPayment
 
