@@ -1,0 +1,18 @@
+export const COLORS = {
+  buy: '#2952A3',
+  buyLight: '#EDF2FA',
+  rent: '#C4522E',
+  rentLight: '#FCF1EC',
+  time: '#1F7A5E',
+  financial: '#6B3FA0',
+  text: '#1A1A22',
+  textSecondary: '#52525E',
+  textMuted: '#94949E',
+  bg: '#F5F2EC',
+  surface: '#FFFFFF',
+  border: '#E5E2DB',
+  dark: '#0E0E16',
+  breakeven: '#E8B84B',
+  breakevenDark: '#B8881B',
+  chartGrid: '#f0f0f0',
+} as const

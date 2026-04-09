@@ -8,13 +8,9 @@ import {
   ChevronDown,
   Info,
 } from 'lucide-react'
+import { formatInputNum } from '../utils/calculations'
+import { COLORS } from '../constants/theme'
 import type { Inputs, Mode } from '../types'
-
-function formatNum(v: number): string {
-  const parts = v.toString().split('.')
-  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')
-  return parts.join('.')
-}
 
 interface InputFieldProps {
   label: string
@@ -54,11 +50,12 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
         )}
       </div>
       <div className="input-value-row">
-        <button className="input-stepper-btn" onClick={decrement} tabIndex={-1} type="button">−</button>
+        <button className="input-stepper-btn" onClick={decrement} tabIndex={-1} type="button" aria-label={`Decrease ${label}`}>−</button>
         <input
           type="text"
           inputMode="decimal"
-          value={focused ? value : formatNum(value)}
+          aria-label={label}
+          value={focused ? value : formatInputNum(value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={e => {
@@ -68,7 +65,7 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           }}
         />
         {unit && <span className="input-unit">{unit}</span>}
-        <button className="input-stepper-btn" onClick={increment} tabIndex={-1} type="button">+</button>
+        <button className="input-stepper-btn" onClick={increment} tabIndex={-1} type="button" aria-label={`Increase ${label}`}>+</button>
       </div>
     </div>
   )
@@ -86,10 +83,19 @@ interface SectionProps {
 
 function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true, children }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen)
+  const bodyId = `section-body-${id}`
   return (
     <div className="input-section">
       <div className={`section-stripe stripe-${stripe}`} />
-      <div className="section-header" onClick={() => setOpen(o => !o)}>
+      <div
+        className="section-header"
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        aria-controls={bodyId}
+        onClick={() => setOpen(o => !o)}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(o => !o) } }}
+      >
         <div className={`section-icon ${id}`}>
           <Icon size={18} color={iconColor} strokeWidth={2} />
         </div>
@@ -101,7 +107,7 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
           style={{ marginLeft: '0.5rem', transition: 'transform 0.3s ease', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
       </div>
-      {open && <div className="section-body">{children}</div>}
+      {open && <div id={bodyId} className="section-body" role="region" aria-label={title}>{children}</div>}
     </div>
   )
 }
@@ -130,7 +136,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
   return (
     <div className="input-panel">
-      <Section id="rent" title={t('sections.rent')} icon={Home} iconColor="#C4522E" stripe="rent">
+      <Section id="rent" title={t('sections.rent')} icon={Home} iconColor={COLORS.rent} stripe="rent">
         <div className="input-grid">
           {field('monthlyRent',   { unit: 'kr / mnd', min: 0, step: 500 })}
           {field('rentIncrease', { unit: '%', min: 0, max: 20, step: 0.1 })}
@@ -143,7 +149,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      <Section id="buy" title={t('sections.buy')} icon={House} iconColor="#2952A3" stripe="buy">
+      <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy} stripe="buy">
         <div className="input-grid">
           {field('purchasePrice',   { unit: 'kr',         min: 0,   step: 100000 })}
           {field('downPayment',     { unit: 'kr',         min: 0,   step: 50000  })}
@@ -166,7 +172,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor="#1F7A5E" stripe="time">
+      <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor={COLORS.time} stripe="time">
         <div className="input-grid">
           {field('years',            { unit: t('units.years'), min: 1, max: 30, step: 1 })}
           {field('appreciationRate', { unit: '%', min: 0, max: 15, step: 0.1 })}
@@ -176,7 +182,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       </Section>
 
       {isAdvanced && (
-        <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor="#6B3FA0" stripe="fin">
+        <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor={COLORS.financial} stripe="fin">
           <div className="input-grid">
             {field('savingsAccountBalance', { unit: 'kr',  min: 0, step: 10000 })}
             {field('savingsAccountRate',    { unit: '%',  min: 0, max: 20, step: 0.1 })}

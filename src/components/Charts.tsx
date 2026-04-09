@@ -13,10 +13,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { BarChart2, TrendingDown } from 'lucide-react'
 import { formatNOK, formatChartNOK } from '../utils/calculations'
+import { COLORS } from '../constants/theme'
 import type { YearlyDataPoint } from '../types'
 
-const RENT_COLOR = '#C4522E'
-const BUY_COLOR  = '#2952A3'
+const RENT_COLOR = COLORS.rent
+const BUY_COLOR  = COLORS.buy
 
 interface TooltipPayloadItem {
   name: string
@@ -83,7 +84,7 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
                 <stop offset="95%" stopColor={RENT_COLOR} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
             <XAxis
               dataKey="year"
               tick={{ fontSize: 11, fill: '#999' }}
@@ -102,9 +103,9 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}
-                stroke="#E8B84B"
+                stroke={COLORS.breakeven}
                 strokeDasharray="5 3"
-                label={{ value: `↔ yr ${breakevenYear}`, fontSize: 10, fill: '#B8881B', position: 'top' }}
+                label={{ value: `↔ yr ${breakevenYear}`, fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
             <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={BUY_COLOR}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
@@ -124,7 +125,7 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
             <XAxis
               dataKey="year"
               tick={{ fontSize: 11, fill: '#999' }}

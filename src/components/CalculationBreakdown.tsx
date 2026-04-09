@@ -36,7 +36,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
       </button>
 
       {open && (
-        <div className="breakdown-panel">
+        <div className="breakdown-panel" role="region" aria-label={t('breakdown.title')}>
 
           <div className="breakdown-download-row">
             <PDFDownloadLink

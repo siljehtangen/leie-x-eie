@@ -1,15 +1,16 @@
 import type { Inputs, Mode, CalculationResult, YearlyDataPoint } from '../types'
-
-const WEALTH_TAX_THRESHOLD = 1_700_000
-const WEALTH_TAX_RATE = 1.0
-const PRIMARY_RESIDENCE_VALUATION = 0.25
-const SAVINGS_VALUATION = 1.0
-const FINANCIAL_ASSET_VALUATION = 0.80
-const INTEREST_DEDUCTION = 0.22
-const SAVINGS_TAX_RATE = 0.22
-const ASK_TAX_RATE = 0.3784
-const QUICK_INVESTMENT_TAX = 0.22
-const SECURITY_DEPOSIT_MONTHS = 3
+import {
+  WEALTH_TAX_THRESHOLD,
+  WEALTH_TAX_RATE,
+  PRIMARY_RESIDENCE_VALUATION,
+  SAVINGS_VALUATION,
+  FINANCIAL_ASSET_VALUATION,
+  INTEREST_DEDUCTION,
+  SAVINGS_TAX_RATE,
+  ASK_TAX_RATE,
+  QUICK_INVESTMENT_TAX,
+  SECURITY_DEPOSIT_MONTHS,
+} from '../constants/finance'
 
 export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const {
@@ -266,6 +267,12 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       initialBuyerMonthly: yearlyData[0].buyerMonthlyCost,
     },
   }
+}
+
+export function formatInputNum(v: number): string {
+  const parts = v.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')
+  return parts.join('.')
 }
 
 export function formatNOK(value: number, compact = false): string {

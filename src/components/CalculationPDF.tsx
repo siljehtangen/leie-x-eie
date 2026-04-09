@@ -2,6 +2,7 @@ import {
   Document, Page, View, Text, StyleSheet, Font,
 } from '@react-pdf/renderer'
 import { formatNOK } from '../utils/calculations'
+import { COLORS } from '../constants/theme'
 import type { CalculationResult, Inputs, Mode } from '../types'
 
 Font.register({
@@ -18,30 +19,17 @@ Font.register({
   ],
 })
 
-const C = {
-  buy: '#2952A3',
-  buyLight: '#EDF2FA',
-  rent: '#C4522E',
-  rentLight: '#FCF1EC',
-  text: '#1A1A22',
-  textSecondary: '#52525E',
-  textMuted: '#94949E',
-  bg: '#F5F2EC',
-  surface: '#FFFFFF',
-  border: '#E5E2DB',
-  dark: '#0E0E16',
-}
 
 const s = StyleSheet.create({
   page: {
     fontFamily: 'Inter',
     fontSize: 9,
-    color: C.text,
-    backgroundColor: C.bg,
+    color: COLORS.text,
+    backgroundColor: COLORS.bg,
     padding: 0,
   },
   header: {
-    backgroundColor: C.dark,
+    backgroundColor: COLORS.dark,
     paddingTop: 20,
     paddingBottom: 20,
     paddingLeft: 32,
@@ -74,8 +62,8 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  recBoxBuy: { backgroundColor: C.buy },
-  recBoxRent: { backgroundColor: C.rent },
+  recBoxBuy: { backgroundColor: COLORS.buy },
+  recBoxRent: { backgroundColor: COLORS.rent },
   recEyebrow: { fontSize: 7, color: 'rgba(255,255,255,0.60)', marginBottom: 3 },
   recTitle: { fontSize: 14, fontWeight: 700, color: '#FFFFFF' },
   recAmountLabel: { fontSize: 7, color: 'rgba(255,255,255,0.60)', marginBottom: 2, textAlign: 'right' },
@@ -87,18 +75,18 @@ const s = StyleSheet.create({
   },
   metricBox: {
     flex: 1,
-    backgroundColor: C.surface,
+    backgroundColor: COLORS.surface,
     borderRadius: 7,
     paddingTop: 9,
     paddingBottom: 9,
     paddingLeft: 10,
     paddingRight: 10,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: COLORS.border,
     borderStyle: 'solid',
   },
-  metricLabel: { fontSize: 7, color: C.textMuted, marginBottom: 3 },
-  metricValue: { fontSize: 10, fontWeight: 700, color: C.text },
+  metricLabel: { fontSize: 7, color: COLORS.textMuted, marginBottom: 3 },
+  metricValue: { fontSize: 10, fontWeight: 700, color: COLORS.text },
   twoCol: { flexDirection: 'row', gap: 10 },
   col: { flex: 1 },
   colTitle: {
@@ -109,10 +97,10 @@ const s = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomStyle: 'solid',
   },
-  colTitleBuy: { color: C.buy, borderBottomColor: C.buy },
-  colTitleRent: { color: C.rent, borderBottomColor: C.rent },
+  colTitleBuy: { color: COLORS.buy, borderBottomColor: COLORS.buy },
+  colTitleRent: { color: COLORS.rent, borderBottomColor: COLORS.rent },
   block: {
-    backgroundColor: C.surface,
+    backgroundColor: COLORS.surface,
     borderRadius: 7,
     paddingTop: 8,
     paddingBottom: 8,
@@ -120,13 +108,13 @@ const s = StyleSheet.create({
     paddingRight: 10,
     marginBottom: 7,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: COLORS.border,
     borderStyle: 'solid',
   },
   blockTitle: {
     fontSize: 7,
     fontWeight: 700,
-    color: C.textSecondary,
+    color: COLORS.textSecondary,
     marginBottom: 5,
     textTransform: 'uppercase',
   },
@@ -140,17 +128,17 @@ const s = StyleSheet.create({
     borderRadius: 3,
     marginBottom: 1,
   },
-  rowAlt: { backgroundColor: C.bg },
-  rowLabel: { fontSize: 7.5, color: C.textSecondary },
-  rowValue: { fontSize: 7.5, fontWeight: 700, color: C.text },
-  step: { fontSize: 7.5, color: C.text, marginBottom: 2 },
-  stepMuted: { fontSize: 7, color: C.textMuted, marginBottom: 2 },
+  rowAlt: { backgroundColor: COLORS.bg },
+  rowLabel: { fontSize: 7.5, color: COLORS.textSecondary },
+  rowValue: { fontSize: 7.5, fontWeight: 700, color: COLORS.text },
+  step: { fontSize: 7.5, color: COLORS.text, marginBottom: 2 },
+  stepMuted: { fontSize: 7, color: COLORS.textMuted, marginBottom: 2 },
   result: { fontSize: 9, fontWeight: 700, marginTop: 4 },
-  resultBuy: { color: C.buy },
-  resultRent: { color: C.rent },
+  resultBuy: { color: COLORS.buy },
+  resultRent: { color: COLORS.rent },
   tableHead: {
     flexDirection: 'row',
-    backgroundColor: C.dark,
+    backgroundColor: COLORS.dark,
     borderRadius: 5,
     paddingTop: 5,
     paddingBottom: 5,
@@ -168,25 +156,25 @@ const s = StyleSheet.create({
     paddingRight: 6,
     borderRadius: 3,
   },
-  trAlt: { backgroundColor: C.surface },
-  td: { flex: 1, fontSize: 7.5, color: C.text, textAlign: 'right' },
+  trAlt: { backgroundColor: COLORS.surface },
+  td: { flex: 1, fontSize: 7.5, color: COLORS.text, textAlign: 'right' },
   tdFirst: { textAlign: 'left', fontWeight: 700 },
-  tdBuyWin: { color: C.buy, fontWeight: 700 },
-  tdRentWin: { color: C.rent, fontWeight: 700 },
+  tdBuyWin: { color: COLORS.buy, fontWeight: 700 },
+  tdRentWin: { color: COLORS.rent, fontWeight: 700 },
   note: {
     marginTop: 16,
-    backgroundColor: C.surface,
+    backgroundColor: COLORS.surface,
     borderRadius: 7,
     paddingTop: 10,
     paddingBottom: 10,
     paddingLeft: 12,
     paddingRight: 12,
     borderWidth: 1,
-    borderColor: C.border,
+    borderColor: COLORS.border,
     borderStyle: 'solid',
   },
-  noteTitle: { fontSize: 7, fontWeight: 700, color: C.textSecondary, marginBottom: 5, textTransform: 'uppercase' },
-  noteLine: { fontSize: 7, color: C.textSecondary, marginBottom: 2 },
+  noteTitle: { fontSize: 7, fontWeight: 700, color: COLORS.textSecondary, marginBottom: 5, textTransform: 'uppercase' },
+  noteLine: { fontSize: 7, color: COLORS.textSecondary, marginBottom: 2 },
   footer: {
     position: 'absolute',
     bottom: 16,
@@ -195,7 +183,7 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  footerText: { fontSize: 7, color: C.textMuted },
+  footerText: { fontSize: 7, color: COLORS.textMuted },
 })
 
 interface Props {
@@ -239,11 +227,11 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
           <View style={s.metricsRow}>
             <View style={s.metricBox}>
               <Text style={s.metricLabel}>Kjøpers formue (år {inputs.years})</Text>
-              <Text style={[s.metricValue, { color: C.buy }]}>{formatNOK(summary.finalEquity, true)}</Text>
+              <Text style={[s.metricValue, { color: COLORS.buy }]}>{formatNOK(summary.finalEquity, true)}</Text>
             </View>
             <View style={s.metricBox}>
               <Text style={s.metricLabel}>Leietakers portefølje (år {inputs.years})</Text>
-              <Text style={[s.metricValue, { color: C.rent }]}>{formatNOK(summary.finalRenterPortfolio, true)}</Text>
+              <Text style={[s.metricValue, { color: COLORS.rent }]}>{formatNOK(summary.finalRenterPortfolio, true)}</Text>
             </View>
             <View style={s.metricBox}>
               <Text style={s.metricLabel}>Break-even år</Text>
@@ -301,9 +289,9 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
                     <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * 0.22, true)}</Text>
                   </View>
                 )}
-                <View style={[s.row, { backgroundColor: C.buyLight }]}>
+                <View style={[s.row, { backgroundColor: COLORS.buyLight }]}>
                   <Text style={[s.rowLabel, { fontWeight: 700 }]}>Totalt per måned</Text>
-                  <Text style={[s.rowValue, { color: C.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
+                  <Text style={[s.rowValue, { color: COLORS.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
                 </View>
               </View>
 
