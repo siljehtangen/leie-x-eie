@@ -919,6 +919,293 @@ body {
   text-transform: uppercase;
 }
 
+/* ── Calculation Breakdown ─────────────────────────────────────────────────── */
+.breakdown-wrap {
+  margin-top: 1.5rem;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.breakdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.breakdown-toggle:hover {
+  color: var(--text);
+  border-color: #b0aaa0;
+  background: #f0ede7;
+}
+
+.breakdown-toggle.open {
+  border-radius: var(--radius) var(--radius) 0 0;
+  border-bottom-color: transparent;
+}
+
+.breakdown-chevron {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.breakdown-chevron.open { transform: rotate(180deg); }
+
+.breakdown-panel {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Download button */
+.breakdown-download-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.breakdown-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: white;
+  background: var(--text);
+  border: none;
+  border-radius: 50px;
+  padding: 0.55rem 1.2rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.breakdown-download-btn:hover {
+  background: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Section */
+.bd-section {}
+
+.bd-section-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.2px;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+/* Input grid */
+.bd-input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.35rem;
+}
+
+.bd-input-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: var(--bg);
+}
+
+.bd-input-label { color: var(--text-secondary); }
+
+.bd-input-value {
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+/* Two-column layout */
+.bd-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.bd-col {}
+
+.bd-col-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+
+.bd-col-buy .bd-col-title  { color: var(--buy-color); border-bottom-color: var(--buy-color); }
+.bd-col-rent .bd-col-title { color: var(--rent-color); border-bottom-color: var(--rent-color); }
+
+/* Formula blocks */
+.bd-formula-block {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.65rem;
+  border: 1px solid var(--border);
+}
+
+.bd-formula-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.bd-formula-line {
+  font-size: 0.83rem;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+  line-height: 1.5;
+}
+
+.bd-formula-eq {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.bd-formula-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+.bd-formula-result {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-top: 0.5rem;
+  letter-spacing: -0.3px;
+}
+
+.bd-result-buy  { color: var(--buy-color); }
+.bd-result-rent { color: var(--rent-color); }
+
+/* Cost table inside formula block */
+.bd-cost-table { display: flex; flex-direction: column; gap: 2px; }
+
+.bd-cost-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.32rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.82rem;
+}
+
+.bd-cost-row.alt    { background: var(--surface); }
+.bd-cost-row.deduction { color: #1F7A5E; background: #EAF4F0; }
+
+.bd-cost-row.total-buy {
+  background: var(--buy-bg);
+  font-weight: 700;
+  color: var(--buy-color);
+  margin-top: 2px;
+}
+
+/* Year table */
+.bd-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.bd-table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  table-layout: fixed;
+}
+
+.bd-table thead {
+  background: #0E0E16;
+  color: rgba(255,255,255,0.75);
+}
+
+.bd-table thead th {
+  padding: 0.6rem 0.75rem;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.73rem;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.bd-table thead th:first-child { text-align: left; width: 44px; }
+.bd-table thead th:nth-child(2),
+.bd-table thead th:nth-child(3) { width: 100px; }
+.bd-table thead th:nth-child(4),
+.bd-table thead th:nth-child(5) { width: 110px; }
+.bd-table thead th:nth-child(6),
+.bd-table thead th:nth-child(7) { width: 116px; }
+.bd-th-buy  { color: rgba(105,144,212,0.95) !important; }
+.bd-th-rent { color: rgba(196,146,100,0.95) !important; }
+
+.bd-table tbody tr { transition: background 0.1s; }
+.bd-table tbody tr.alt { background: var(--bg); }
+.bd-table tbody tr:hover { background: #eceae4; }
+
+.bd-table tbody td {
+  padding: 0.5rem 0.75rem;
+  text-align: right;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.bd-td-year {
+  text-align: left !important;
+  font-weight: 700;
+  color: var(--text-secondary) !important;
+}
+
+.bd-winner-buy  { color: var(--buy-color) !important; font-weight: 700; }
+.bd-winner-rent { color: var(--rent-color) !important; font-weight: 700; }
+
+.bd-table-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .bd-two-col { grid-template-columns: 1fr; }
+  .bd-input-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 500px) {
+  .bd-input-grid { grid-template-columns: 1fr; }
+  .breakdown-panel { padding: 1.25rem; }
+}
+
 /* ── Footer ────────────────────────────────────────────────────────────────── */
 .footer {
   display: flex;

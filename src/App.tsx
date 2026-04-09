@@ -6,6 +6,7 @@ import InputPanel from './components/InputPanel'
 import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
+import CalculationBreakdown from './components/CalculationBreakdown'
 import { calculate } from './utils/calculations'
 import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
@@ -107,6 +108,7 @@ export default function App() {
               <SplitResults results={results} years={inputs.years} />
               <Charts yearlyData={results.yearlyData} breakevenYear={results.breakevenYear} />
               <Recommendation results={results} years={inputs.years} />
+              <CalculationBreakdown results={results} inputs={inputs} mode={mode} />
             </div>
           )}
         </div>

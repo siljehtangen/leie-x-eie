@@ -9,7 +9,7 @@ const FINANCIAL_ASSET_VALUATION = 0.80       // Aksjer/ASK: 80% av markedsverdi
 const INTEREST_DEDUCTION = 0.22              // Rentefradrag: 22%
 const SAVINGS_TAX_RATE = 0.22               // Skatt på renteinntekter: 22%
 const ASK_TAX_RATE = 0.3784                 // Aksjonærmodellen: 37.84% ved uttak
-const QUICK_INVESTMENT_TAX = 0.37           // Approx. skatt i enkel modus
+const QUICK_INVESTMENT_TAX = 0.22           // Sparekonto-skatt i enkel modus (renteinntekter 22%)
 const SECURITY_DEPOSIT_MONTHS = 3
 
 export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
@@ -140,17 +140,18 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         principalPayment = Math.min(effectiveMortgage - interestPayment, remainingMortgage)
       }
 
-      let buyerMonthlyCost = effectiveMortgage + currentHoaFee + sharedUtilitiesMonthly
+      // Bug fix 1: rentefradrag (22%) applies in both modes — it's universal Norwegian tax law
+      const taxDeductionMonthly =
+        (interestPayment + (isAdvanced ? sharedDebtMonthlyInterest : 0)) * INTEREST_DEDUCTION
+
+      let buyerMonthlyCost = effectiveMortgage + currentHoaFee + sharedUtilitiesMonthly - taxDeductionMonthly
 
       if (isAdvanced) {
-        const taxDeductionMonthly =
-          (interestPayment + sharedDebtMonthlyInterest) * INTEREST_DEDUCTION
         buyerMonthlyCost +=
           maintenanceMonthly +
           municipalFeesMonthly +
           insuranceMonthly +
-          propertyTaxMonthly -
-          taxDeductionMonthly
+          propertyTaxMonthly
       }
 
       const renterMonthlyCost = currentMonthlyRent + advancedRentMonthly
@@ -161,7 +162,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         savingsPortfolio *= (1 + savingsMonthlyReturn)
         // Monthly diff (positive = renter saves, negative = renter spends extra) → ASK
         askPortfolio = askPortfolio * (1 + askMonthlyReturn) + monthlyDiff
-        askCostBasis += monthlyDiff
+        // Bug fix 2: clamp cost basis at 0 — negative basis creates phantom capital gains
+        askCostBasis = Math.max(0, askCostBasis + monthlyDiff)
       } else {
         renterPortfolio = renterPortfolio * (1 + quickMonthlyReturn) + monthlyDiff
       }
@@ -196,10 +198,11 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       const renterWealthTax =
         Math.max(0, renterTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
 
-      // Buyer wealth tax → renter captures the saving (goes into ASK)
-      yearlyBuyerCashflow += buyerWealthTax
+      // Bug fix 3: buyer wealth tax tracked separately — not added to yearlyBuyerCashflow
+      // so it doesn't inflate the monthly cost display column in the table
+      totalBuyerPaid += buyerWealthTax
       askPortfolio += buyerWealthTax
-      askCostBasis += buyerWealthTax
+      askCostBasis = Math.max(0, askCostBasis + buyerWealthTax)
 
       // Renter pays own wealth tax — deduct from savings first, then ASK
       const fromSavings = Math.min(renterWealthTax, savingsPortfolio)
@@ -207,7 +210,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       const fromAsk = renterWealthTax - fromSavings
       if (fromAsk > 0) {
         askPortfolio -= fromAsk
-        askCostBasis -= fromAsk
+        askCostBasis = Math.max(0, askCostBasis - fromAsk)
       }
     }
 
