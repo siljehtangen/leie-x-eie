@@ -40,8 +40,8 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
 
           <div className="breakdown-download-row">
             <PDFDownloadLink
-              document={<CalculationPDF results={results} inputs={inputs} mode={mode} />}
-              fileName="leiexeie-beregning.pdf"
+              document={<CalculationPDF results={results} inputs={inputs} mode={mode} title={t('breakdown.pdfDocTitle')} />}
+              fileName={t('breakdown.pdfFileName')}
               className="breakdown-download-btn"
             >
               {({ loading }) => (
