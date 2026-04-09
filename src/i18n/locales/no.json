@@ -132,6 +132,8 @@
     "title": "Beregningsdetaljer",
     "download": "Last ned PDF",
     "generating": "Genererer...",
+    "pdfDocTitle": "Leie vs Eie – Utregning",
+    "pdfFileName": "leie-vs-eie-utregning.pdf",
     "inputs": "Grunnlagsdata",
     "buyerCalc": "Kjøperscenariet",
     "renterCalc": "Leierscenariet",

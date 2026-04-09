@@ -190,9 +190,10 @@ interface Props {
   results: CalculationResult
   inputs: Inputs
   mode: Mode
+  title: string
 }
 
-export default function CalculationPDF({ results, inputs, mode }: Props) {
+export default function CalculationPDF({ results, inputs, mode, title }: Props) {
   const { summary, yearlyData, recommendation, difference, breakevenYear } = results
   const loanAmount = inputs.purchasePrice - inputs.downPayment
   const monthlyRate = inputs.mortgageRate / 100 / 12
@@ -203,7 +204,7 @@ export default function CalculationPDF({ results, inputs, mode }: Props) {
   const date = new Date().toLocaleDateString('nb-NO')
 
   return (
-    <Document title="LeieXEie – Leie vs Eie" author="LeieXEie">
+    <Document title={title} author="LeieXEie">
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <Text style={s.headerTitle}>LeieXEie</Text>

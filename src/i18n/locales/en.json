@@ -132,6 +132,8 @@
     "title": "Calculation Details",
     "download": "Download PDF",
     "generating": "Generating...",
+    "pdfDocTitle": "Rent vs Buy – Calculation",
+    "pdfFileName": "rent-vs-buy-calculation.pdf",
     "inputs": "Key Inputs",
     "buyerCalc": "Buyer Scenario",
     "renterCalc": "Renter Scenario",
