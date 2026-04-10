@@ -20,6 +20,14 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
   const loanAmount = inputs.purchasePrice - inputs.downPayment
   const monthlyRate = inputs.mortgageRate / 100 / 12
   const n = inputs.loanTermYears * 12
+  const ioYears = mode === 'advanced' ? Math.min(inputs.interestOnlyYears ?? 0, inputs.loanTermYears - 1) : 0
+  const remainingTermMonths = n - ioYears * 12
+  const monthlyAmortizingPayment =
+    remainingTermMonths > 0
+      ? monthlyRate > 0
+        ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, remainingTermMonths)) / (Math.pow(1 + monthlyRate, remainingTermMonths) - 1)
+        : loanAmount / remainingTermMonths
+      : 0
   const initialInvestment = inputs.downPayment + summary.closingCosts
   const finalYear = yearlyData[inputs.years - 1]
   const inflationFactor = Math.pow(1 + inputs.inflation / 100, inputs.years)
@@ -99,12 +107,34 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-line">
                   n = {inputs.loanTermYears} × 12 = {n} {t('breakdown.payments')}
                 </div>
-                <div className="bd-formula-line bd-formula-eq">
-                  Betaling = L × r(1+r)^n / ((1+r)^n − 1)
-                </div>
-                <div className="bd-formula-result bd-result-buy">
-                  → {formatNOK(summary.monthlyMortgagePayment)} / {t('breakdown.month')}
-                </div>
+                {ioYears > 0 ? (
+                  <>
+                    <div className="bd-formula-line bd-formula-note">
+                      {t('breakdown.ioPhase', { years: ioYears })}
+                    </div>
+                    <div className="bd-formula-line bd-formula-eq">
+                      Betaling = L × r = {formatNOK(loanAmount * monthlyRate)} / {t('breakdown.month')}
+                    </div>
+                    <div className="bd-formula-line bd-formula-note">
+                      {t('breakdown.amortizingPhase', { from: ioYears + 1, months: remainingTermMonths })}
+                    </div>
+                    <div className="bd-formula-line bd-formula-eq">
+                      Betaling = L × r(1+r)^n / ((1+r)^n − 1)
+                    </div>
+                    <div className="bd-formula-result bd-result-buy">
+                      → {formatNOK(monthlyAmortizingPayment)} / {t('breakdown.month')}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bd-formula-line bd-formula-eq">
+                      Betaling = L × r(1+r)^n / ((1+r)^n − 1)
+                    </div>
+                    <div className="bd-formula-result bd-result-buy">
+                      → {formatNOK(summary.monthlyMortgagePayment)} / {t('breakdown.month')}
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="bd-formula-block">
