@@ -52,7 +52,7 @@ export default function App() {
 
   useEffect(() => {
     document.title = t('header.pageTitle')
-  }, [lang, t])
+  }, [t])
 
   const handleLangChange = (newLang: Lang) => {
     setLang(newLang)
@@ -112,7 +112,7 @@ export default function App() {
         <span className="footer-dot" />
         <span>{new Date().getFullYear()}</span>
         <span className="footer-dot" />
-        <span>For educational purposes only</span>
+        <span>{t('footer.disclaimer')}</span>
       </footer>
     </div>
   )

@@ -30,7 +30,6 @@
     "brokerSellingFee": "Broker Fee When Selling",
     "years": "Years You Plan to Live There",
     "appreciationRate": "Expected Home Price Growth",
-    "rentGrowth": "Expected Rent Growth",
     "investmentReturn": "Investment Return if Renting",
     "contentsInsurance": "Renter's Insurance (Innboforsikring)",
     "electricity": "Electricity / Heating",
@@ -47,8 +46,7 @@
     "inflation": "Inflation Rate",
     "savingsAccountBalance": "Savings Account Balance",
     "savingsAccountRate": "Savings Account Rate",
-    "askRate": "ASK (Equity ISA) Return",
-    "wageGrowth": "Expected Wage Growth"
+    "askRate": "ASK (Equity ISA) Return"
   },
   "tooltips": {
     "monthlyRent": "Your current monthly rent. Used as the baseline cost for the renting scenario.",
@@ -69,7 +67,6 @@
     "hoaFeeIncrease": "How much the HOA / shared costs rise each year. Boards typically adjust annually in line with costs.",
     "years": "How long you plan to stay. The longer you own, the more the upfront buying costs are spread out.",
     "appreciationRate": "Norwegian average home price growth is approximately 2–4% per year.",
-    "rentGrowth": "How fast rents rise in your area. Used to project renting costs over time.",
     "investmentReturn": "Expected annual return on your savings account before tax. Norwegian savings accounts typically yield 3–5% per year. 22% tax on interest is automatically applied.",
     "contentsInsurance": "Contents insurance covering your belongings. Typically 1,500–3,000 kr/year as a renter.",
     "electricity": "Annual electricity and heating costs. Varies widely — roughly 15,000–30,000 kr/year for an apartment.",
@@ -80,8 +77,10 @@
     "inflation": "General price growth used to convert future amounts to today's money. Norwegian long-run target is 2%.",
     "savingsAccountBalance": "Amount kept as a liquid buffer in a savings account. Interest is taxed annually at 22% (automatically applied). The rest of your starting capital goes into an Aksjesparekonto (ASK).",
     "savingsAccountRate": "Interest rate on your savings account. Check with your bank. 22% tax on interest is automatically applied.",
-    "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
-    "wageGrowth": "Expected annual growth in your income. Used to assess affordability over time."
+    "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically."
+  },
+  "footer": {
+    "disclaimer": "For educational purposes only. Not financial advice."
   },
   "calculate": "Calculate",
   "recalculate": "Recalculate",
@@ -108,7 +107,8 @@
     "downPayment": "Down Payment",
     "closingCosts": "Closing Costs",
     "rent": "RENT",
-    "buy": "OWN"
+    "buy": "OWN",
+    "winner": "WINNER"
   },
   "recommendation": {
     "buy": "Owning is Better for You",

@@ -30,7 +30,6 @@
     "brokerSellingFee": "Meglerprovision ved salg",
     "years": "Antall år du planlegger å bo der",
     "appreciationRate": "Forventet boligprisvekst",
-    "rentGrowth": "Forventet leievekst",
     "investmentReturn": "Avkastning ved investering (leie)",
     "contentsInsurance": "Innboforsikring",
     "electricity": "Strøm / fjernvarme",
@@ -47,8 +46,7 @@
     "inflation": "Inflasjon",
     "savingsAccountBalance": "Sparebeløp i sparekonto",
     "savingsAccountRate": "Sparerente",
-    "askRate": "ASK-avkastning",
-    "wageGrowth": "Forventet lønnsvekst"
+    "askRate": "ASK-avkastning"
   },
   "tooltips": {
     "monthlyRent": "Din nåværende månedlige husleie. Brukes som grunnkostnad i leiescenarioet.",
@@ -69,7 +67,6 @@
     "hoaFeeIncrease": "Hvor mye felleskostnadene øker hvert år. Styret justerer vanligvis årlig i takt med kostnadene.",
     "years": "Hvor lenge du planlegger å bo der. Jo lenger du eier, jo mer fordeles oppstartskostnadene.",
     "appreciationRate": "Norsk boligprisvekst er gjennomsnittlig 2–4% per år.",
-    "rentGrowth": "Hvor raskt husleiene stiger i ditt område. Brukes til å beregne leieutgifter over tid.",
     "investmentReturn": "Forventet årlig rente på sparekontoen din (før skatt). Norske sparekontoer gir typisk 3–5% per år. 22% skatt på renteinntekter trekkes automatisk.",
     "contentsInsurance": "Forsikring for innbo og løsøre. Typisk 1 500–3 000 kr/år som leietaker.",
     "electricity": "Årlige strøm- og oppvarmingskostnader. Varierer mye — ca. 15 000–30 000 kr/år for en leilighet.",
@@ -80,8 +77,10 @@
     "inflation": "Generell prisvekst brukt til å omregne fremtidige beløp til dagens pengeverdi. Norges Banks langsiktige mål er 2%.",
     "savingsAccountBalance": "Beløp du beholder i sparekonto som likvid buffer. Renten skattes løpende med 22% (automatisk). Resten av startkapitalen (egenkapital + kjøpsomkostninger) plasseres i Aksjesparekonto (ASK).",
     "savingsAccountRate": "Rentesatsen på sparekontoen din. Sjekk din bank. 22% renteskatt trekkes automatisk i beregningen.",
-    "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk.",
-    "wageGrowth": "Forventet årlig inntektsvekst. Brukes til å vurdere betalingsevne over tid."
+    "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk."
+  },
+  "footer": {
+    "disclaimer": "Kun for illustrasjonsformål. Ikke finansiell rådgivning."
   },
   "calculate": "Beregn",
   "recalculate": "Beregn på nytt",
@@ -108,7 +107,8 @@
     "downPayment": "Egenkapital",
     "closingCosts": "Dokumentavgift",
     "rent": "LEIE",
-    "buy": "EIE"
+    "buy": "EIE",
+    "winner": "VINNER"
   },
   "recommendation": {
     "buy": "Det lønner seg å eie",

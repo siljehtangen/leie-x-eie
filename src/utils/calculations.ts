@@ -48,7 +48,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const isAdvanced = mode === 'advanced'
 
   const effectivePrice = purchasePrice + sharedDebt
-  const loanAmount = purchasePrice - downPayment
+  const loanAmount = Math.max(0, purchasePrice - downPayment)
   const closingCosts = stampDuty + (isAdvanced ? otherClosingCosts : 0)
   const securityDeposit = isAdvanced ? monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
 
