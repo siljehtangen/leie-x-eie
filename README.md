@@ -16,6 +16,8 @@ A rent-vs-buy calculator tailored for the Norwegian housing market. Enter your n
   - **After-tax investment returns**: configurable effective tax rate (default 37.84% under aksjonærmodellen); home appreciation remains tax-free
 - Inflation-deflated net worth comparison (real kroner)
 - Breakeven year detection
+- Detailed calculation breakdown (year-by-year costs, equity, and portfolio growth)
+- PDF export of the full calculation breakdown (`@react-pdf/renderer`)
 - Interactive charts (Recharts)
 - Norwegian and English UI (i18next)
 
@@ -33,6 +35,7 @@ Both final net worths are deflated to today's kroner using the inflation rate. W
 
 - [Vite](https://vitejs.dev/) + React 18 + TypeScript
 - [Recharts](https://recharts.org/) for charts
+- [@react-pdf/renderer](https://react-pdf.org/) for PDF export
 - [react-i18next](https://react.i18next.com/) for i18n (Norwegian / English)
 - [lucide-react](https://lucide.dev/) for icons
 
