@@ -160,6 +160,7 @@
     "renterNetWorthLabel": "Leiers formue",
     "homeValue": "Boligverdi",
     "remainingMortgage": "Restgjeld",
+    "accumulatedWealthTax": "Akkumulert formuesskatt",
     "inflationFactor": "Inflasjonsfaktor",
     "portfolioGross": "Portefølje (brutto, før inflasjonsjustering)",
     "buyerMonthly": "Kjøper/mnd",

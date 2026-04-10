@@ -84,6 +84,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   let askCostBasis = askInitial
 
   let remainingMortgage = loanAmount
+  let cumulativeBuyerWealthTax = 0
   let currentMonthlyRent = monthlyRent
   let currentHoaFee = monthlyHoaFee
 
@@ -166,7 +167,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     const homeValue = effectivePrice * Math.pow(1 + appreciationRate / 100, year)
     const isFinalYear = year === years
     const sellingCost = isFinalYear ? brokerSellingFee : 0
-    const buyerEquity = homeValue - remainingMortgage - sharedDebt - sellingCost
 
     if (isAdvanced) {
       const buyerTaxableWealth = Math.max(
@@ -184,8 +184,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         Math.max(0, renterTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
 
       totalBuyerPaid += buyerWealthTax
-      askPortfolio += buyerWealthTax
-      askCostBasis = Math.max(0, askCostBasis + buyerWealthTax)
+      cumulativeBuyerWealthTax += buyerWealthTax
 
       const fromSavings = Math.min(renterWealthTax, savingsPortfolio)
       savingsPortfolio -= fromSavings
@@ -205,6 +204,9 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
 
     const inflationFactor = Math.pow(1 + inflation / 100, year)
 
+    const buyerEquity = homeValue - remainingMortgage - sharedDebt - sellingCost
+      - (isAdvanced ? cumulativeBuyerWealthTax : 0)
+
     let renterNetWorth: number
     if (isAdvanced) {
       const askGains = Math.max(0, askPortfolio - askCostBasis)
@@ -222,6 +224,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       renterNetWorth,
       homeValue,
       remainingMortgage,
+      cumulativeBuyerWealthTax,
     })
 
     currentMonthlyRent *= 1 + rentIncrease / 100

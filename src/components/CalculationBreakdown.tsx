@@ -79,6 +79,9 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                   ? [t('inputs.inflation'), `${inputs.inflation}%`]
                   : [t('inputs.investmentReturn'), `${inputs.investmentReturn}%`],
                 [t('inputs.brokerSellingFee'), formatNOK(inputs.brokerSellingFee)],
+                ...(mode === 'advanced' && inputs.interestOnlyYears > 0
+                  ? [[t('inputs.interestOnlyYears'), `${inputs.interestOnlyYears} ${t('units.years')}`]]
+                  : []),
               ].map(([label, val]) => (
                 <div key={label} className="bd-input-row">
                   <span className="bd-input-label">{label}</span>
@@ -207,6 +210,11 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-line">
                   − {t('inputs.brokerSellingFee')}: {formatNOK(inputs.brokerSellingFee)}
                 </div>
+                {mode === 'advanced' && finalYear.cumulativeBuyerWealthTax > 0 && (
+                  <div className="bd-formula-line">
+                    − {t('breakdown.accumulatedWealthTax')}: {formatNOK(finalYear.cumulativeBuyerWealthTax)}
+                  </div>
+                )}
                 <div className="bd-formula-line">
                   ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
                 </div>

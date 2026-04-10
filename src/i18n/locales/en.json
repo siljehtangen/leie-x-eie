@@ -160,6 +160,7 @@
     "renterNetWorthLabel": "Renter Net Worth",
     "homeValue": "Home Value",
     "remainingMortgage": "Remaining Mortgage",
+    "accumulatedWealthTax": "Accumulated Wealth Tax",
     "inflationFactor": "Inflation Factor",
     "portfolioGross": "Portfolio (gross, before inflation adjustment)",
     "buyerMonthly": "Buyer/mo",

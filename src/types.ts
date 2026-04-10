@@ -42,6 +42,7 @@ export interface YearlyDataPoint {
   renterNetWorth: number
   homeValue: number
   remainingMortgage: number
+  cumulativeBuyerWealthTax: number
 }
 
 export interface Summary {
