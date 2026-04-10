@@ -101,7 +101,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     : 0
 
   const yearlyData: YearlyDataPoint[] = []
-  let totalBuyerPaid = closingCosts
+  let totalBuyerPaid = 0
   let totalRenterPaid = 0
 
   for (let year = 1; year <= years; year++) {
@@ -150,8 +150,18 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
 
       if (isAdvanced) {
         savingsPortfolio *= (1 + savingsMonthlyReturn)
-        askPortfolio = askPortfolio * (1 + askMonthlyReturn) + monthlyDiff
-        askCostBasis = Math.max(0, askCostBasis + monthlyDiff)
+        askPortfolio *= (1 + askMonthlyReturn)
+        if (monthlyDiff >= 0) {
+          askPortfolio += monthlyDiff
+          askCostBasis += monthlyDiff
+        } else {
+          const shortfall = -monthlyDiff
+          const fromSavings = Math.min(shortfall, savingsPortfolio)
+          savingsPortfolio -= fromSavings
+          const fromAsk = shortfall - fromSavings
+          askPortfolio = Math.max(0, askPortfolio - fromAsk)
+          askCostBasis = Math.max(0, askCostBasis - fromAsk)
+        }
       } else {
         renterPortfolio = renterPortfolio * (1 + quickMonthlyReturn) + monthlyDiff
       }
