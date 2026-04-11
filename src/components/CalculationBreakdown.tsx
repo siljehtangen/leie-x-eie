@@ -30,7 +30,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
       : 0
   const initialInvestment = inputs.downPayment + summary.closingCosts
   const securityDeposit = mode === 'advanced' ? inputs.monthlyRent * 3 : 0
-  const finalYear = yearlyData[inputs.years - 1]
+  const finalYear = yearlyData[yearlyData.length - 1]
   const inflationFactor = Math.pow(1 + inputs.inflation / 100, inputs.years)
 
   return (
