@@ -29,6 +29,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
         : loanAmount / remainingTermMonths
       : 0
   const initialInvestment = inputs.downPayment + summary.closingCosts
+  const securityDeposit = mode === 'advanced' ? inputs.monthlyRent * 3 : 0
   const finalYear = yearlyData[inputs.years - 1]
   const inflationFactor = Math.pow(1 + inputs.inflation / 100, inputs.years)
 
@@ -193,7 +194,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
               </div>
 
               <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} (år {inputs.years})</div>
+                <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} ({inputs.years} {t('units.years')})</div>
                 <div className="bd-formula-line">
                   {t('breakdown.homeValue')}: {formatNOK(finalYear.homeValue)}
                 </div>
@@ -238,6 +239,9 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                     <div className="bd-formula-line">
                       {t('breakdown.total')}: <strong>{formatNOK(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
                     </div>
+                    <div className="bd-formula-line bd-formula-note">
+                      − {t('breakdown.securityDeposit')} (3 mnd): {formatNOK(securityDeposit)} → {t('breakdown.securityDepositNote')}
+                    </div>
                   </>
                 ) : (
                   <>
@@ -275,7 +279,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
               </div>
 
               <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.renterNetWorth')} (år {inputs.years})</div>
+                <div className="bd-formula-title">{t('breakdown.renterNetWorth')} ({inputs.years} {t('units.years')})</div>
                 <div className="bd-formula-line">
                   {t('breakdown.portfolioGross')}: {formatNOK(summary.finalRenterNominalGross)}
                 </div>

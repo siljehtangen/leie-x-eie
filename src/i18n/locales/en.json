@@ -153,6 +153,8 @@
     "initialInvestment": "Starting Capital Invested",
     "initialInvestmentNote": "Invested in the market instead of buying (down payment + closing costs)",
     "total": "Total",
+    "securityDeposit": "Security deposit",
+    "securityDepositNote": "locked, not invested — returned at move-out",
     "portfolioGrowth": "Portfolio Growth",
     "investReturn": "Investment Return",
     "taxNote37": "22% tax on interest (savings account rate) applied automatically",
