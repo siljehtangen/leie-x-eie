@@ -41,6 +41,9 @@ const DEFAULT_INPUTS: Inputs = {
   savingsAccountRate: 4.0,
   askBalance: 400000,
   askRate: 7.0,
+  askShieldingRate: 3.0,
+  bsuActive: 0,
+  bsuYearlyContribution: 27500,
 }
 
 export default function App() {

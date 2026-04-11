@@ -33,6 +33,9 @@ export interface Inputs {
   savingsAccountRate: number
   askBalance: number
   askRate: number
+  askShieldingRate: number
+  bsuActive: number
+  bsuYearlyContribution: number
 }
 
 export interface YearlyDataPoint {

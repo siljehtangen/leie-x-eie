@@ -81,6 +81,34 @@ interface SectionProps {
   children: React.ReactNode
 }
 
+function CheckboxField({ label, name, value, onChange, tooltip }: {
+  label: string
+  name: keyof Inputs
+  value: number
+  onChange: (name: keyof Inputs, value: number) => void
+  tooltip?: string
+}) {
+  return (
+    <div className="input-field">
+      <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', userSelect: 'none' }}>
+        <input
+          type="checkbox"
+          checked={value === 1}
+          onChange={e => onChange(name, e.target.checked ? 1 : 0)}
+          style={{ width: '1rem', height: '1rem', cursor: 'pointer', accentColor: 'var(--color-buy, #4CAF50)', flexShrink: 0 }}
+        />
+        <span>{label}</span>
+        {tooltip && (
+          <span className="tooltip-icon">
+            <Info size={13} />
+            <span className="tooltip-popup">{tooltip}</span>
+          </span>
+        )}
+      </label>
+    </div>
+  )
+}
+
 function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true, children }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen)
   const bodyId = `section-body-${id}`
@@ -184,10 +212,19 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor={COLORS.financial} stripe="fin">
           <div className="input-grid">
-            {field('savingsAccountBalance', { unit: 'kr',  min: 0, step: 10000 })}
+            {field('savingsAccountBalance', { unit: 'kr', min: 0, step: 10000 })}
             {field('savingsAccountRate',    { unit: '%',  min: 0, max: 20, step: 0.1 })}
-            {field('askBalance',            { unit: 'kr',  min: 0, step: 10000 })}
+            {field('askBalance',            { unit: 'kr', min: 0, step: 10000 })}
             {field('askRate',               { unit: '%',  min: 0, max: 30, step: 0.1 })}
+            {field('askShieldingRate',      { unit: '%',  min: 0, max: 10, step: 0.1 })}
+            <CheckboxField
+              label={t('inputs.bsuActive')}
+              name="bsuActive"
+              value={inputs.bsuActive}
+              onChange={onInputChange}
+              tooltip={t('tooltips.bsuActive', { defaultValue: '' }) || undefined}
+            />
+            {inputs.bsuActive === 1 && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: 27500, step: 500 })}
           </div>
         </Section>
       )}

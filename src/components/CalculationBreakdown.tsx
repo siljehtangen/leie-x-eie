@@ -17,6 +17,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
   const [open, setOpen] = useState(false)
 
   const { summary, yearlyData } = results
+  const bsuActive = inputs.bsuActive === 1
   const loanAmount = inputs.purchasePrice - inputs.downPayment
   const monthlyRate = inputs.mortgageRate / 100 / 12
   const n = inputs.loanTermYears * 12
@@ -217,6 +218,9 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-line">
                   ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
                 </div>
+                <div className="bd-formula-note" style={{ marginTop: '0.3rem' }}>
+                  {t('breakdown.taxFreeHomeSale')}
+                </div>
                 <div className="bd-formula-result bd-result-buy">
                   = {formatNOK(summary.finalEquity)}
                 </div>
@@ -288,6 +292,16 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                     − {t('breakdown.askCapitalGainsTax')}: {formatNOK(summary.finalAskTax)}
                   </div>
                 )}
+                {mode === 'advanced' && inputs.askShieldingRate > 0 && (
+                  <div className="bd-formula-note">
+                    {t('breakdown.shieldingNote', { rate: inputs.askShieldingRate })}
+                  </div>
+                )}
+                {mode === 'advanced' && bsuActive && (
+                  <div className="bd-formula-note">
+                    {t('breakdown.bsuBenefit', { amount: Math.round(inputs.bsuYearlyContribution * 0.10) })}
+                  </div>
+                )}
                 <div className="bd-formula-line">
                   ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
                 </div>
@@ -300,9 +314,12 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-block">
                   <div className="bd-formula-title">{t('breakdown.norwegianRules')}</div>
                   <div className="bd-formula-line">{t('breakdown.wealthTaxHome')}</div>
+                  <div className="bd-formula-line">{t('breakdown.wealthTaxHomeTiered')}</div>
                   <div className="bd-formula-line">{t('breakdown.wealthTaxSavings')}</div>
                   <div className="bd-formula-line">{t('breakdown.wealthTaxAsk')}</div>
-                  <div className="bd-formula-line">{t('breakdown.wealthTaxThreshold')}</div>
+                  <div className="bd-formula-line">
+                    {t('breakdown.wealthTaxThreshold')}
+                  </div>
                 </div>
               )}
             </div>

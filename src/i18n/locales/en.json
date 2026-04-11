@@ -47,7 +47,10 @@
     "savingsAccountBalance": "Savings Account Balance",
     "savingsAccountRate": "Savings Account Rate",
     "askBalance": "ASK (Equity ISA) Balance",
-    "askRate": "ASK (Equity ISA) Return"
+    "askRate": "ASK (Equity ISA) Return",
+    "askShieldingRate": "ASK Shielding Rate (Skjerming)",
+    "bsuActive": "I save in BSU (under 34 and first-time buyer)",
+    "bsuYearlyContribution": "Annual BSU Contribution"
   },
   "tooltips": {
     "monthlyRent": "Your current monthly rent. Used as the baseline cost for the renting scenario.",
@@ -79,7 +82,10 @@
     "savingsAccountBalance": "Amount kept as a liquid buffer in a savings account. Interest is taxed annually at 22% (automatically applied).",
     "savingsAccountRate": "Interest rate on your savings account. Check with your bank. 22% tax on interest is automatically applied.",
     "askBalance": "Amount you have invested in an Aksjesparekonto (ASK). Grows tax-free until withdrawal — 37.84% capital gains tax is modelled automatically.",
-    "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically."
+    "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
+    "askShieldingRate": "The shielding deduction (skjermingsfradrag) reduces taxable ASK gains. Skatteetaten sets the rate annually (typically 3–5%). Only gains above accumulated shielding are taxed at 37.84%.",
+    "bsuActive": "BSU (Boligsparing for ungdom): save up to 27,500 kr/year and get a 10% tax deduction (max 2,750 kr/year). Available until age 34 if you haven't used BSU for a purchase. The deduction reduces the renter's effective cost.",
+    "bsuYearlyContribution": "Amount saved in BSU this year. Max 27,500 kr (2024). You get 10% back as a tax deduction."
   },
   "footer": {
     "disclaimer": "For educational purposes only. Not financial advice."
@@ -172,11 +178,15 @@
     "renterMonthly": "Renter/mo",
     "tableNote": "Net worth figures are in real terms (inflation-adjusted). Bold value is leading that year.",
     "norwegianRules": "Norwegian Rules (Wealth Tax)",
-    "wealthTaxHome": "Primary residence valued at 25% of market value",
+    "wealthTaxHome": "Primary residence: 25% of market value up to 10 MNOK",
+    "wealthTaxHomeTiered": "Primary residence above 10 MNOK: 70% of the excess",
     "wealthTaxSavings": "Bank savings: 100% of market value",
     "wealthTaxAsk": "Stocks/ASK: 80% of market value",
     "wealthTaxThreshold": "Threshold: 1,700,000 kr · Rate: 1.0%",
-    "askCapitalGainsTax": "ASK capital gains tax (37.84%)"
+    "taxFreeHomeSale": "Capital gain on home sale is tax-free (primary residence, owned & lived in 12 of last 24 months)",
+    "shieldingNote": "Shielding deduction ({{rate}}%/yr) has been applied to ASK gains",
+    "bsuBenefit": "BSU deduction: {{amount}} kr/yr reduces renter's effective cost",
+    "askCapitalGainsTax": "ASK capital gains tax after shielding (37.84%)"
   },
   "language": {
     "en": "EN",

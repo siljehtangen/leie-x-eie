@@ -3,6 +3,8 @@ import {
   WEALTH_TAX_THRESHOLD,
   WEALTH_TAX_RATE,
   PRIMARY_RESIDENCE_VALUATION,
+  PRIMARY_RESIDENCE_HIGH_THRESHOLD,
+  PRIMARY_RESIDENCE_HIGH_VALUATION,
   SAVINGS_VALUATION,
   FINANCIAL_ASSET_VALUATION,
   INTEREST_DEDUCTION,
@@ -10,6 +12,7 @@ import {
   ASK_TAX_RATE,
   QUICK_INVESTMENT_TAX,
   SECURITY_DEPOSIT_MONTHS,
+  BSU_TAX_DEDUCTION_RATE,
 } from '../constants/finance'
 
 export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
@@ -44,6 +47,9 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     savingsAccountRate,
     askBalance,
     askRate,
+    askShieldingRate,
+    bsuActive,
+    bsuYearlyContribution,
   } = inputs
 
   const isAdvanced = mode === 'advanced'
@@ -77,10 +83,13 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const savingsMonthlyReturn = savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
   const askMonthlyReturn = askRate / 100 / 12
 
+  const bsuMonthlySaving = isAdvanced && bsuActive ? (bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE) / 12 : 0
+
   let renterPortfolio = initialInvestment
   let savingsPortfolio = savingsInitial
   let askPortfolio = askInitial
   let askCostBasis = askInitial
+  let accumulatedShielding = 0
 
   let remainingMortgage = loanAmount
   let cumulativeBuyerWealthTax = 0
@@ -108,6 +117,10 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   for (let year = 1; year <= years; year++) {
     let yearlyBuyerCashflow = 0
     let yearlyRenterCashflow = 0
+
+    if (isAdvanced && askShieldingRate > 0) {
+      accumulatedShielding += (askCostBasis + accumulatedShielding) * (askShieldingRate / 100)
+    }
 
     const isInterestOnly = ioYears > 0 && year <= ioYears
     const inflationMultiplier = Math.pow(1 + inflation / 100, year - 1)
@@ -146,7 +159,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
           propertyTaxMonthly
       }
 
-      const renterMonthlyCost = currentMonthlyRent + advancedRentMonthly
+      const renterMonthlyCost = currentMonthlyRent + advancedRentMonthly - bsuMonthlySaving
       const monthlyDiff = buyerMonthlyCost - renterMonthlyCost
 
       if (isAdvanced) {
@@ -180,9 +193,12 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     const sellingCost = isFinalYear ? brokerSellingFee : 0
 
     if (isAdvanced) {
+      const homeValueForWealthTax =
+        Math.min(homeValue, PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_VALUATION +
+        Math.max(0, homeValue - PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_HIGH_VALUATION
       const buyerTaxableWealth = Math.max(
         0,
-        homeValue * PRIMARY_RESIDENCE_VALUATION - remainingMortgage - sharedDebt,
+        homeValueForWealthTax - remainingMortgage - sharedDebt,
       )
       const buyerWealthTax =
         Math.max(0, buyerTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
@@ -222,7 +238,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     let renterNetWorth: number
     if (isAdvanced) {
       const askGains = Math.max(0, askPortfolio - askCostBasis)
-      lastAskTax = askGains * ASK_TAX_RATE
+      const taxableAskGains = Math.max(0, askGains - accumulatedShielding)
+      lastAskTax = taxableAskGains * ASK_TAX_RATE
       lastRenterNominalGross = savingsPortfolio + askPortfolio
       renterNetWorth = (lastRenterNominalGross - lastAskTax) / inflationFactor
     } else {

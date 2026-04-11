@@ -47,7 +47,10 @@
     "savingsAccountBalance": "Sparebeløp i sparekonto",
     "savingsAccountRate": "Sparerente",
     "askBalance": "Beløp i ASK",
-    "askRate": "ASK-avkastning"
+    "askRate": "ASK-avkastning",
+    "askShieldingRate": "Skjermingsrente (ASK)",
+    "bsuActive": "Jeg sparer i BSU (under 34 år og førstegangskjøper)",
+    "bsuYearlyContribution": "BSU-sparing per år"
   },
   "tooltips": {
     "monthlyRent": "Din nåværende månedlige husleie. Brukes som grunnkostnad i leiescenarioet.",
@@ -79,7 +82,10 @@
     "savingsAccountBalance": "Beløp du beholder i sparekonto som likvid buffer. Renten skattes løpende med 22% (automatisk).",
     "savingsAccountRate": "Rentesatsen på sparekontoen din. Sjekk din bank. 22% renteskatt trekkes automatisk i beregningen.",
     "askBalance": "Beløp du har plassert i Aksjesparekonto (ASK). Vokser skattefritt frem til uttak — 37,84% gevinst­skatt modelleres automatisk.",
-    "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk."
+    "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk.",
+    "askShieldingRate": "Skjermingsfradraget reduserer gevinstskatten i ASK. Renten fastsettes av Skatteetaten hvert år (normalt 3–5%). Kun gevinst over akkumulert skjerming skattes med 37,84%.",
+    "bsuActive": "Boligsparing for ungdom (BSU): maks 27 500 kr/år i sparing gir 10% skattefradrag (maks 2 750 kr/år). Tilgjengelig til du fyller 34 år og ikke har brukt BSU til kjøp. Fradraget reduserer leietakers effektive kostnad.",
+    "bsuYearlyContribution": "Beløp du sparer i BSU dette året. Maks 27 500 kr (2024). Du får 10% av beløpet tilbake som skattefradrag."
   },
   "footer": {
     "disclaimer": "Kun for illustrasjonsformål. Ikke finansiell rådgivning."
@@ -172,11 +178,15 @@
     "renterMonthly": "Leier/mnd",
     "tableNote": "Formuestall er i reelle kroner (justert for inflasjon). Uthevet tall er ledende det aktuelle året.",
     "norwegianRules": "Norske regler (formuesskatt)",
-    "wealthTaxHome": "Primærbolig verdsettes til 25% av markedsverdi",
+    "wealthTaxHome": "Primærbolig: 25% av markedsverdi opp til 10 mill. kr",
+    "wealthTaxHomeTiered": "Primærbolig over 10 mill. kr: 70% av den overskytende delen",
     "wealthTaxSavings": "Bankinnskudd: 100% av markedsverdi",
     "wealthTaxAsk": "Aksjer/ASK: 80% av markedsverdi",
     "wealthTaxThreshold": "Bunnfradrag: 1 700 000 kr · Sats: 1,0%",
-    "askCapitalGainsTax": "ASK-gevinstskatt (37,84%)"
+    "taxFreeHomeSale": "Gevinst ved boligsalg er skattefri (primærbolig, eid og bodd 12 av siste 24 mnd)",
+    "shieldingNote": "Skjermingsfradrag ({{rate}}%/år) er trukket fra gevinstgrunnlaget",
+    "bsuBenefit": "BSU-fradrag: {{amount}} kr/år reduserer leiers effektive kostnad",
+    "askCapitalGainsTax": "ASK-gevinstskatt etter skjerming (37,84%)"
   },
   "language": {
     "en": "EN",
