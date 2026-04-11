@@ -51,8 +51,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const effectivePrice = purchasePrice + sharedDebt
   const loanAmount = Math.max(0, purchasePrice - downPayment)
   const closingCosts = stampDuty + (isAdvanced ? otherClosingCosts : 0)
-  const securityDeposit = isAdvanced ? monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
-
   const monthlyRate = mortgageRate / 100 / 12
   const ioYears = isAdvanced ? Math.min(interestOnlyYears, loanTermYears - 1) : 0
   const numPayments = loanTermYears * 12
@@ -67,11 +65,13 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
         : loanAmount / remainingTermMonths
       : 0
 
-  const initialInvestment = downPayment + closingCosts - securityDeposit
+  const initialInvestment = downPayment + closingCosts
+  const securityDeposit = isAdvanced ? monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
 
   const quickMonthlyReturn = investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX)
 
-  const savingsInitial = isAdvanced ? Math.max(0, savingsAccountBalance) : 0
+  // In advanced mode, security deposit is locked cash — deduct from savings first
+  const savingsInitial = isAdvanced ? Math.max(0, savingsAccountBalance - securityDeposit) : 0
   const askInitial = isAdvanced ? Math.max(0, askBalance) : 0
 
   const savingsMonthlyReturn = savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
@@ -102,6 +102,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   const yearlyData: YearlyDataPoint[] = []
   let totalBuyerPaid = 0
   let totalRenterPaid = 0
+  let lastRenterNominalGross = 0
+  let lastAskTax = 0
 
   for (let year = 1; year <= years; year++) {
     let yearlyBuyerCashflow = 0
@@ -213,12 +215,19 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     const buyerEquity = homeValue - remainingMortgage - sharedDebt - sellingCost
       - (isAdvanced ? cumulativeBuyerWealthTax : 0)
 
+    if (isFinalYear && isAdvanced && securityDeposit > 0) {
+      savingsPortfolio += securityDeposit
+    }
+
     let renterNetWorth: number
     if (isAdvanced) {
       const askGains = Math.max(0, askPortfolio - askCostBasis)
-      const askTax = askGains * ASK_TAX_RATE
-      renterNetWorth = (savingsPortfolio + askPortfolio - askTax) / inflationFactor
+      lastAskTax = askGains * ASK_TAX_RATE
+      lastRenterNominalGross = savingsPortfolio + askPortfolio
+      renterNetWorth = (lastRenterNominalGross - lastAskTax) / inflationFactor
     } else {
+      lastAskTax = 0
+      lastRenterNominalGross = renterPortfolio
       renterNetWorth = renterPortfolio / inflationFactor
     }
 
@@ -271,6 +280,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       finalHomeValue: finalYear.homeValue,
       finalEquity: finalYear.buyerNetWorth,
       finalRenterPortfolio: finalYear.renterNetWorth,
+      finalRenterNominalGross: lastRenterNominalGross,
+      finalAskTax: lastAskTax,
       finalRemainingMortgage: finalYear.remainingMortgage,
       initialMonthlyRent: monthlyRent,
       initialBuyerMonthly: yearlyData[0].buyerMonthlyCost,

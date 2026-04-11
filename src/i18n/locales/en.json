@@ -173,7 +173,8 @@
     "wealthTaxHome": "Primary residence valued at 25% of market value",
     "wealthTaxSavings": "Bank savings: 100% of market value",
     "wealthTaxAsk": "Stocks/ASK: 80% of market value",
-    "wealthTaxThreshold": "Threshold: 1,700,000 kr · Rate: 1.0%"
+    "wealthTaxThreshold": "Threshold: 1,700,000 kr · Rate: 1.0%",
+    "askCapitalGainsTax": "ASK capital gains tax (37.84%)"
   },
   "language": {
     "en": "EN",

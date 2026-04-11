@@ -55,6 +55,8 @@ export interface Summary {
   finalHomeValue: number
   finalEquity: number
   finalRenterPortfolio: number
+  finalRenterNominalGross: number
+  finalAskTax: number
   finalRemainingMortgage: number
   initialMonthlyRent: number
   initialBuyerMonthly: number

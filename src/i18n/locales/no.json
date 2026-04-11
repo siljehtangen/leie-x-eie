@@ -173,7 +173,8 @@
     "wealthTaxHome": "Primærbolig verdsettes til 25% av markedsverdi",
     "wealthTaxSavings": "Bankinnskudd: 100% av markedsverdi",
     "wealthTaxAsk": "Aksjer/ASK: 80% av markedsverdi",
-    "wealthTaxThreshold": "Bunnfradrag: 1 700 000 kr · Sats: 1,0%"
+    "wealthTaxThreshold": "Bunnfradrag: 1 700 000 kr · Sats: 1,0%",
+    "askCapitalGainsTax": "ASK-gevinstskatt (37,84%)"
   },
   "language": {
     "en": "EN",

@@ -277,8 +277,13 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
               <div className="bd-formula-block">
                 <div className="bd-formula-title">{t('breakdown.renterNetWorth')} (år {inputs.years})</div>
                 <div className="bd-formula-line">
-                  {t('breakdown.portfolioGross')}: {formatNOK(summary.finalRenterPortfolio * inflationFactor)}
+                  {t('breakdown.portfolioGross')}: {formatNOK(summary.finalRenterNominalGross)}
                 </div>
+                {mode === 'advanced' && summary.finalAskTax > 0 && (
+                  <div className="bd-formula-line">
+                    − {t('breakdown.askCapitalGainsTax')}: {formatNOK(summary.finalAskTax)}
+                  </div>
+                )}
                 <div className="bd-formula-line">
                   ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
                 </div>
