@@ -152,6 +152,7 @@
     "totalMonthly": "Total per Month",
     "initialInvestment": "Starting Capital Invested",
     "initialInvestmentNote": "Invested in the market instead of buying (down payment + closing costs)",
+    "total": "Total",
     "portfolioGrowth": "Portfolio Growth",
     "investReturn": "Investment Return",
     "taxNote37": "22% tax on interest (savings account rate) applied automatically",

@@ -152,6 +152,7 @@
     "totalMonthly": "Totalt per måned",
     "initialInvestment": "Startkapital investert",
     "initialInvestmentNote": "Investeres i markedet istedenfor kjøp (egenkapital + dokumentavgift)",
+    "total": "Totalt",
     "portfolioGrowth": "Porteføljevekst",
     "investReturn": "Investeringsavkastning",
     "taxNote37": "22% skatt på renteinntekter (sparekonto) trekkes automatisk",

@@ -204,9 +204,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       }
     }
 
-    if (isFinalYear && isAdvanced) {
-      savingsPortfolio += securityDeposit
-    }
 
     totalBuyerPaid += yearlyBuyerCashflow
     totalRenterPaid += yearlyRenterCashflow

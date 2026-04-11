@@ -151,12 +151,10 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                     <span>{t('inputs.monthlyHoaFee')}</span>
                     <span>+ {formatNOK(inputs.monthlyHoaFee)}</span>
                   </div>
-                  {mode === 'advanced' && (
-                    <div className="bd-cost-row deduction">
-                      <span>{t('breakdown.interestDeduction')} (22%)</span>
-                      <span>− {formatNOK((loanAmount * monthlyRate + inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12) * 0.22)}</span>
-                    </div>
-                  )}
+                  <div className="bd-cost-row deduction">
+                    <span>{t('breakdown.interestDeduction')} (22%)</span>
+                    <span>− {formatNOK((loanAmount * monthlyRate + (mode === 'advanced' ? inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12 : 0)) * 0.22)}</span>
+                  </div>
                   {mode === 'advanced' && (inputs.electricity > 0 || inputs.internet > 0) && (
                     <div className="bd-cost-row alt">
                       <span>{t('inputs.electricity')} & {t('inputs.internet')}</span>
@@ -229,10 +227,26 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
 
               <div className="bd-formula-block">
                 <div className="bd-formula-title">{t('breakdown.initialInvestment')}</div>
-                <div className="bd-formula-line">
-                  {formatNOK(inputs.downPayment)} + {formatNOK(summary.closingCosts)} = <strong>{formatNOK(initialInvestment)}</strong>
-                </div>
-                <div className="bd-formula-note">{t('breakdown.initialInvestmentNote')}</div>
+                {mode === 'advanced' ? (
+                  <>
+                    <div className="bd-formula-line bd-formula-note">
+                      {t('inputs.savingsAccountBalance')}: <strong>{formatNOK(inputs.savingsAccountBalance)}</strong>
+                    </div>
+                    <div className="bd-formula-line bd-formula-note">
+                      {t('inputs.askBalance')}: <strong>{formatNOK(inputs.askBalance)}</strong>
+                    </div>
+                    <div className="bd-formula-line">
+                      {t('breakdown.total')}: <strong>{formatNOK(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="bd-formula-line">
+                      {formatNOK(inputs.downPayment)} + {formatNOK(summary.closingCosts)} = <strong>{formatNOK(initialInvestment)}</strong>
+                    </div>
+                    <div className="bd-formula-note">{t('breakdown.initialInvestmentNote')}</div>
+                  </>
+                )}
               </div>
 
               <div className="bd-formula-block">
