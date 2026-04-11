@@ -6,13 +6,13 @@ A rent-vs-buy calculator tailored for the Norwegian housing market. Enter your n
 
 - **Quick mode** — core inputs: rent, purchase price, down payment, mortgage rate, HOA fee, and time horizon
 - **Advanced mode** — full Norwegian financial model:
-  - Fellesgjeld (shared debt) as permanent liability with its own tax-deductible interest
-  - Interest-only period (avdragsfrihet) with recalculated amortisation after
+  - Shared debt as permanent liability with its own tax-deductible interest
+  - Interest-only period with recalculated amortisation after
   - Maintenance costs inflation-adjusted year-over-year
   - Municipal fees, home insurance, property tax
   - Contents insurance, electricity, internet, parking (electricity/internet applied to both sides to avoid asymmetry)
   - Security deposit opportunity cost (3 months rent, returned at face value at end)
-  - **Formuesskatt (wealth tax)**: primary residence valued at 25% vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway
+  - **Wealth tax**: primary residence valued at 25% vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway
   - **After-tax investment returns**: configurable effective tax rate (default 37.84% under aksjonærmodellen); home appreciation remains tax-free
 - Inflation-deflated net worth comparison (real kroner)
 - Breakeven year detection
