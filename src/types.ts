@@ -31,6 +31,7 @@ export interface Inputs {
   interestOnlyYears: number
   savingsAccountBalance: number
   savingsAccountRate: number
+  askBalance: number
   askRate: number
 }
 

@@ -46,6 +46,7 @@
     "inflation": "Inflasjon",
     "savingsAccountBalance": "Sparebeløp i sparekonto",
     "savingsAccountRate": "Sparerente",
+    "askBalance": "Beløp i ASK",
     "askRate": "ASK-avkastning"
   },
   "tooltips": {
@@ -75,8 +76,9 @@
     "sharedDebtRate": "Rentesatsen på borettslagets fellesgjeld. Denne renten inngår i felleskostnadene og er fradragsberettiget. Tilsvarer vanligvis gjeldende boliglånsrente.",
     "interestOnlyYears": "Antall år med avdragsfrihet — kun rentebetalinger, ingen nedbetaling av hovedstol. Etter perioden amortiseres lånet over resterende løpetid. Mange norske banker tilbyr inntil 5 år.",
     "inflation": "Generell prisvekst brukt til å omregne fremtidige beløp til dagens pengeverdi. Norges Banks langsiktige mål er 2%.",
-    "savingsAccountBalance": "Beløp du beholder i sparekonto som likvid buffer. Renten skattes løpende med 22% (automatisk). Resten av startkapitalen (egenkapital + kjøpsomkostninger) plasseres i Aksjesparekonto (ASK).",
+    "savingsAccountBalance": "Beløp du beholder i sparekonto som likvid buffer. Renten skattes løpende med 22% (automatisk).",
     "savingsAccountRate": "Rentesatsen på sparekontoen din. Sjekk din bank. 22% renteskatt trekkes automatisk i beregningen.",
+    "askBalance": "Beløp du har plassert i Aksjesparekonto (ASK). Vokser skattefritt frem til uttak — 37,84% gevinst­skatt modelleres automatisk.",
     "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk."
   },
   "footer": {

@@ -39,6 +39,7 @@ const DEFAULT_INPUTS: Inputs = {
   inflation: 2.5,
   savingsAccountBalance: 200000,
   savingsAccountRate: 4.0,
+  askBalance: 400000,
   askRate: 7.0,
 }
 

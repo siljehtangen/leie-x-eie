@@ -46,6 +46,7 @@
     "inflation": "Inflation Rate",
     "savingsAccountBalance": "Savings Account Balance",
     "savingsAccountRate": "Savings Account Rate",
+    "askBalance": "ASK (Equity ISA) Balance",
     "askRate": "ASK (Equity ISA) Return"
   },
   "tooltips": {
@@ -75,8 +76,9 @@
     "sharedDebtRate": "The interest rate on the housing cooperative's shared debt (fellesgjeld). This interest is included in monthly HOA fees and is also tax-deductible. Typically close to the current mortgage rate.",
     "interestOnlyYears": "Number of years paying interest only (avdragsfrihet), with no principal repayment. After this period the full loan amortises over the remaining term. Many Norwegian banks offer up to 5 years.",
     "inflation": "General price growth used to convert future amounts to today's money. Norwegian long-run target is 2%.",
-    "savingsAccountBalance": "Amount kept as a liquid buffer in a savings account. Interest is taxed annually at 22% (automatically applied). The rest of your starting capital goes into an Aksjesparekonto (ASK).",
+    "savingsAccountBalance": "Amount kept as a liquid buffer in a savings account. Interest is taxed annually at 22% (automatically applied).",
     "savingsAccountRate": "Interest rate on your savings account. Check with your bank. 22% tax on interest is automatically applied.",
+    "askBalance": "Amount you have invested in an Aksjesparekonto (ASK). Grows tax-free until withdrawal — 37.84% capital gains tax is modelled automatically.",
     "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically."
   },
   "footer": {

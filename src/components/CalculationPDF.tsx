@@ -318,7 +318,7 @@ export default function CalculationPDF({ results, inputs, mode, title }: Props) 
                     ? ['Sparekonto', `${formatNOK(inputs.savingsAccountBalance, true)} @ ${inputs.savingsAccountRate}%`]
                     : ['Investeringsavkastning', `${inputs.investmentReturn}%`],
                   mode === 'advanced'
-                    ? ['ASK-avkastning', `${inputs.askRate}%`]
+                    ? ['ASK', `${formatNOK(inputs.askBalance, true)} @ ${inputs.askRate}%`]
                     : ['Skatt på avkastning', '37% (auto)'],
                 ].map(([label, val], i) => (
                   <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
@@ -340,8 +340,8 @@ export default function CalculationPDF({ results, inputs, mode, title }: Props) 
                 <Text style={s.blockTitle}>Porteføljevekst</Text>
                 {mode === 'advanced' ? (
                   <>
-                    <Text style={s.step}>Sparekonto: {inputs.savingsAccountRate}% (22% renteskatt automatisk)</Text>
-                    <Text style={s.step}>ASK: {inputs.askRate}% (37,84% kun ved uttak)</Text>
+                    <Text style={s.step}>Sparekonto: {formatNOK(inputs.savingsAccountBalance, true)} @ {inputs.savingsAccountRate}% (22% renteskatt automatisk)</Text>
+                    <Text style={s.step}>ASK: {formatNOK(inputs.askBalance, true)} @ {inputs.askRate}% (37,84% kun ved uttak)</Text>
                   </>
                 ) : (
                   <Text style={s.step}>Avkastning: {inputs.investmentReturn}%/år (37% skatt auto)</Text>

@@ -239,14 +239,11 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 <div className="bd-formula-title">{t('breakdown.portfolioGrowth')}</div>
                 {mode === 'advanced' ? (
                   <>
-                    <div className="bd-formula-line">
-                      {t('inputs.savingsAccountRate')}: {inputs.savingsAccountRate}% (22% skatt automatisk)
-                    </div>
-                    <div className="bd-formula-line">
-                      {t('inputs.askRate')}: {inputs.askRate}% (37,84% ved uttak)
+                    <div className="bd-formula-line bd-formula-note">
+                      {t('inputs.savingsAccountBalance')}: {formatNOK(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% (22% skatt automatisk)
                     </div>
                     <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.savingsAccountBalance')}: {formatNOK(inputs.savingsAccountBalance)} i sparekonto
+                      {t('inputs.askBalance')}: {formatNOK(inputs.askBalance)} @ {inputs.askRate}% (37,84% ved uttak)
                     </div>
                   </>
                 ) : (

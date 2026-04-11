@@ -42,6 +42,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     interestOnlyYears,
     savingsAccountBalance,
     savingsAccountRate,
+    askBalance,
     askRate,
   } = inputs
 
@@ -70,10 +71,8 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
 
   const quickMonthlyReturn = investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX)
 
-  const savingsInitial = isAdvanced
-    ? Math.min(savingsAccountBalance, Math.max(0, initialInvestment))
-    : 0
-  const askInitial = isAdvanced ? Math.max(0, initialInvestment - savingsInitial) : 0
+  const savingsInitial = isAdvanced ? Math.max(0, savingsAccountBalance) : 0
+  const askInitial = isAdvanced ? Math.max(0, askBalance) : 0
 
   const savingsMonthlyReturn = savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
   const askMonthlyReturn = askRate / 100 / 12

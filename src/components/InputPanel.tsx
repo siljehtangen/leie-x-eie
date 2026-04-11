@@ -186,6 +186,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           <div className="input-grid">
             {field('savingsAccountBalance', { unit: 'kr',  min: 0, step: 10000 })}
             {field('savingsAccountRate',    { unit: '%',  min: 0, max: 20, step: 0.1 })}
+            {field('askBalance',            { unit: 'kr',  min: 0, step: 10000 })}
             {field('askRate',               { unit: '%',  min: 0, max: 30, step: 0.1 })}
           </div>
         </Section>
