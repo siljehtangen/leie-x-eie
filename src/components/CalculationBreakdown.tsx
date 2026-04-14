@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { ChevronDown, Download } from 'lucide-react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { formatNOK } from '../utils/calculations'
+import {
+  SECURITY_DEPOSIT_MONTHS,
+  INTEREST_DEDUCTION,
+  BSU_TAX_DEDUCTION_RATE,
+  SAVINGS_TAX_RATE,
+  ASK_TAX_RATE,
+} from '../constants/finance'
 import type { CalculationResult, Inputs, Mode } from '../types'
 import CalculationPDF from './CalculationPDF'
 
@@ -23,14 +30,9 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
   const n = inputs.loanTermYears * 12
   const ioYears = mode === 'advanced' ? Math.min(inputs.interestOnlyYears ?? 0, inputs.loanTermYears - 1) : 0
   const remainingTermMonths = n - ioYears * 12
-  const monthlyAmortizingPayment =
-    remainingTermMonths > 0
-      ? monthlyRate > 0
-        ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, remainingTermMonths)) / (Math.pow(1 + monthlyRate, remainingTermMonths) - 1)
-        : loanAmount / remainingTermMonths
-      : 0
+  const { monthlyAmortizingPayment } = summary
   const initialInvestment = inputs.downPayment + summary.closingCosts
-  const securityDeposit = mode === 'advanced' ? inputs.monthlyRent * 3 : 0
+  const securityDeposit = mode === 'advanced' ? inputs.monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
   const finalYear = yearlyData[yearlyData.length - 1]
   const inflationFactor = Math.pow(1 + inputs.inflation / 100, inputs.years)
 
@@ -154,8 +156,8 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                     <span>+ {formatNOK(inputs.monthlyHoaFee)}</span>
                   </div>
                   <div className="bd-cost-row deduction">
-                    <span>{t('breakdown.interestDeduction')} (22%)</span>
-                    <span>− {formatNOK((loanAmount * monthlyRate + (mode === 'advanced' ? inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12 : 0)) * 0.22)}</span>
+                    <span>{t('breakdown.interestDeduction')} ({(INTEREST_DEDUCTION * 100).toFixed(0)}%)</span>
+                    <span>− {formatNOK((loanAmount * monthlyRate + (mode === 'advanced' ? inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12 : 0)) * INTEREST_DEDUCTION)}</span>
                   </div>
                   {mode === 'advanced' && (inputs.electricity > 0 || inputs.internet > 0) && (
                     <div className="bd-cost-row alt">
@@ -244,7 +246,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                       {t('breakdown.total')}: <strong>{formatNOK(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
                     </div>
                     <div className="bd-formula-line bd-formula-note">
-                      − {t('breakdown.securityDeposit')} (3 mnd): {formatNOK(securityDeposit)} → {t('breakdown.securityDepositNote')}
+                      − {t('breakdown.securityDeposit')} ({SECURITY_DEPOSIT_MONTHS} mnd): {formatNOK(securityDeposit)} → {t('breakdown.securityDepositNote')}
                     </div>
                   </>
                 ) : (
@@ -262,10 +264,10 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 {mode === 'advanced' ? (
                   <>
                     <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.savingsAccountBalance')}: {formatNOK(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% (22% skatt automatisk)
+                      {t('inputs.savingsAccountBalance')}: {formatNOK(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% ({(SAVINGS_TAX_RATE * 100).toFixed(0)}% skatt automatisk)
                     </div>
                     <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.askBalance')}: {formatNOK(inputs.askBalance)} @ {inputs.askRate}% (37,84% ved uttak)
+                      {t('inputs.askBalance')}: {formatNOK(inputs.askBalance)} @ {inputs.askRate}% ({(ASK_TAX_RATE * 100).toFixed(2).replace('.', ',')}% ved uttak)
                     </div>
                   </>
                 ) : (
@@ -299,7 +301,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
                 )}
                 {mode === 'advanced' && bsuActive && (
                   <div className="bd-formula-note">
-                    {t('breakdown.bsuBenefit', { amount: Math.round(inputs.bsuYearlyContribution * 0.10) })}
+                    {t('breakdown.bsuBenefit', { amount: Math.round(inputs.bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE) })}
                   </div>
                 )}
                 <div className="bd-formula-line">

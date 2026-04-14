@@ -290,6 +290,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     breakevenYear,
     summary: {
       monthlyMortgagePayment: initialMonthlyMortgage,
+      monthlyAmortizingPayment,
       downPayment,
       closingCosts,
       totalBuyerPaid,

@@ -51,6 +51,7 @@ export interface YearlyDataPoint {
 
 export interface Summary {
   monthlyMortgagePayment: number
+  monthlyAmortizingPayment: number
   downPayment: number
   closingCosts: number
   totalBuyerPaid: number
