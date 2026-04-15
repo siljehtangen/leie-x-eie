@@ -76,7 +76,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
 
   const quickMonthlyReturn = investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX)
 
-  // In advanced mode, security deposit is locked cash — deduct from savings first
   const savingsInitial = isAdvanced ? Math.max(0, savingsAccountBalance - securityDeposit) : 0
   const askInitial = isAdvanced ? Math.max(0, askBalance) : 0
 
