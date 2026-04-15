@@ -1,11 +1,25 @@
 {
+  "meta": {
+    "description": "LeieXEie — compare renting and buying with Norwegian tax and finance rules. Educational tool, not financial advice."
+  },
   "header": {
+    "eyebrow": "Norwegian housing market",
+    "langGroupLabel": "Language",
     "heroLine1": "Rent or",
     "heroHighlight": "own?",
     "pageTitle": "LeieXEie – Rent or own?",
     "tagline": "Your smart guide to choosing whether to rent or own a home in Norway."
   },
+  "a11y": {
+    "decreaseField": "Decrease {{label}}",
+    "increaseField": "Increase {{label}}",
+    "skipToMain": "Skip to main content",
+    "skipToResults": "Skip to results",
+    "langNorwegian": "Norwegian",
+    "langEnglish": "English"
+  },
   "mode": {
+    "groupLabel": "Calculation mode",
     "quick": "Quick",
     "advanced": "Advanced",
     "quickDesc": "Essential inputs — 90% of the answer",
@@ -110,6 +124,7 @@
     "homeAndLoanTitle": "Home value vs. loan balance",
     "loanBalanceSeries": "Remaining mortgage",
     "nominalChartNote": "Nominal amounts (not adjusted for inflation).",
+    "chartBreakevenLabel": "Breakeven · Year {{year}}",
     "buyerNetWorth": "Buyer's Net Worth",
     "renterNetWorth": "Renter's Portfolio",
     "buyCosts": "Buying",
@@ -137,6 +152,7 @@
     "equityBuilt": "Net proceeds after sale (year {{years}})",
     "investmentGrowth": "Renter's portfolio after {{years}} years",
     "breakevenYear": "Breakeven year",
+    "notApplicable": "—",
     "year": "Year",
     "disclaimer": "This is an estimate based on your inputs and assumptions about future market conditions. Always consult a qualified financial advisor before making major financial decisions.",
     "keyFactors": "Key Factors"

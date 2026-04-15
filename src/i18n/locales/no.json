@@ -1,11 +1,25 @@
 {
+  "meta": {
+    "description": "LeieXEie — sammenlign leie og eie med norske skatte- og finansregler. Utdanning, ikke finansrådgivning."
+  },
   "header": {
+    "eyebrow": "Det norske boligmarkedet",
+    "langGroupLabel": "Språk",
     "heroLine1": "Leie eller",
     "heroHighlight": "eie?",
     "pageTitle": "LeieXEie – Leie eller eie?",
     "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge."
   },
+  "a11y": {
+    "decreaseField": "Reduser {{label}}",
+    "increaseField": "Øk {{label}}",
+    "skipToMain": "Hopp til hovedinnhold",
+    "skipToResults": "Hopp til resultater",
+    "langNorwegian": "Norsk",
+    "langEnglish": "Engelsk"
+  },
   "mode": {
+    "groupLabel": "Beregningsmodus",
     "quick": "Rask",
     "advanced": "Avansert",
     "quickDesc": "Viktigste felt — 90% av svaret",
@@ -110,6 +124,7 @@
     "homeAndLoanTitle": "Boligverdi vs. restgjeld",
     "loanBalanceSeries": "Restgjeld",
     "nominalChartNote": "Nominelle beløp (ikke inflasjonsjustert).",
+    "chartBreakevenLabel": "Likeverdig · År {{year}}",
     "buyerNetWorth": "Kjøpers formue",
     "renterNetWorth": "Leietakers portefølje",
     "buyCosts": "Kjøpe",
@@ -137,6 +152,7 @@
     "equityBuilt": "Gevinst etter salg (år {{years}})",
     "investmentGrowth": "Leietakers portefølje etter {{years}} år",
     "breakevenYear": "Break-even år",
+    "notApplicable": "—",
     "year": "År",
     "disclaimer": "Dette er et estimat basert på dine inndata og forutsetninger om fremtidige markedsforhold. Konsulter alltid en kvalifisert finansrådgiver før større finansielle beslutninger.",
     "keyFactors": "Nøkkeltall"
