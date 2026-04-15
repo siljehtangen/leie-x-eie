@@ -54,6 +54,8 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
         <input
           type="text"
           inputMode="decimal"
+          autoComplete="off"
+          spellCheck={false}
           aria-label={label}
           value={focused ? value : formatInputNum(value)}
           onFocus={() => setFocused(true)}

@@ -502,6 +502,14 @@ body {
 
 .input-stepper-btn:active { transform: scale(0.96); }
 
+@media (pointer: coarse) {
+  .input-stepper-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.15rem;
+  }
+}
+
 .input-field input[type="text"] {
   flex: 1;
   border: none;
@@ -779,6 +787,13 @@ body {
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.chart-footnote {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
 }
 
 /* ── Recommendation ────────────────────────────────────────────────────────── */
