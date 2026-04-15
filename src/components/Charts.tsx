@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
+import type { TFunction } from 'i18next'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -32,28 +33,22 @@ interface CustomTooltipProps {
   active?: boolean
   payload?: TooltipPayloadItem[]
   label?: number
-  t: (key: string) => string
+  t: TFunction
+  locale: string
 }
 
-function CustomTooltip({ active, payload, label, t }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, t, locale }: CustomTooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div style={{
-      background: 'white',
-      border: '1px solid #e8e8e8',
-      borderRadius: 12,
-      padding: '0.75rem 1.1rem',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-      fontSize: '0.85rem',
-    }}>
-      <div style={{ fontWeight: 700, marginBottom: 6, color: '#333' }}>
+    <div className="chart-tooltip">
+      <div className="chart-tooltip-title">
         {t('results.year')} {label}
       </div>
       {payload.map(p => (
-        <div key={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
-          <span style={{ color: '#666' }}>{p.name}:</span>
-          <span style={{ fontWeight: 600, color: '#333' }}>{formatNOK(p.value)}</span>
+        <div key={p.name} className="chart-tooltip-row">
+          <span className="chart-tooltip-swatch" style={{ background: p.color }} />
+          <span className="chart-tooltip-name">{p.name}</span>
+          <span className="chart-tooltip-value">{formatNOK(p.value, false, locale)}</span>
         </div>
       ))}
     </div>
@@ -66,7 +61,9 @@ interface ChartsProps {
 }
 
 export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const locale = i18n.language.startsWith('en') ? 'en-GB' : 'nb-NO'
+  const tickFormatter = useCallback((v: number) => formatChartNOK(v, locale), [locale])
 
   const gapData = useMemo(
     () =>
@@ -105,19 +102,19 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
               label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
             />
             <YAxis
-              tickFormatter={formatChartNOK}
+              tickFormatter={tickFormatter}
               tick={{ fontSize: 11, fill: '#999' }}
               tickLine={false}
               axisLine={false}
               width={52}
             />
-            <Tooltip content={<CustomTooltip t={t} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}
                 stroke={COLORS.breakeven}
                 strokeDasharray="5 3"
-                label={{ value: `↔ yr ${breakevenYear}`, fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
+                label={{ value: t('results.chartBreakevenLabel', { year: breakevenYear }), fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
             <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={BUY_COLOR}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
@@ -146,13 +143,13 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
               label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
             />
             <YAxis
-              tickFormatter={formatChartNOK}
+              tickFormatter={tickFormatter}
               tick={{ fontSize: 11, fill: '#999' }}
               tickLine={false}
               axisLine={false}
               width={52}
             />
-            <Tooltip content={<CustomTooltip t={t} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             <Line type="monotone" dataKey="buyerMonthlyCost"  name={t('results.buyCosts')}  stroke={BUY_COLOR}  strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             <Line type="monotone" dataKey="renterMonthlyCost" name={t('results.rentCosts')} stroke={RENT_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
           </LineChart>
@@ -179,20 +176,20 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
               label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
             />
             <YAxis
-              tickFormatter={formatChartNOK}
+              tickFormatter={tickFormatter}
               tick={{ fontSize: 11, fill: '#999' }}
               tickLine={false}
               axisLine={false}
               width={52}
             />
-            <Tooltip content={<CustomTooltip t={t} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             <ReferenceLine y={0} stroke="#B8B8C0" strokeWidth={1.5} />
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}
                 stroke={COLORS.breakeven}
                 strokeDasharray="5 3"
-                label={{ value: `↔ yr ${breakevenYear}`, fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
+                label={{ value: t('results.chartBreakevenLabel', { year: breakevenYear }), fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
             <Line
@@ -227,13 +224,13 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
               label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
             />
             <YAxis
-              tickFormatter={formatChartNOK}
+              tickFormatter={tickFormatter}
               tick={{ fontSize: 11, fill: '#999' }}
               tickLine={false}
               axisLine={false}
               width={52}
             />
-            <Tooltip content={<CustomTooltip t={t} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             <Line type="monotone" dataKey="homeValue" name={t('results.homeValue')} stroke={BUY_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             <Line type="monotone" dataKey="remainingMortgage" name={t('results.loanBalanceSeries')} stroke={MORTGAGE_LINE} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
           </LineChart>
