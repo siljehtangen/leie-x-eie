@@ -9,13 +9,14 @@ interface RecommendationProps {
 }
 
 export default function Recommendation({ results, years }: RecommendationProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { recommendation, difference, summary, breakevenYear } = results
   const isBuy = recommendation === 'buy'
+  const locale = i18n.language.startsWith('en') ? 'en-GB' : 'nb-NO'
 
-  const diffFormatted = formatNOK(difference)
-  const equityFormatted = formatNOK(summary.finalEquity)
-  const portfolioFormatted = formatNOK(summary.finalRenterPortfolio)
+  const diffFormatted = formatNOK(difference, false, locale)
+  const equityFormatted = formatNOK(summary.finalEquity, false, locale)
+  const portfolioFormatted = formatNOK(summary.finalRenterPortfolio, false, locale)
 
   const mortgageDiff = summary.initialBuyerMonthly - summary.initialMonthlyRent
   const buyingCostsMore = mortgageDiff > 0
@@ -27,8 +28,8 @@ export default function Recommendation({ results, years }: RecommendationProps) 
       : t('recommendation.noBreakevenRent', { years })
 
   const breakevenValue = breakevenYear !== null
-    ? t('recommendation.year') + ' ' + breakevenYear
-    : '—'
+    ? `${t('recommendation.year')} ${breakevenYear}`
+    : t('recommendation.notApplicable')
 
   return (
     <div className="recommendation-section">
@@ -62,7 +63,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
                 : t('recommendation.rentingCostsMore')}
             </div>
             <div className="rec-metric-value">
-              {formatNOK(Math.abs(mortgageDiff))} {t('units.perMonth')}
+              {formatNOK(Math.abs(mortgageDiff), false, locale)} {t('units.perMonth')}
             </div>
           </div>
           <div className="rec-metric">
@@ -83,7 +84,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
       </div>
 
       <p className="rec-disclaimer">
-        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: '#9E9E9E' }} />
+        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: '#9E9E9E' }} aria-hidden />
         {t('recommendation.disclaimer')}
       </p>
     </div>
