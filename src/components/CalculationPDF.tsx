@@ -3,6 +3,8 @@ import {
 } from '@react-pdf/renderer'
 import { formatNOK } from '../utils/calculations'
 import { COLORS } from '../constants/theme'
+import { INTEREST_DEDUCTION } from '../constants/finance'
+import { APP_NAME, APP_DOMAIN } from '../constants/app'
 import type { CalculationResult, Inputs, Mode } from '../types'
 
 Font.register({
@@ -186,252 +188,268 @@ const s = StyleSheet.create({
   footerText: { fontSize: 7, color: COLORS.textMuted },
 })
 
+type TFn = (key: string, opts?: Record<string, unknown>) => string
+
+interface PageShellProps {
+  headerTitle: string
+  headerSub: string
+  date: string
+  t: TFn
+  children: React.ReactNode
+}
+
+function PDFPageShell({ headerTitle, headerSub, date, t, children }: PageShellProps) {
+  return (
+    <Page size="A4" style={s.page}>
+      <View style={s.header}>
+        <Text style={s.headerTitle}>{headerTitle}</Text>
+        <Text style={s.headerSub}>{headerSub} · {date}</Text>
+      </View>
+      <View style={s.body}>
+        {children}
+      </View>
+      <View style={s.footer} fixed>
+        <Text style={s.footerText}>{APP_DOMAIN} · {date}</Text>
+        <Text
+          style={s.footerText}
+          render={({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) =>
+            t('pdf.pageOf', { page: pageNumber, total: totalPages })
+          }
+        />
+      </View>
+    </Page>
+  )
+}
+
 interface Props {
   results: CalculationResult
   inputs: Inputs
   mode: Mode
   title: string
+  t: TFn
 }
 
-export default function CalculationPDF({ results, inputs, mode, title }: Props) {
+export default function CalculationPDF({ results, inputs, mode, title, t }: Props) {
   const { summary, yearlyData, recommendation, difference, breakevenYear } = results
-  const loanAmount = inputs.purchasePrice - inputs.downPayment
-  const monthlyRate = inputs.mortgageRate / 100 / 12
-  const n = inputs.loanTermYears * 12
+  const isAdvanced = mode === 'advanced'
+  const { loanAmount, monthlyRate, numPayments: n, finalInflationFactor } = summary
   const initialInvestment = inputs.downPayment + summary.closingCosts
   const isBuy = recommendation === 'buy'
   const finalYear = yearlyData[inputs.years - 1]
   const date = new Date().toLocaleDateString('nb-NO')
+  const interestDeductionPct = `${(INTEREST_DEDUCTION * 100).toFixed(0)}%`
 
   return (
-    <Document title={title} author="LeieXEie">
-      <Page size="A4" style={s.page}>
-        <View style={s.header}>
-          <Text style={s.headerTitle}>LeieXEie</Text>
-          <Text style={s.headerSub}>Leie vs Eie – Beregningsrapport · {date}</Text>
+    <Document title={title} author={APP_NAME}>
+      <PDFPageShell
+        headerTitle={APP_NAME}
+        headerSub={t('pdf.reportSubtitle')}
+        date={date}
+        t={t}
+      >
+        <View style={[s.recBox, isBuy ? s.recBoxBuy : s.recBoxRent]}>
+          <View>
+            <Text style={s.recEyebrow}>{t('pdf.recommendationAfterYears', { years: inputs.years })}</Text>
+            <Text style={s.recTitle}>
+              {t(isBuy ? 'recommendation.buy' : 'recommendation.rent')}
+            </Text>
+          </View>
+          <View>
+            <Text style={s.recAmountLabel}>{t('pdf.advantage')}</Text>
+            <Text style={s.recAmount}>{formatNOK(difference, true)}</Text>
+          </View>
         </View>
 
-        <View style={s.body}>
-          <View style={[s.recBox, isBuy ? s.recBoxBuy : s.recBoxRent]}>
-            <View>
-              <Text style={s.recEyebrow}>Anbefaling etter {inputs.years} år</Text>
-              <Text style={s.recTitle}>
-                {isBuy ? 'Det lønner seg å eie' : 'Det lønner seg å leie'}
+        <View style={s.metricsRow}>
+          <View style={s.metricBox}>
+            <Text style={s.metricLabel}>{t('pdf.metricBuyerNetWorth', { years: inputs.years })}</Text>
+            <Text style={[s.metricValue, { color: COLORS.buy }]}>{formatNOK(summary.finalEquity, true)}</Text>
+          </View>
+          <View style={s.metricBox}>
+            <Text style={s.metricLabel}>{t('pdf.metricRenterPortfolio', { years: inputs.years })}</Text>
+            <Text style={[s.metricValue, { color: COLORS.rent }]}>{formatNOK(summary.finalRenterPortfolio, true)}</Text>
+          </View>
+          <View style={s.metricBox}>
+            <Text style={s.metricLabel}>{t('recommendation.breakevenYear')}</Text>
+            <Text style={s.metricValue}>{breakevenYear ? `${t('recommendation.year')} ${breakevenYear}` : '—'}</Text>
+          </View>
+          <View style={s.metricBox}>
+            <Text style={s.metricLabel}>{t('pdf.mode')}</Text>
+            <Text style={s.metricValue}>{t(isAdvanced ? 'mode.advanced' : 'mode.quick')}</Text>
+          </View>
+        </View>
+
+        <View style={s.twoCol}>
+          <View style={s.col}>
+            <Text style={[s.colTitle, s.colTitleBuy]}>{t('breakdown.buyerCalc')}</Text>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.inputs')}</Text>
+              {[
+                [t('inputs.purchasePrice'), formatNOK(inputs.purchasePrice, true)],
+                [t('inputs.downPayment'), formatNOK(inputs.downPayment, true)],
+                [t('breakdown.loanAmount'), formatNOK(loanAmount, true)],
+                [t('pdf.rate'), `${inputs.mortgageRate}%`],
+                [t('inputs.loanTermYears'), `${inputs.loanTermYears} ${t('units.years')}`],
+                [t('pdf.hoaFee'), `${formatNOK(inputs.monthlyHoaFee, true)}/${t('breakdown.month')}`],
+                [t('inputs.stampDuty'), formatNOK(summary.closingCosts, true)],
+              ].map(([label, val], i) => (
+                <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
+                  <Text style={s.rowLabel}>{label}</Text>
+                  <Text style={s.rowValue}>{val}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.monthlyMortgageCalc')}</Text>
+              <Text style={s.step}>r = {inputs.mortgageRate}% ÷ 12 = {(monthlyRate * 100).toFixed(4)}%/{t('breakdown.month')}</Text>
+              <Text style={s.step}>n = {inputs.loanTermYears} × 12 = {n} {t('breakdown.payments')}</Text>
+              <Text style={s.step}>{t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)</Text>
+              <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.monthlyMortgagePayment)}/{t('breakdown.month')}</Text>
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.year1MonthlyCost')}</Text>
+              <View style={[s.row, s.rowAlt]}>
+                <Text style={s.rowLabel}>{t('breakdown.mortgagePayment')}</Text>
+                <Text style={s.rowValue}>+ {formatNOK(summary.monthlyMortgagePayment, true)}</Text>
+              </View>
+              <View style={s.row}>
+                <Text style={s.rowLabel}>{t('pdf.hoaFee')}</Text>
+                <Text style={s.rowValue}>+ {formatNOK(inputs.monthlyHoaFee, true)}</Text>
+              </View>
+              {isAdvanced && (
+                <View style={[s.row, s.rowAlt]}>
+                  <Text style={s.rowLabel}>{t('breakdown.interestDeduction')} ({interestDeductionPct})</Text>
+                  <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * INTEREST_DEDUCTION, true)}</Text>
+                </View>
+              )}
+              <View style={[s.row, { backgroundColor: COLORS.buyLight }]}>
+                <Text style={[s.rowLabel, { fontWeight: 700 }]}>{t('breakdown.totalMonthly')}</Text>
+                <Text style={[s.rowValue, { color: COLORS.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
+              </View>
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.buyerNetWorth')} ({t('units.years')} {inputs.years})</Text>
+              <Text style={s.step}>{t('breakdown.homeValue')}: {formatNOK(finalYear.homeValue, true)}</Text>
+              <Text style={s.step}>− {t('breakdown.remainingMortgage')}: {formatNOK(finalYear.remainingMortgage, true)}</Text>
+              <Text style={s.step}>− {t('pdf.brokerFee')}: {formatNOK(inputs.brokerSellingFee, true)}</Text>
+              <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {finalInflationFactor.toFixed(3)}</Text>
+              <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.finalEquity)}</Text>
+            </View>
+          </View>
+
+          <View style={s.col}>
+            <Text style={[s.colTitle, s.colTitleRent]}>{t('breakdown.renterCalc')}</Text>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.inputs')}</Text>
+              {[
+                [t('inputs.monthlyRent'), `${formatNOK(inputs.monthlyRent, true)}/${t('breakdown.month')}`],
+                [t('inputs.rentIncrease'), `${inputs.rentIncrease}%`],
+                isAdvanced
+                  ? [t('pdf.savingsAccount'), `${formatNOK(inputs.savingsAccountBalance, true)} @ ${inputs.savingsAccountRate}%`]
+                  : [t('breakdown.investReturn'), `${inputs.investmentReturn}%`],
+                isAdvanced
+                  ? ['ASK', `${formatNOK(inputs.askBalance, true)} @ ${inputs.askRate}%`]
+                  : [t('pdf.taxOnReturn'), '37% (auto)'],
+              ].map(([label, val], i) => (
+                <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
+                  <Text style={s.rowLabel}>{label}</Text>
+                  <Text style={s.rowValue}>{val}</Text>
+                </View>
+              ))}
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.initialInvestment')}</Text>
+              <Text style={s.step}>{t('inputs.downPayment')}: {formatNOK(inputs.downPayment, true)}</Text>
+              <Text style={s.step}>+ {t('inputs.stampDuty')}: {formatNOK(summary.closingCosts, true)}</Text>
+              <Text style={[s.result, s.resultRent]}>{formatNOK(initialInvestment, true)}</Text>
+              <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.portfolioGrowth')}</Text>
+              {isAdvanced ? (
+                <>
+                  <Text style={s.step}>{t('pdf.savingsAccount')}: {formatNOK(inputs.savingsAccountBalance, true)} @ {inputs.savingsAccountRate}% ({t('pdf.savingsTaxNote')})</Text>
+                  <Text style={s.step}>ASK: {formatNOK(inputs.askBalance, true)} @ {inputs.askRate}% ({t('pdf.askTaxNote')})</Text>
+                </>
+              ) : (
+                <Text style={s.step}>{t('pdf.investReturnLine', { return: inputs.investmentReturn })}</Text>
+              )}
+              <Text style={s.step}>{t('pdf.monthlyDiffShort')}</Text>
+              <Text style={[s.result, s.resultRent]}>{formatNOK(summary.finalRenterPortfolio, true)} {t('breakdown.afterYears', { years: inputs.years })}</Text>
+            </View>
+
+            <View style={s.block}>
+              <Text style={s.blockTitle}>{t('breakdown.norwegianRules')}</Text>
+              <Text style={s.step}>{t('pdf.interestDeductionLine')}</Text>
+              <Text style={s.step}>{t('pdf.inflationLine', { inflation: inputs.inflation })}</Text>
+              {isAdvanced && (
+                <>
+                  <Text style={s.step}>{t('pdf.wealthTaxCombined')}</Text>
+                  <Text style={s.step}>{t('breakdown.wealthTaxThreshold')}</Text>
+                </>
+              )}
+              <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>
+            </View>
+          </View>
+        </View>
+      </PDFPageShell>
+
+      <PDFPageShell
+        headerTitle={t('breakdown.yearTable')}
+        headerSub={t('pdf.yearByYearSubtitle', { inflation: inputs.inflation })}
+        date={date}
+        t={t}
+      >
+        <View style={s.tableHead}>
+          <Text style={[s.th, s.thFirst, { flex: 0.35 }]}>{t('results.year')}</Text>
+          <Text style={[s.th, { flex: 0.9 }]}>{t('breakdown.buyerMonthly')}</Text>
+          <Text style={[s.th, { flex: 0.9 }]}>{t('breakdown.renterMonthly')}</Text>
+          <Text style={s.th}>{t('breakdown.homeValue')}</Text>
+          <Text style={s.th}>{t('breakdown.remainingMortgage')}</Text>
+          <Text style={[s.th, { flex: 1.2, color: 'rgba(105,144,212,0.95)' }]}>{t('breakdown.buyerNetWorth')}</Text>
+          <Text style={[s.th, { flex: 1.2, color: 'rgba(196,146,100,0.95)' }]}>{t('breakdown.renterNetWorthLabel')}</Text>
+        </View>
+
+        {yearlyData.map((row, idx) => {
+          const buyerWins = row.buyerNetWorth >= row.renterNetWorth
+          return (
+            <View key={row.year} style={[s.tr, idx % 2 === 0 ? s.trAlt : {}]}>
+              <Text style={[s.td, s.tdFirst, { flex: 0.35 }]}>{row.year}</Text>
+              <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.buyerMonthlyCost, true)}</Text>
+              <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.renterMonthlyCost, true)}</Text>
+              <Text style={s.td}>{formatNOK(row.homeValue, true)}</Text>
+              <Text style={s.td}>{formatNOK(row.remainingMortgage, true)}</Text>
+              <Text style={[s.td, { flex: 1.2 }, buyerWins ? s.tdBuyWin : {}]}>
+                {formatNOK(row.buyerNetWorth, true)}
+              </Text>
+              <Text style={[s.td, { flex: 1.2 }, !buyerWins ? s.tdRentWin : {}]}>
+                {formatNOK(row.renterNetWorth, true)}
               </Text>
             </View>
-            <View>
-              <Text style={s.recAmountLabel}>Fordel</Text>
-              <Text style={s.recAmount}>{formatNOK(difference, true)}</Text>
-            </View>
-          </View>
+          )
+        })}
 
-          <View style={s.metricsRow}>
-            <View style={s.metricBox}>
-              <Text style={s.metricLabel}>Kjøpers formue (år {inputs.years})</Text>
-              <Text style={[s.metricValue, { color: COLORS.buy }]}>{formatNOK(summary.finalEquity, true)}</Text>
-            </View>
-            <View style={s.metricBox}>
-              <Text style={s.metricLabel}>Leietakers portefølje (år {inputs.years})</Text>
-              <Text style={[s.metricValue, { color: COLORS.rent }]}>{formatNOK(summary.finalRenterPortfolio, true)}</Text>
-            </View>
-            <View style={s.metricBox}>
-              <Text style={s.metricLabel}>Break-even år</Text>
-              <Text style={s.metricValue}>{breakevenYear ? `År ${breakevenYear}` : '—'}</Text>
-            </View>
-            <View style={s.metricBox}>
-              <Text style={s.metricLabel}>Modus</Text>
-              <Text style={s.metricValue}>{mode === 'advanced' ? 'Avansert' : 'Rask'}</Text>
-            </View>
-          </View>
-
-          <View style={s.twoCol}>
-            <View style={s.col}>
-              <Text style={[s.colTitle, s.colTitleBuy]}>Kjøperscenariet</Text>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Grunnlag</Text>
-                {[
-                  ['Kjøpesum', formatNOK(inputs.purchasePrice, true)],
-                  ['Egenkapital', formatNOK(inputs.downPayment, true)],
-                  ['Lånebeløp', formatNOK(loanAmount, true)],
-                  ['Rente', `${inputs.mortgageRate}%`],
-                  ['Løpetid', `${inputs.loanTermYears} år`],
-                  ['Felleskostnader', `${formatNOK(inputs.monthlyHoaFee, true)}/mnd`],
-                  ['Dokumentavgift', formatNOK(summary.closingCosts, true)],
-                ].map(([label, val], i) => (
-                  <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
-                    <Text style={s.rowLabel}>{label}</Text>
-                    <Text style={s.rowValue}>{val}</Text>
-                  </View>
-                ))}
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Månedlig lånebetaling (annuitet)</Text>
-                <Text style={s.step}>r = {inputs.mortgageRate}% ÷ 12 = {(monthlyRate * 100).toFixed(4)}%/mnd</Text>
-                <Text style={s.step}>n = {inputs.loanTermYears} × 12 = {n} betalinger</Text>
-                <Text style={s.step}>Betaling = L × r(1+r)^n / ((1+r)^n − 1)</Text>
-                <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.monthlyMortgagePayment)}/mnd</Text>
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Månedlig kostnad år 1</Text>
-                <View style={[s.row, s.rowAlt]}>
-                  <Text style={s.rowLabel}>Lånebetaling</Text>
-                  <Text style={s.rowValue}>+ {formatNOK(summary.monthlyMortgagePayment, true)}</Text>
-                </View>
-                <View style={s.row}>
-                  <Text style={s.rowLabel}>Felleskostnader</Text>
-                  <Text style={s.rowValue}>+ {formatNOK(inputs.monthlyHoaFee, true)}</Text>
-                </View>
-                {mode === 'advanced' && (
-                  <View style={[s.row, s.rowAlt]}>
-                    <Text style={s.rowLabel}>Rentefradrag (22%)</Text>
-                    <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * 0.22, true)}</Text>
-                  </View>
-                )}
-                <View style={[s.row, { backgroundColor: COLORS.buyLight }]}>
-                  <Text style={[s.rowLabel, { fontWeight: 700 }]}>Totalt per måned</Text>
-                  <Text style={[s.rowValue, { color: COLORS.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
-                </View>
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Kjøpers formue (år {inputs.years})</Text>
-                <Text style={s.step}>Boligverdi: {formatNOK(finalYear.homeValue, true)}</Text>
-                <Text style={s.step}>− Restgjeld: {formatNOK(finalYear.remainingMortgage, true)}</Text>
-                <Text style={s.step}>− Megler: {formatNOK(inputs.brokerSellingFee, true)}</Text>
-                <Text style={s.step}>÷ Inflasjonsfaktor: {Math.pow(1 + inputs.inflation / 100, inputs.years).toFixed(3)}</Text>
-                <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.finalEquity)}</Text>
-              </View>
-            </View>
-
-            <View style={s.col}>
-              <Text style={[s.colTitle, s.colTitleRent]}>Leierscenariet</Text>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Grunnlag</Text>
-                {[
-                  ['Månedlig leie', `${formatNOK(inputs.monthlyRent, true)}/mnd`],
-                  ['Arlig leieokning', `${inputs.rentIncrease}%`],
-                  mode === 'advanced'
-                    ? ['Sparekonto', `${formatNOK(inputs.savingsAccountBalance, true)} @ ${inputs.savingsAccountRate}%`]
-                    : ['Investeringsavkastning', `${inputs.investmentReturn}%`],
-                  mode === 'advanced'
-                    ? ['ASK', `${formatNOK(inputs.askBalance, true)} @ ${inputs.askRate}%`]
-                    : ['Skatt på avkastning', '37% (auto)'],
-                ].map(([label, val], i) => (
-                  <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
-                    <Text style={s.rowLabel}>{label}</Text>
-                    <Text style={s.rowValue}>{val}</Text>
-                  </View>
-                ))}
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Startkapital investert</Text>
-                <Text style={s.step}>Egenkapital: {formatNOK(inputs.downPayment, true)}</Text>
-                <Text style={s.step}>+ Dokumentavgift: {formatNOK(summary.closingCosts, true)}</Text>
-                <Text style={[s.result, s.resultRent]}>{formatNOK(initialInvestment, true)}</Text>
-                <Text style={s.stepMuted}>Investeres i markedet istedenfor kjøp</Text>
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Porteføljevekst</Text>
-                {mode === 'advanced' ? (
-                  <>
-                    <Text style={s.step}>Sparekonto: {formatNOK(inputs.savingsAccountBalance, true)} @ {inputs.savingsAccountRate}% (22% renteskatt automatisk)</Text>
-                    <Text style={s.step}>ASK: {formatNOK(inputs.askBalance, true)} @ {inputs.askRate}% (37,84% kun ved uttak)</Text>
-                  </>
-                ) : (
-                  <Text style={s.step}>Avkastning: {inputs.investmentReturn}%/år (37% skatt auto)</Text>
-                )}
-                <Text style={s.step}>Månedlig diff. (kjøper − leier) → portefølje</Text>
-                <Text style={[s.result, s.resultRent]}>{formatNOK(summary.finalRenterPortfolio, true)} etter {inputs.years} år</Text>
-              </View>
-
-              <View style={s.block}>
-                <Text style={s.blockTitle}>Norske regler brukt</Text>
-                <Text style={s.step}>Rentefradrag: 22% av rentekostnader</Text>
-                <Text style={s.step}>Inflasjon: {inputs.inflation}%/år</Text>
-                {mode === 'advanced' && (
-                  <>
-                    <Text style={s.step}>Formuesskatt: bolig 25%, bank 100%, ASK 80%</Text>
-                    <Text style={s.step}>Bunnfradrag: 1 700 000 kr · Sats: 1,0%</Text>
-                  </>
-                )}
-                <Text style={s.stepMuted}>Alle formuestall i reelle (inflasjonsjusterte) kroner</Text>
-              </View>
-            </View>
-          </View>
+        <View style={s.note}>
+          <Text style={s.noteTitle}>{t('pdf.notes')}</Text>
+          <Text style={s.noteLine}>{t('pdf.notesBuyerEquity')}</Text>
+          <Text style={s.noteLine}>{t('pdf.notesRenterEquity')}</Text>
+          <Text style={s.noteLine}>
+            {t('pdf.notesBreakeven', {
+              value: breakevenYear
+                ? t('pdf.notesBreakevenCross', { year: breakevenYear })
+                : t('pdf.notesBreakevenNone'),
+            })}
+          </Text>
+          <Text style={s.noteLine}>{t('pdf.notesDisclaimer')}</Text>
         </View>
-
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>leiexeie.no · {date}</Text>
-          <Text
-            style={s.footerText}
-            render={({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) =>
-              `Side ${pageNumber} / ${totalPages}`
-            }
-          />
-        </View>
-      </Page>
-
-      <Page size="A4" style={s.page}>
-        <View style={s.header}>
-          <Text style={s.headerTitle}>År for år</Text>
-          <Text style={s.headerSub}>Alle formuestall i reelle kroner – justert for {inputs.inflation}% inflasjon per år</Text>
-        </View>
-
-        <View style={s.body}>
-          <View style={s.tableHead}>
-            <Text style={[s.th, s.thFirst, { flex: 0.35 }]}>År</Text>
-            <Text style={[s.th, { flex: 0.9 }]}>Kjøper/mnd</Text>
-            <Text style={[s.th, { flex: 0.9 }]}>Leier/mnd</Text>
-            <Text style={s.th}>Boligverdi</Text>
-            <Text style={s.th}>Restgjeld</Text>
-            <Text style={[s.th, { flex: 1.2, color: 'rgba(105,144,212,0.95)' }]}>Kjøpers formue</Text>
-            <Text style={[s.th, { flex: 1.2, color: 'rgba(196,146,100,0.95)' }]}>Leiers formue</Text>
-          </View>
-
-          {yearlyData.map((row, idx) => {
-            const buyerWins = row.buyerNetWorth >= row.renterNetWorth
-            return (
-              <View key={row.year} style={[s.tr, idx % 2 === 0 ? s.trAlt : {}]}>
-                <Text style={[s.td, s.tdFirst, { flex: 0.35 }]}>{row.year}</Text>
-                <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.buyerMonthlyCost, true)}</Text>
-                <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.renterMonthlyCost, true)}</Text>
-                <Text style={s.td}>{formatNOK(row.homeValue, true)}</Text>
-                <Text style={s.td}>{formatNOK(row.remainingMortgage, true)}</Text>
-                <Text style={[s.td, { flex: 1.2 }, buyerWins ? s.tdBuyWin : {}]}>
-                  {formatNOK(row.buyerNetWorth, true)}
-                </Text>
-                <Text style={[s.td, { flex: 1.2 }, !buyerWins ? s.tdRentWin : {}]}>
-                  {formatNOK(row.renterNetWorth, true)}
-                </Text>
-              </View>
-            )
-          })}
-
-          <View style={s.note}>
-            <Text style={s.noteTitle}>Notater</Text>
-            <Text style={s.noteLine}>· Kjøpers formue = Boligverdi − Restgjeld − Salgsomkostninger, justert for inflasjon</Text>
-            <Text style={s.noteLine}>· Leiers formue = Investeringsportefølje etter estimert skatt, justert for inflasjon</Text>
-            <Text style={s.noteLine}>· Break-even år: {breakevenYear ? `År ${breakevenYear} – da krysser linjene` : 'Ikke aktuelt i denne perioden'}</Text>
-            <Text style={s.noteLine}>· Modellen er veiledende. Konsulter alltid en finansrådgiver ved store beslutninger.</Text>
-          </View>
-        </View>
-
-        <View style={s.footer} fixed>
-          <Text style={s.footerText}>leiexeie.no · {date}</Text>
-          <Text
-            style={s.footerText}
-            render={({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) =>
-              `Side ${pageNumber} / ${totalPages}`
-            }
-          />
-        </View>
-      </Page>
+      </PDFPageShell>
     </Document>
   )
 }
