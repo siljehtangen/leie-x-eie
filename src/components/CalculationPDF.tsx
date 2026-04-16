@@ -1,10 +1,11 @@
 import {
-  Document, Page, View, Text, StyleSheet, Font,
+  Document, Page, View, Text, Font,
 } from '@react-pdf/renderer'
 import { formatNOK } from '../utils/calculations'
 import { COLORS } from '../constants/theme'
 import { INTEREST_DEDUCTION } from '../constants/finance'
 import { APP_NAME, APP_DOMAIN } from '../constants/app'
+import { s } from './PDFStyles'
 import type { CalculationResult, Inputs, Mode } from '../types'
 
 Font.register({
@@ -19,173 +20,6 @@ Font.register({
       fontWeight: 700,
     },
   ],
-})
-
-
-const s = StyleSheet.create({
-  page: {
-    fontFamily: 'Inter',
-    fontSize: 9,
-    color: COLORS.text,
-    backgroundColor: COLORS.bg,
-    padding: 0,
-  },
-  header: {
-    backgroundColor: COLORS.dark,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingLeft: 32,
-    paddingRight: 32,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 700,
-    color: '#FFFFFF',
-  },
-  headerSub: {
-    fontSize: 8,
-    color: 'rgba(255,255,255,0.50)',
-    marginTop: 3,
-  },
-  body: {
-    paddingTop: 18,
-    paddingBottom: 40,
-    paddingLeft: 32,
-    paddingRight: 32,
-  },
-  recBox: {
-    borderRadius: 10,
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 18,
-    paddingRight: 18,
-    marginBottom: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  recBoxBuy: { backgroundColor: COLORS.buy },
-  recBoxRent: { backgroundColor: COLORS.rent },
-  recEyebrow: { fontSize: 7, color: 'rgba(255,255,255,0.60)', marginBottom: 3 },
-  recTitle: { fontSize: 14, fontWeight: 700, color: '#FFFFFF' },
-  recAmountLabel: { fontSize: 7, color: 'rgba(255,255,255,0.60)', marginBottom: 2, textAlign: 'right' },
-  recAmount: { fontSize: 18, fontWeight: 700, color: '#FFFFFF', textAlign: 'right' },
-  metricsRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 14,
-  },
-  metricBox: {
-    flex: 1,
-    backgroundColor: COLORS.surface,
-    borderRadius: 7,
-    paddingTop: 9,
-    paddingBottom: 9,
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderStyle: 'solid',
-  },
-  metricLabel: { fontSize: 7, color: COLORS.textMuted, marginBottom: 3 },
-  metricValue: { fontSize: 10, fontWeight: 700, color: COLORS.text },
-  twoCol: { flexDirection: 'row', gap: 10 },
-  col: { flex: 1 },
-  colTitle: {
-    fontSize: 10,
-    fontWeight: 700,
-    marginBottom: 6,
-    paddingBottom: 4,
-    borderBottomWidth: 2,
-    borderBottomStyle: 'solid',
-  },
-  colTitleBuy: { color: COLORS.buy, borderBottomColor: COLORS.buy },
-  colTitleRent: { color: COLORS.rent, borderBottomColor: COLORS.rent },
-  block: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 7,
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 10,
-    paddingRight: 10,
-    marginBottom: 7,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderStyle: 'solid',
-  },
-  blockTitle: {
-    fontSize: 7,
-    fontWeight: 700,
-    color: COLORS.textSecondary,
-    marginBottom: 5,
-    textTransform: 'uppercase',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: 6,
-    paddingRight: 6,
-    borderRadius: 3,
-    marginBottom: 1,
-  },
-  rowAlt: { backgroundColor: COLORS.bg },
-  rowLabel: { fontSize: 7.5, color: COLORS.textSecondary },
-  rowValue: { fontSize: 7.5, fontWeight: 700, color: COLORS.text },
-  step: { fontSize: 7.5, color: COLORS.text, marginBottom: 2 },
-  stepMuted: { fontSize: 7, color: COLORS.textMuted, marginBottom: 2 },
-  result: { fontSize: 9, fontWeight: 700, marginTop: 4 },
-  resultBuy: { color: COLORS.buy },
-  resultRent: { color: COLORS.rent },
-  tableHead: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.dark,
-    borderRadius: 5,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 6,
-    paddingRight: 6,
-    marginBottom: 2,
-  },
-  th: { flex: 1, fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.70)', textAlign: 'right' },
-  thFirst: { textAlign: 'left' },
-  tr: {
-    flexDirection: 'row',
-    paddingTop: 4,
-    paddingBottom: 4,
-    paddingLeft: 6,
-    paddingRight: 6,
-    borderRadius: 3,
-  },
-  trAlt: { backgroundColor: COLORS.surface },
-  td: { flex: 1, fontSize: 7.5, color: COLORS.text, textAlign: 'right' },
-  tdFirst: { textAlign: 'left', fontWeight: 700 },
-  tdBuyWin: { color: COLORS.buy, fontWeight: 700 },
-  tdRentWin: { color: COLORS.rent, fontWeight: 700 },
-  note: {
-    marginTop: 16,
-    backgroundColor: COLORS.surface,
-    borderRadius: 7,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingLeft: 12,
-    paddingRight: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderStyle: 'solid',
-  },
-  noteTitle: { fontSize: 7, fontWeight: 700, color: COLORS.textSecondary, marginBottom: 5, textTransform: 'uppercase' },
-  noteLine: { fontSize: 7, color: COLORS.textSecondary, marginBottom: 2 },
-  footer: {
-    position: 'absolute',
-    bottom: 16,
-    left: 32,
-    right: 32,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  footerText: { fontSize: 7, color: COLORS.textMuted },
 })
 
 type TFn = (key: string, opts?: Record<string, unknown>) => string
@@ -221,7 +55,7 @@ function PDFPageShell({ headerTitle, headerSub, date, t, children }: PageShellPr
   )
 }
 
-interface Props {
+interface CalculationPDFProps {
   results: CalculationResult
   inputs: Inputs
   mode: Mode
@@ -229,7 +63,7 @@ interface Props {
   t: TFn
 }
 
-export default function CalculationPDF({ results, inputs, mode, title, t }: Props) {
+export default function CalculationPDF({ results, inputs, mode, title, t }: CalculationPDFProps) {
   const { summary, yearlyData, recommendation, difference, breakevenYear } = results
   const isAdvanced = mode === 'advanced'
   const { loanAmount, monthlyRate, numPayments: n, finalInflationFactor } = summary
