@@ -16,9 +16,6 @@ import { formatNOK, formatChartNOK } from '../utils/calculations'
 import { COLORS } from '../constants/theme'
 import type { YearlyDataPoint } from '../types'
 
-const RENT_COLOR = COLORS.rent
-const BUY_COLOR  = COLORS.buy
-
 interface TooltipPayloadItem {
   name: string
   value: number
@@ -65,40 +62,44 @@ interface ChartsProps {
 export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
   const { t } = useTranslation()
 
+  const xAxisProps = {
+    dataKey: 'year' as const,
+    tick: { fontSize: 11, fill: '#999' },
+    tickLine: false,
+    axisLine: false,
+    label: { value: t('results.year'), position: 'insideBottomRight' as const, offset: -5, fontSize: 11, fill: '#bbb' },
+  }
+
+  const yAxisProps = {
+    tickFormatter: formatChartNOK,
+    tick: { fontSize: 11, fill: '#999' },
+    tickLine: false,
+    axisLine: false,
+    width: 52,
+  }
+
   return (
     <div className="charts-section">
       <div className="chart-card">
         <div className="chart-card-title">
-          <BarChart2 size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: BUY_COLOR }} />
+          <BarChart2 size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: COLORS.buy }} />
           {t('results.netWorthOverTime')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
             <defs>
               <linearGradient id="gradBuy" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor={BUY_COLOR}  stopOpacity={0.25} />
-                <stop offset="95%" stopColor={BUY_COLOR}  stopOpacity={0.02} />
+                <stop offset="5%"  stopColor={COLORS.buy}  stopOpacity={0.25} />
+                <stop offset="95%" stopColor={COLORS.buy}  stopOpacity={0.02} />
               </linearGradient>
               <linearGradient id="gradRent" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%"  stopColor={RENT_COLOR} stopOpacity={0.25} />
-                <stop offset="95%" stopColor={RENT_COLOR} stopOpacity={0.02} />
+                <stop offset="5%"  stopColor={COLORS.rent} stopOpacity={0.25} />
+                <stop offset="95%" stopColor={COLORS.rent} stopOpacity={0.02} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
-            <XAxis
-              dataKey="year"
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
-            />
-            <YAxis
-              tickFormatter={formatChartNOK}
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              width={52}
-            />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
             <Tooltip content={<CustomTooltip t={t} />} />
             {breakevenYear && (
               <ReferenceLine
@@ -108,46 +109,34 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
                 label={{ value: `↔ yr ${breakevenYear}`, fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
-            <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={BUY_COLOR}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-            <Area type="monotone" dataKey="renterNetWorth" name={t('results.renterNetWorth')} stroke={RENT_COLOR} strokeWidth={2.5} fill="url(#gradRent)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={COLORS.buy}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Area type="monotone" dataKey="renterNetWorth" name={t('results.renterNetWorth')} stroke={COLORS.rent} strokeWidth={2.5} fill="url(#gradRent)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
           </AreaChart>
         </ResponsiveContainer>
         <div className="chart-legend">
-          <div className="legend-item"><span className="legend-dot" style={{ background: BUY_COLOR }} />{t('results.buyerNetWorth')}</div>
-          <div className="legend-item"><span className="legend-dot" style={{ background: RENT_COLOR }} />{t('results.renterNetWorth')}</div>
+          <div className="legend-item"><span className="legend-dot" style={{ background: COLORS.buy }} />{t('results.buyerNetWorth')}</div>
+          <div className="legend-item"><span className="legend-dot" style={{ background: COLORS.rent }} />{t('results.renterNetWorth')}</div>
         </div>
       </div>
 
       <div className="chart-card">
         <div className="chart-card-title">
-          <TrendingDown size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: RENT_COLOR }} />
+          <TrendingDown size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: COLORS.rent }} />
           {t('results.monthlyCostOverTime')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
-            <XAxis
-              dataKey="year"
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
-            />
-            <YAxis
-              tickFormatter={formatChartNOK}
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              width={52}
-            />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
             <Tooltip content={<CustomTooltip t={t} />} />
-            <Line type="monotone" dataKey="buyerMonthlyCost"  name={t('results.buyCosts')}  stroke={BUY_COLOR}  strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-            <Line type="monotone" dataKey="renterMonthlyCost" name={t('results.rentCosts')} stroke={RENT_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Line type="monotone" dataKey="buyerMonthlyCost"  name={t('results.buyCosts')}  stroke={COLORS.buy}  strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Line type="monotone" dataKey="renterMonthlyCost" name={t('results.rentCosts')} stroke={COLORS.rent} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
           </LineChart>
         </ResponsiveContainer>
         <div className="chart-legend">
-          <div className="legend-item"><span className="legend-dot" style={{ background: BUY_COLOR }} />{t('results.buyCosts')}</div>
-          <div className="legend-item"><span className="legend-dot" style={{ background: RENT_COLOR }} />{t('results.rentCosts')}</div>
+          <div className="legend-item"><span className="legend-dot" style={{ background: COLORS.buy }} />{t('results.buyCosts')}</div>
+          <div className="legend-item"><span className="legend-dot" style={{ background: COLORS.rent }} />{t('results.rentCosts')}</div>
         </div>
       </div>
     </div>
