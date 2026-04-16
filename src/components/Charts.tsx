@@ -14,7 +14,8 @@ import {
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
 import { BarChart2, TrendingDown, Scale, Landmark } from 'lucide-react'
-import { formatNOK, formatChartNOK, getLocale } from '../utils/calculations'
+import { formatNOK, formatChartNOK } from '../utils/formatting'
+import { useLocale } from '../hooks/useLocale'
 import { COLORS } from '../constants/theme'
 import type { YearlyDataPoint } from '../types'
 
@@ -62,8 +63,8 @@ interface ChartsProps {
 }
 
 export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
-  const { t, i18n } = useTranslation()
-  const locale = getLocale(i18n.language)
+  const { t } = useTranslation()
+  const locale = useLocale()
   const tickFormatter = useCallback((v: number) => formatChartNOK(v, locale), [locale])
 
   const gapData = useMemo(
@@ -161,20 +162,8 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={gapData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
-            <XAxis
-              dataKey="year"
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
-            />
-            <YAxis
-              tickFormatter={tickFormatter}
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              width={52}
-            />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
             <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             <ReferenceLine y={0} stroke="#B8B8C0" strokeWidth={1.5} />
             {breakevenYear && (
@@ -209,20 +198,8 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
         <ResponsiveContainer width="100%" height={220}>
           <LineChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
-            <XAxis
-              dataKey="year"
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              label={{ value: t('results.year'), position: 'insideBottomRight', offset: -5, fontSize: 11, fill: '#bbb' }}
-            />
-            <YAxis
-              tickFormatter={tickFormatter}
-              tick={{ fontSize: 11, fill: '#999' }}
-              tickLine={false}
-              axisLine={false}
-              width={52}
-            />
+            <XAxis {...xAxisProps} />
+            <YAxis {...yAxisProps} />
             <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
             <Line type="monotone" dataKey="homeValue" name={t('results.homeValue')} stroke={BUY_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
             <Line type="monotone" dataKey="remainingMortgage" name={t('results.loanBalanceSeries')} stroke={MORTGAGE_LINE} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
