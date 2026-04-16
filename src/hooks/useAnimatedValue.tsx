@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { formatNOK } from '../utils/calculations'
+import { formatNOK } from '../utils/formatting'
 
 export function useAnimatedValue(target: number, trigger: number): number {
   const [value, setValue] = useState(0)
