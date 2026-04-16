@@ -8,6 +8,8 @@ import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
 import CalculationBreakdown from './components/CalculationBreakdown'
 import { calculate } from './utils/calculations'
+import { BSU_MAX_CONTRIBUTION, STAMP_DUTY_RATE, DEFAULT_DOWN_PAYMENT_RATE } from './constants/finance'
+import { APP_NAME, SCROLL_DELAY_MS } from './constants/app'
 import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
 const DEFAULT_INPUTS: Inputs = {
@@ -43,7 +45,7 @@ const DEFAULT_INPUTS: Inputs = {
   askRate: 7.0,
   askShieldingRate: 3.0,
   bsuActive: 0,
-  bsuYearlyContribution: 27500,
+  bsuYearlyContribution: BSU_MAX_CONTRIBUTION,
 }
 
 export default function App() {
@@ -66,11 +68,11 @@ export default function App() {
   const handleInputChange = (name: keyof Inputs, value: number) => {
     setInputs(prev => {
       const next = { ...prev, [name]: value }
-      if (name === 'purchasePrice' && prev.stampDuty === Math.round(prev.purchasePrice * 0.025)) {
-        next.stampDuty = Math.round(value * 0.025)
+      if (name === 'purchasePrice' && prev.stampDuty === Math.round(prev.purchasePrice * STAMP_DUTY_RATE)) {
+        next.stampDuty = Math.round(value * STAMP_DUTY_RATE)
       }
-      if (name === 'purchasePrice' && prev.downPayment === Math.round(prev.purchasePrice * 0.15)) {
-        next.downPayment = Math.round(value * 0.15)
+      if (name === 'purchasePrice' && prev.downPayment === Math.round(prev.purchasePrice * DEFAULT_DOWN_PAYMENT_RATE)) {
+        next.downPayment = Math.round(value * DEFAULT_DOWN_PAYMENT_RATE)
       }
       return next
     })
@@ -81,7 +83,7 @@ export default function App() {
     setResults(result)
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 80)
+    }, SCROLL_DELAY_MS)
   }
 
   return (
@@ -112,7 +114,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        <span>LeieXEie</span>
+        <span>{APP_NAME}</span>
         <span className="footer-dot" />
         <span>{new Date().getFullYear()}</span>
         <span className="footer-dot" />
