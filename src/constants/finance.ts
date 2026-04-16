@@ -1,3 +1,7 @@
+export const STAMP_DUTY_RATE = 0.025
+export const DEFAULT_DOWN_PAYMENT_RATE = 0.15
+export const DEFAULT_HOA_INCREASE_PCT = 2
+
 export const WEALTH_TAX_THRESHOLD = 1_700_000
 
 export const WEALTH_TAX_RATE = 1.0
