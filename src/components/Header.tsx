@@ -44,7 +44,7 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
       <div className="header-hero">
         <div className="header-eyebrow">
           <span className="header-eyebrow-dot" />
-          {lang === 'no' ? 'Det norske boligmarkedet' : 'Norwegian housing market'}
+          {t('header.eyebrow')}
         </div>
         <h1 className="header-title">
           {t('header.heroLine1')} <span className="highlight">{t('header.heroHighlight')}</span>
