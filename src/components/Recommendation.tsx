@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
-import { formatNOK, getLocale } from '../utils/calculations'
+import { useFormatNOK } from '../hooks/useFormatNOK'
 import type { CalculationResult } from '../types'
 
 interface RecommendationProps {
@@ -9,14 +9,14 @@ interface RecommendationProps {
 }
 
 export default function Recommendation({ results, years }: RecommendationProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
+  const formatKr = useFormatNOK()
   const { recommendation, difference, summary, breakevenYear } = results
   const isBuy = recommendation === 'buy'
-  const locale = getLocale(i18n.language)
 
-  const diffFormatted = formatNOK(difference, false, locale)
-  const equityFormatted = formatNOK(summary.finalEquity, false, locale)
-  const portfolioFormatted = formatNOK(summary.finalRenterPortfolio, false, locale)
+  const diffFormatted = formatKr(difference)
+  const equityFormatted = formatKr(summary.finalEquity)
+  const portfolioFormatted = formatKr(summary.finalRenterPortfolio)
 
   const mortgageDiff = summary.initialBuyerMonthly - summary.initialMonthlyRent
   const buyingCostsMore = mortgageDiff > 0
@@ -63,7 +63,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
                 : t('recommendation.rentingCostsMore')}
             </div>
             <div className="rec-metric-value">
-              {formatNOK(Math.abs(mortgageDiff), false, locale)} {t('units.perMonth')}
+              {formatKr(Math.abs(mortgageDiff))} {t('units.perMonth')}
             </div>
           </div>
           <div className="rec-metric">
