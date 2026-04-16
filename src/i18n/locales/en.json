@@ -3,7 +3,8 @@
     "heroLine1": "Rent or",
     "heroHighlight": "own?",
     "pageTitle": "LeieXEie – Rent or own?",
-    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway."
+    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway.",
+    "eyebrow": "Norwegian housing market"
   },
   "mode": {
     "quick": "Quick",
@@ -138,6 +139,7 @@
   },
   "breakdown": {
     "title": "Calculation Details",
+    "payment": "Payment",
     "download": "Download PDF",
     "generating": "Generating...",
     "pdfDocTitle": "Rent vs Buy – Calculation",
@@ -191,6 +193,36 @@
   "language": {
     "en": "EN",
     "no": "NO"
+  },
+  "pdf": {
+    "reportSubtitle": "Rent vs Buy – Calculation Report",
+    "recommendationAfterYears": "Recommendation after {{years}} years",
+    "advantage": "Advantage",
+    "metricBuyerNetWorth": "Buyer's net worth (yr {{years}})",
+    "metricRenterPortfolio": "Renter's portfolio (yr {{years}})",
+    "mode": "Mode",
+    "rate": "Rate",
+    "hoaFee": "HOA Costs",
+    "brokerFee": "Broker",
+    "savingsAccount": "Savings",
+    "taxOnReturn": "Tax on return",
+    "savingsTaxNote": "22% interest tax auto",
+    "askTaxNote": "37.84% on withdrawal only",
+    "investReturnLine": "Return: {{return}}%/yr (37% tax auto)",
+    "monthlyDiffShort": "Monthly diff. (buyer − renter) → portfolio",
+    "interestDeductionLine": "Interest deduction: 22% of interest costs",
+    "inflationLine": "Inflation: {{inflation}}%/yr",
+    "wealthTaxCombined": "Wealth tax: home 25%, savings 100%, ASK 80%",
+    "realTermsNote": "All net worth figures are in real (inflation-adjusted) terms",
+    "yearByYearSubtitle": "All net worth figures in real terms – adjusted for {{inflation}}% inflation per year",
+    "notes": "Notes",
+    "notesBuyerEquity": "· Buyer's net worth = Home value − Remaining mortgage − Selling costs, inflation-adjusted",
+    "notesRenterEquity": "· Renter's net worth = Investment portfolio after estimated tax, inflation-adjusted",
+    "notesBreakeven": "· Breakeven year: {{value}}",
+    "notesBreakevenNone": "Not applicable in this period",
+    "notesBreakevenCross": "Year {{year}} – where the lines cross",
+    "notesDisclaimer": "· This model is indicative. Always consult a financial advisor for major decisions.",
+    "pageOf": "Page {{page}} / {{total}}"
   },
   "units": {
     "kr": "kr",

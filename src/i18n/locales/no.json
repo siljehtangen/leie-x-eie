@@ -3,7 +3,8 @@
     "heroLine1": "Leie eller",
     "heroHighlight": "eie?",
     "pageTitle": "LeieXEie – Leie eller eie?",
-    "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge."
+    "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge.",
+    "eyebrow": "Det norske boligmarkedet"
   },
   "mode": {
     "quick": "Rask",
@@ -138,6 +139,7 @@
   },
   "breakdown": {
     "title": "Beregningsdetaljer",
+    "payment": "Betaling",
     "download": "Last ned PDF",
     "generating": "Genererer...",
     "pdfDocTitle": "Leie vs Eie – Utregning",
@@ -191,6 +193,36 @@
   "language": {
     "en": "EN",
     "no": "NO"
+  },
+  "pdf": {
+    "reportSubtitle": "Leie vs Eie – Beregningsrapport",
+    "recommendationAfterYears": "Anbefaling etter {{years}} år",
+    "advantage": "Fordel",
+    "metricBuyerNetWorth": "Kjøpers formue (år {{years}})",
+    "metricRenterPortfolio": "Leietakers portefølje (år {{years}})",
+    "mode": "Modus",
+    "rate": "Rente",
+    "hoaFee": "Felleskostnader",
+    "brokerFee": "Megler",
+    "savingsAccount": "Sparekonto",
+    "taxOnReturn": "Skatt på avkastning",
+    "savingsTaxNote": "22% renteskatt automatisk",
+    "askTaxNote": "37,84% kun ved uttak",
+    "investReturnLine": "Avkastning: {{return}}%/år (37% skatt auto)",
+    "monthlyDiffShort": "Månedlig diff. (kjøper − leier) → portefølje",
+    "interestDeductionLine": "Rentefradrag: 22% av rentekostnader",
+    "inflationLine": "Inflasjon: {{inflation}}%/år",
+    "wealthTaxCombined": "Formuesskatt: bolig 25%, bank 100%, ASK 80%",
+    "realTermsNote": "Alle formuestall i reelle (inflasjonsjusterte) kroner",
+    "yearByYearSubtitle": "Alle formuestall i reelle kroner – justert for {{inflation}}% inflasjon per år",
+    "notes": "Notater",
+    "notesBuyerEquity": "· Kjøpers formue = Boligverdi − Restgjeld − Salgsomkostninger, justert for inflasjon",
+    "notesRenterEquity": "· Leiers formue = Investeringsportefølje etter estimert skatt, justert for inflasjon",
+    "notesBreakeven": "· Break-even år: {{value}}",
+    "notesBreakevenNone": "Ikke aktuelt i denne perioden",
+    "notesBreakevenCross": "År {{year}} – da krysser linjene",
+    "notesDisclaimer": "· Modellen er veiledende. Konsulter alltid en finansrådgiver ved store beslutninger.",
+    "pageOf": "Side {{page}} / {{total}}"
   },
   "units": {
     "kr": "kr",
