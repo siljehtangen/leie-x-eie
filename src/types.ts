@@ -64,6 +64,12 @@ export interface Summary {
   finalRemainingMortgage: number
   initialMonthlyRent: number
   initialBuyerMonthly: number
+  loanAmount: number
+  monthlyRate: number
+  numPayments: number
+  ioYears: number
+  remainingTermMonths: number
+  finalInflationFactor: number
 }
 
 export interface CalculationResult {
