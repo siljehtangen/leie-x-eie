@@ -44,7 +44,7 @@ const DEFAULT_INPUTS: Inputs = {
   askBalance: 400000,
   askRate: 7.0,
   askShieldingRate: 3.0,
-  bsuActive: 0,
+  bsuActive: false,
   bsuYearlyContribution: BSU_MAX_CONTRIBUTION,
 }
 
@@ -71,14 +71,16 @@ export default function App() {
     i18n.changeLanguage(newLang)
   }
 
-  const handleInputChange = (name: keyof Inputs, value: number) => {
+  const handleInputChange = (name: keyof Inputs, value: number | boolean) => {
     setInputs(prev => {
-      const next = { ...prev, [name]: value }
-      if (name === 'purchasePrice' && prev.stampDuty === Math.round(prev.purchasePrice * STAMP_DUTY_RATE)) {
-        next.stampDuty = Math.round(value * STAMP_DUTY_RATE)
-      }
-      if (name === 'purchasePrice' && prev.downPayment === Math.round(prev.purchasePrice * DEFAULT_DOWN_PAYMENT_RATE)) {
-        next.downPayment = Math.round(value * DEFAULT_DOWN_PAYMENT_RATE)
+      const next: Inputs = { ...prev, [name]: value } as Inputs
+      if (name === 'purchasePrice' && typeof value === 'number') {
+        if (prev.stampDuty === Math.round(prev.purchasePrice * STAMP_DUTY_RATE)) {
+          next.stampDuty = Math.round(value * STAMP_DUTY_RATE)
+        }
+        if (prev.downPayment === Math.round(prev.purchasePrice * DEFAULT_DOWN_PAYMENT_RATE)) {
+          next.downPayment = Math.round(value * DEFAULT_DOWN_PAYMENT_RATE)
+        }
       }
       return next
     })
