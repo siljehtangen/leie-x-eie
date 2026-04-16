@@ -88,8 +88,8 @@ interface SectionProps {
 function CheckboxField({ label, name, value, onChange, tooltip }: {
   label: string
   name: keyof Inputs
-  value: number
-  onChange: (name: keyof Inputs, value: number) => void
+  value: boolean
+  onChange: (name: keyof Inputs, value: boolean) => void
   tooltip?: string
 }) {
   return (
@@ -97,8 +97,8 @@ function CheckboxField({ label, name, value, onChange, tooltip }: {
       <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', userSelect: 'none' }}>
         <input
           type="checkbox"
-          checked={value === 1}
-          onChange={e => onChange(name, e.target.checked ? 1 : 0)}
+          checked={value}
+          onChange={e => onChange(name, e.target.checked)}
           style={{ width: '1rem', height: '1rem', cursor: 'pointer', accentColor: 'var(--color-buy, #4CAF50)', flexShrink: 0 }}
         />
         <span>{label}</span>
@@ -146,7 +146,7 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
 
 interface InputPanelProps {
   inputs: Inputs
-  onInputChange: (name: keyof Inputs, value: number) => void
+  onInputChange: (name: keyof Inputs, value: number | boolean) => void
   mode: Mode
 }
 
@@ -159,7 +159,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       key={name}
       label={t(`inputs.${name}`)}
       name={name}
-      value={inputs[name]}
+      value={inputs[name] as number}
       onChange={onInputChange}
       tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
       {...extra}
@@ -228,7 +228,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
               onChange={onInputChange}
               tooltip={t('tooltips.bsuActive', { defaultValue: '' }) || undefined}
             />
-            {inputs.bsuActive === 1 && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
+            {inputs.bsuActive && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
           </div>
         </Section>
       )}
