@@ -34,7 +34,7 @@ export interface Inputs {
   askBalance: number
   askRate: number
   askShieldingRate: number
-  bsuActive: number
+  bsuActive: boolean
   bsuYearlyContribution: number
 }
 
