@@ -13,6 +13,7 @@ import {
   QUICK_INVESTMENT_TAX,
   SECURITY_DEPOSIT_MONTHS,
   BSU_TAX_DEDUCTION_RATE,
+  DEFAULT_HOA_INCREASE_PCT,
 } from '../constants/finance'
 
 export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
@@ -260,7 +261,7 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     })
 
     currentMonthlyRent *= 1 + rentIncrease / 100
-    currentHoaFee *= 1 + (isAdvanced ? hoaFeeIncrease : 2) / 100
+    currentHoaFee *= 1 + (isAdvanced ? hoaFeeIncrease : DEFAULT_HOA_INCREASE_PCT) / 100
   }
 
   const finalYear = yearlyData[yearlyData.length - 1]
@@ -303,6 +304,12 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
       finalRemainingMortgage: finalYear.remainingMortgage,
       initialMonthlyRent: monthlyRent,
       initialBuyerMonthly: yearlyData[0].buyerMonthlyCost,
+      loanAmount,
+      monthlyRate,
+      numPayments,
+      ioYears,
+      remainingTermMonths,
+      finalInflationFactor: Math.pow(1 + inflation / 100, years),
     },
   }
 }
