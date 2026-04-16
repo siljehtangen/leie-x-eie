@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trophy, Home, Building2 } from 'lucide-react'
 import { AnimatedNOK } from '../hooks/useAnimatedValue'
-import { getLocale } from '../utils/calculations'
+import { useLocale } from '../hooks/useLocale'
 import type { CalculationResult } from '../types'
 
 interface SplitResultsProps {
@@ -11,8 +11,8 @@ interface SplitResultsProps {
 }
 
 export default function SplitResults({ results, years }: SplitResultsProps) {
-  const { t, i18n } = useTranslation()
-  const locale = getLocale(i18n.language)
+  const { t } = useTranslation()
+  const locale = useLocale()
   const { summary, recommendation } = results
   const [tick, setTick] = useState(0)
 
