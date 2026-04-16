@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
-import { formatNOK } from '../utils/calculations'
+import { formatNOK, getLocale } from '../utils/calculations'
 import type { CalculationResult } from '../types'
 
 interface RecommendationProps {
@@ -12,7 +12,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
   const { t, i18n } = useTranslation()
   const { recommendation, difference, summary, breakevenYear } = results
   const isBuy = recommendation === 'buy'
-  const locale = i18n.language.startsWith('en') ? 'en-GB' : 'nb-NO'
+  const locale = getLocale(i18n.language)
 
   const diffFormatted = formatNOK(difference, false, locale)
   const equityFormatted = formatNOK(summary.finalEquity, false, locale)

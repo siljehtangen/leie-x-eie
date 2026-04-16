@@ -25,9 +25,10 @@ interface AnimatedNOKProps {
   value: number
   trigger: number
   large?: boolean
+  locale?: string
 }
 
-export function AnimatedNOK({ value, trigger, large }: AnimatedNOKProps) {
+export function AnimatedNOK({ value, trigger, large, locale }: AnimatedNOKProps) {
   const anim = useAnimatedValue(value, trigger)
-  return <span className={`stat-value${large ? ' large' : ''}`}>{formatNOK(anim)}</span>
+  return <span className={`stat-value${large ? ' large' : ''}`}>{formatNOK(anim, false, locale)}</span>
 }

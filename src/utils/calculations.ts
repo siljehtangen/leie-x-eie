@@ -313,6 +313,10 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
   }
 }
 
+export function getLocale(language: string): string {
+  return language.startsWith('en') ? 'en-GB' : 'nb-NO'
+}
+
 export function formatInputNum(v: number): string {
   const parts = v.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')
