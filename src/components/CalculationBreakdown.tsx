@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Download } from 'lucide-react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
-import { formatNOK, getLocale } from '../utils/calculations'
+import { useFormatNOK } from '../hooks/useFormatNOK'
 import {
   SECURITY_DEPOSIT_MONTHS,
   INTEREST_DEDUCTION,
@@ -10,28 +10,290 @@ import {
   SAVINGS_TAX_RATE,
   ASK_TAX_RATE,
 } from '../constants/finance'
-import type { CalculationResult, Inputs, Mode } from '../types'
+import type { CalculationResult, Inputs, Mode, Summary, YearlyDataPoint } from '../types'
 import CalculationPDF from './CalculationPDF'
 
-interface Props {
+type FormatFn = (value: number, compact?: boolean) => string
+type TFn = (key: string, opts?: Record<string, unknown>) => string
+
+interface BuyerColumnProps {
+  t: TFn
+  formatKr: FormatFn
+  inputs: Inputs
+  summary: Summary
+  yearlyData: YearlyDataPoint[]
+  isAdvanced: boolean
+  finalYear: YearlyDataPoint
+}
+
+function BuyerColumn({ t, formatKr, inputs, summary, yearlyData, isAdvanced, finalYear }: BuyerColumnProps) {
+  const {
+    loanAmount, monthlyRate, numPayments: n, ioYears,
+    remainingTermMonths, monthlyAmortizingPayment, finalInflationFactor: inflationFactor,
+  } = summary
+
+  return (
+    <div className="bd-col bd-col-buy">
+      <h3 className="bd-col-title">{t('breakdown.buyerCalc')}</h3>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.loanAmount')}</div>
+        <div className="bd-formula-line">
+          {formatKr(inputs.purchasePrice)} − {formatKr(inputs.downPayment)} = <strong>{formatKr(loanAmount)}</strong>
+        </div>
+      </div>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.monthlyMortgageCalc')}</div>
+        <div className="bd-formula-line">
+          r = {inputs.mortgageRate}% ÷ 12 = {(monthlyRate * 100).toFixed(4)}% / {t('breakdown.month')}
+        </div>
+        <div className="bd-formula-line">
+          n = {inputs.loanTermYears} × 12 = {n} {t('breakdown.payments')}
+        </div>
+        {ioYears > 0 ? (
+          <>
+            <div className="bd-formula-line bd-formula-note">
+              {t('breakdown.ioPhase', { years: ioYears })}
+            </div>
+            <div className="bd-formula-line bd-formula-eq">
+              {t('breakdown.payment')} = L × r = {formatKr(loanAmount * monthlyRate)} / {t('breakdown.month')}
+            </div>
+            <div className="bd-formula-line bd-formula-note">
+              {t('breakdown.amortizingPhase', { from: ioYears + 1, months: remainingTermMonths })}
+            </div>
+            <div className="bd-formula-line bd-formula-eq">
+              {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
+            </div>
+            <div className="bd-formula-result bd-result-buy">
+              → {formatKr(monthlyAmortizingPayment)} / {t('breakdown.month')}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="bd-formula-line bd-formula-eq">
+              {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
+            </div>
+            <div className="bd-formula-result bd-result-buy">
+              → {formatKr(summary.monthlyMortgagePayment)} / {t('breakdown.month')}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.year1MonthlyCost')}</div>
+        <div className="bd-cost-table">
+          <div className="bd-cost-row">
+            <span>{t('breakdown.mortgagePayment')}</span>
+            <span>+ {formatKr(summary.monthlyMortgagePayment)}</span>
+          </div>
+          <div className="bd-cost-row alt">
+            <span>{t('inputs.monthlyHoaFee')}</span>
+            <span>+ {formatKr(inputs.monthlyHoaFee)}</span>
+          </div>
+          <div className="bd-cost-row deduction">
+            <span>{t('breakdown.interestDeduction')} ({(INTEREST_DEDUCTION * 100).toFixed(0)}%)</span>
+            <span>− {formatKr((loanAmount * monthlyRate + (isAdvanced ? inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12 : 0)) * INTEREST_DEDUCTION)}</span>
+          </div>
+          {isAdvanced && (inputs.electricity > 0 || inputs.internet > 0) && (
+            <div className="bd-cost-row alt">
+              <span>{t('inputs.electricity')} & {t('inputs.internet')}</span>
+              <span>+ {formatKr((inputs.electricity + inputs.internet) / 12)}</span>
+            </div>
+          )}
+          {isAdvanced && inputs.renovationPct > 0 && (
+            <div className="bd-cost-row">
+              <span>{t('inputs.renovationPct')}</span>
+              <span>+ {formatKr(inputs.purchasePrice * inputs.renovationPct / 100 / 12)}</span>
+            </div>
+          )}
+          {isAdvanced && inputs.municipalFees > 0 && (
+            <div className="bd-cost-row alt">
+              <span>{t('inputs.municipalFees')}</span>
+              <span>+ {formatKr(inputs.municipalFees / 12)}</span>
+            </div>
+          )}
+          {isAdvanced && inputs.homeInsurance > 0 && (
+            <div className="bd-cost-row">
+              <span>{t('inputs.homeInsurance')}</span>
+              <span>+ {formatKr(inputs.homeInsurance / 12)}</span>
+            </div>
+          )}
+          {isAdvanced && inputs.propertyTax > 0 && (
+            <div className="bd-cost-row alt">
+              <span>{t('inputs.propertyTax')}</span>
+              <span>+ {formatKr(inputs.propertyTax / 12)}</span>
+            </div>
+          )}
+          <div className="bd-cost-row total-buy">
+            <span>{t('breakdown.totalMonthly')}</span>
+            <span>{formatKr(yearlyData[0].buyerMonthlyCost)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} ({inputs.years} {t('units.years')})</div>
+        <div className="bd-formula-line">
+          {t('breakdown.homeValue')}: {formatKr(finalYear.homeValue)}
+        </div>
+        <div className="bd-formula-line">
+          − {t('breakdown.remainingMortgage')}: {formatKr(finalYear.remainingMortgage)}
+        </div>
+        {inputs.sharedDebt > 0 && (
+          <div className="bd-formula-line">
+            − {t('inputs.sharedDebt')}: {formatKr(inputs.sharedDebt)}
+          </div>
+        )}
+        <div className="bd-formula-line">
+          − {t('inputs.brokerSellingFee')}: {formatKr(inputs.brokerSellingFee)}
+        </div>
+        {isAdvanced && finalYear.cumulativeBuyerWealthTax > 0 && (
+          <div className="bd-formula-line">
+            − {t('breakdown.accumulatedWealthTax')}: {formatKr(finalYear.cumulativeBuyerWealthTax)}
+          </div>
+        )}
+        <div className="bd-formula-line">
+          ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
+        </div>
+        <div className="bd-formula-note" style={{ marginTop: '0.3rem' }}>
+          {t('breakdown.taxFreeHomeSale')}
+        </div>
+        <div className="bd-formula-result bd-result-buy">
+          = {formatKr(summary.finalEquity)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface RenterColumnProps {
+  t: TFn
+  formatKr: FormatFn
+  inputs: Inputs
+  summary: Summary
+  isAdvanced: boolean
+  bsuActive: boolean
+  initialInvestment: number
+  securityDeposit: number
+}
+
+function RenterColumn({ t, formatKr, inputs, summary, isAdvanced, bsuActive, initialInvestment, securityDeposit }: RenterColumnProps) {
+  const { finalInflationFactor: inflationFactor } = summary
+
+  return (
+    <div className="bd-col bd-col-rent">
+      <h3 className="bd-col-title">{t('breakdown.renterCalc')}</h3>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.initialInvestment')}</div>
+        {isAdvanced ? (
+          <>
+            <div className="bd-formula-line bd-formula-note">
+              {t('inputs.savingsAccountBalance')}: <strong>{formatKr(inputs.savingsAccountBalance)}</strong>
+            </div>
+            <div className="bd-formula-line bd-formula-note">
+              {t('inputs.askBalance')}: <strong>{formatKr(inputs.askBalance)}</strong>
+            </div>
+            <div className="bd-formula-line">
+              {t('breakdown.total')}: <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
+            </div>
+            <div className="bd-formula-line bd-formula-note">
+              − {t('breakdown.securityDeposit')} ({SECURITY_DEPOSIT_MONTHS} mnd): {formatKr(securityDeposit)} → {t('breakdown.securityDepositNote')}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="bd-formula-line">
+              {formatKr(inputs.downPayment)} + {formatKr(summary.closingCosts)} = <strong>{formatKr(initialInvestment)}</strong>
+            </div>
+            <div className="bd-formula-note">{t('breakdown.initialInvestmentNote')}</div>
+          </>
+        )}
+      </div>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.portfolioGrowth')}</div>
+        {isAdvanced ? (
+          <>
+            <div className="bd-formula-line bd-formula-note">
+              {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% ({(SAVINGS_TAX_RATE * 100).toFixed(0)}% skatt automatisk)
+            </div>
+            <div className="bd-formula-line bd-formula-note">
+              {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {inputs.askRate}% ({(ASK_TAX_RATE * 100).toFixed(2).replace('.', ',')}% ved uttak)
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="bd-formula-line">
+              {t('breakdown.investReturn')}: {inputs.investmentReturn}%/{t('units.perYear').replace('/ ', '')}
+            </div>
+            <div className="bd-formula-line">{t('breakdown.taxNote37')}</div>
+          </>
+        )}
+        <div className="bd-formula-line">{t('breakdown.monthlyDiffNote')}</div>
+        <div className="bd-formula-result bd-result-rent">
+          → {formatKr(summary.finalRenterPortfolio)} {t('breakdown.afterYears', { years: inputs.years })}
+        </div>
+      </div>
+
+      <div className="bd-formula-block">
+        <div className="bd-formula-title">{t('breakdown.renterNetWorth')} ({inputs.years} {t('units.years')})</div>
+        <div className="bd-formula-line">
+          {t('breakdown.portfolioGross')}: {formatKr(summary.finalRenterNominalGross)}
+        </div>
+        {isAdvanced && summary.finalAskTax > 0 && (
+          <div className="bd-formula-line">
+            − {t('breakdown.askCapitalGainsTax')}: {formatKr(summary.finalAskTax)}
+          </div>
+        )}
+        {isAdvanced && inputs.askShieldingRate > 0 && (
+          <div className="bd-formula-note">
+            {t('breakdown.shieldingNote', { rate: inputs.askShieldingRate })}
+          </div>
+        )}
+        {isAdvanced && bsuActive && (
+          <div className="bd-formula-note">
+            {t('breakdown.bsuBenefit', { amount: Math.round(inputs.bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE) })}
+          </div>
+        )}
+        <div className="bd-formula-line">
+          ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
+        </div>
+        <div className="bd-formula-result bd-result-rent">
+          = {formatKr(summary.finalRenterPortfolio)}
+        </div>
+      </div>
+
+      {isAdvanced && (
+        <div className="bd-formula-block">
+          <div className="bd-formula-title">{t('breakdown.norwegianRules')}</div>
+          <div className="bd-formula-line">{t('breakdown.wealthTaxHome')}</div>
+          <div className="bd-formula-line">{t('breakdown.wealthTaxHomeTiered')}</div>
+          <div className="bd-formula-line">{t('breakdown.wealthTaxSavings')}</div>
+          <div className="bd-formula-line">{t('breakdown.wealthTaxAsk')}</div>
+          <div className="bd-formula-line">{t('breakdown.wealthTaxThreshold')}</div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface CalculationBreakdownProps {
   results: CalculationResult
   inputs: Inputs
   mode: Mode
 }
 
-export default function CalculationBreakdown({ results, inputs, mode }: Props) {
-  const { t, i18n } = useTranslation()
+export default function CalculationBreakdown({ results, inputs, mode }: CalculationBreakdownProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
-  const formatKr = (value: number, compact = false) =>
-    formatNOK(value, compact, getLocale(i18n.language))
+  const formatKr = useFormatNOK()
 
   const isAdvanced = mode === 'advanced'
   const { summary, yearlyData } = results
-  const bsuActive = inputs.bsuActive === 1
-  const {
-    loanAmount, monthlyRate, numPayments: n, ioYears, remainingTermMonths,
-    monthlyAmortizingPayment, finalInflationFactor: inflationFactor,
-  } = summary
+  const { bsuActive } = inputs
   const initialInvestment = inputs.downPayment + summary.closingCosts
   const securityDeposit = isAdvanced ? inputs.monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
   const finalYear = yearlyData[yearlyData.length - 1]
@@ -50,7 +312,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
 
       {open && (
         <div className="breakdown-panel" role="region" aria-label={t('breakdown.title')}>
-
           <div className="breakdown-download-row">
             <PDFDownloadLink
               document={<CalculationPDF results={results} inputs={inputs} mode={mode} title={t('breakdown.pdfDocTitle')} t={t} />}
@@ -72,7 +333,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
               {[
                 [t('inputs.purchasePrice'), formatKr(inputs.purchasePrice)],
                 [t('inputs.downPayment'), formatKr(inputs.downPayment)],
-                [t('breakdown.loanAmount'), formatKr(loanAmount)],
+                [t('breakdown.loanAmount'), formatKr(summary.loanAmount)],
                 [t('inputs.mortgageRate'), `${inputs.mortgageRate}%`],
                 [t('inputs.loanTermYears'), `${inputs.loanTermYears} ${t('units.years')}`],
                 [t('inputs.monthlyHoaFee'), `${formatKr(inputs.monthlyHoaFee)}/${t('breakdown.month')}`],
@@ -97,235 +358,25 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
           </div>
 
           <div className="bd-two-col">
-            <div className="bd-col bd-col-buy">
-              <h3 className="bd-col-title">{t('breakdown.buyerCalc')}</h3>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.loanAmount')}</div>
-                <div className="bd-formula-line">
-                  {formatKr(inputs.purchasePrice)} − {formatKr(inputs.downPayment)} = <strong>{formatKr(loanAmount)}</strong>
-                </div>
-              </div>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.monthlyMortgageCalc')}</div>
-                <div className="bd-formula-line">
-                  r = {inputs.mortgageRate}% ÷ 12 = {(monthlyRate * 100).toFixed(4)}% / {t('breakdown.month')}
-                </div>
-                <div className="bd-formula-line">
-                  n = {inputs.loanTermYears} × 12 = {n} {t('breakdown.payments')}
-                </div>
-                {ioYears > 0 ? (
-                  <>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('breakdown.ioPhase', { years: ioYears })}
-                    </div>
-                    <div className="bd-formula-line bd-formula-eq">
-                      {t('breakdown.payment')} = L × r = {formatKr(loanAmount * monthlyRate)} / {t('breakdown.month')}
-                    </div>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('breakdown.amortizingPhase', { from: ioYears + 1, months: remainingTermMonths })}
-                    </div>
-                    <div className="bd-formula-line bd-formula-eq">
-                      {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
-                    </div>
-                    <div className="bd-formula-result bd-result-buy">
-                      → {formatKr(monthlyAmortizingPayment)} / {t('breakdown.month')}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="bd-formula-line bd-formula-eq">
-                      {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
-                    </div>
-                    <div className="bd-formula-result bd-result-buy">
-                      → {formatKr(summary.monthlyMortgagePayment)} / {t('breakdown.month')}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.year1MonthlyCost')}</div>
-                <div className="bd-cost-table">
-                  <div className="bd-cost-row">
-                    <span>{t('breakdown.mortgagePayment')}</span>
-                    <span>+ {formatKr(summary.monthlyMortgagePayment)}</span>
-                  </div>
-                  <div className="bd-cost-row alt">
-                    <span>{t('inputs.monthlyHoaFee')}</span>
-                    <span>+ {formatKr(inputs.monthlyHoaFee)}</span>
-                  </div>
-                  <div className="bd-cost-row deduction">
-                    <span>{t('breakdown.interestDeduction')} ({(INTEREST_DEDUCTION * 100).toFixed(0)}%)</span>
-                    <span>− {formatKr((loanAmount * monthlyRate + (isAdvanced ? inputs.sharedDebt * inputs.sharedDebtRate / 100 / 12 : 0)) * INTEREST_DEDUCTION)}</span>
-                  </div>
-                  {isAdvanced && (inputs.electricity > 0 || inputs.internet > 0) && (
-                    <div className="bd-cost-row alt">
-                      <span>{t('inputs.electricity')} & {t('inputs.internet')}</span>
-                      <span>+ {formatKr((inputs.electricity + inputs.internet) / 12)}</span>
-                    </div>
-                  )}
-                  {isAdvanced && inputs.renovationPct > 0 && (
-                    <div className="bd-cost-row">
-                      <span>{t('inputs.renovationPct')}</span>
-                      <span>+ {formatKr(inputs.purchasePrice * inputs.renovationPct / 100 / 12)}</span>
-                    </div>
-                  )}
-                  {isAdvanced && inputs.municipalFees > 0 && (
-                    <div className="bd-cost-row alt">
-                      <span>{t('inputs.municipalFees')}</span>
-                      <span>+ {formatKr(inputs.municipalFees / 12)}</span>
-                    </div>
-                  )}
-                  {isAdvanced && inputs.homeInsurance > 0 && (
-                    <div className="bd-cost-row">
-                      <span>{t('inputs.homeInsurance')}</span>
-                      <span>+ {formatKr(inputs.homeInsurance / 12)}</span>
-                    </div>
-                  )}
-                  {isAdvanced && inputs.propertyTax > 0 && (
-                    <div className="bd-cost-row alt">
-                      <span>{t('inputs.propertyTax')}</span>
-                      <span>+ {formatKr(inputs.propertyTax / 12)}</span>
-                    </div>
-                  )}
-                  <div className="bd-cost-row total-buy">
-                    <span>{t('breakdown.totalMonthly')}</span>
-                    <span>{formatKr(yearlyData[0].buyerMonthlyCost)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} ({inputs.years} {t('units.years')})</div>
-                <div className="bd-formula-line">
-                  {t('breakdown.homeValue')}: {formatKr(finalYear.homeValue)}
-                </div>
-                <div className="bd-formula-line">
-                  − {t('breakdown.remainingMortgage')}: {formatKr(finalYear.remainingMortgage)}
-                </div>
-                {inputs.sharedDebt > 0 && (
-                  <div className="bd-formula-line">
-                    − {t('inputs.sharedDebt')}: {formatKr(inputs.sharedDebt)}
-                  </div>
-                )}
-                <div className="bd-formula-line">
-                  − {t('inputs.brokerSellingFee')}: {formatKr(inputs.brokerSellingFee)}
-                </div>
-                {isAdvanced && finalYear.cumulativeBuyerWealthTax > 0 && (
-                  <div className="bd-formula-line">
-                    − {t('breakdown.accumulatedWealthTax')}: {formatKr(finalYear.cumulativeBuyerWealthTax)}
-                  </div>
-                )}
-                <div className="bd-formula-line">
-                  ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
-                </div>
-                <div className="bd-formula-note" style={{ marginTop: '0.3rem' }}>
-                  {t('breakdown.taxFreeHomeSale')}
-                </div>
-                <div className="bd-formula-result bd-result-buy">
-                  = {formatKr(summary.finalEquity)}
-                </div>
-              </div>
-            </div>
-
-            <div className="bd-col bd-col-rent">
-              <h3 className="bd-col-title">{t('breakdown.renterCalc')}</h3>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.initialInvestment')}</div>
-                {isAdvanced ? (
-                  <>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.savingsAccountBalance')}: <strong>{formatKr(inputs.savingsAccountBalance)}</strong>
-                    </div>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.askBalance')}: <strong>{formatKr(inputs.askBalance)}</strong>
-                    </div>
-                    <div className="bd-formula-line">
-                      {t('breakdown.total')}: <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
-                    </div>
-                    <div className="bd-formula-line bd-formula-note">
-                      − {t('breakdown.securityDeposit')} ({SECURITY_DEPOSIT_MONTHS} mnd): {formatKr(securityDeposit)} → {t('breakdown.securityDepositNote')}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="bd-formula-line">
-                      {formatKr(inputs.downPayment)} + {formatKr(summary.closingCosts)} = <strong>{formatKr(initialInvestment)}</strong>
-                    </div>
-                    <div className="bd-formula-note">{t('breakdown.initialInvestmentNote')}</div>
-                  </>
-                )}
-              </div>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.portfolioGrowth')}</div>
-                {isAdvanced ? (
-                  <>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% ({(SAVINGS_TAX_RATE * 100).toFixed(0)}% skatt automatisk)
-                    </div>
-                    <div className="bd-formula-line bd-formula-note">
-                      {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {inputs.askRate}% ({(ASK_TAX_RATE * 100).toFixed(2).replace('.', ',')}% ved uttak)
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="bd-formula-line">
-                      {t('breakdown.investReturn')}: {inputs.investmentReturn}%/{t('units.perYear').replace('/ ', '')}
-                    </div>
-                    <div className="bd-formula-line">{t('breakdown.taxNote37')}</div>
-                  </>
-                )}
-                <div className="bd-formula-line">{t('breakdown.monthlyDiffNote')}</div>
-                <div className="bd-formula-result bd-result-rent">
-                  → {formatKr(summary.finalRenterPortfolio)} {t('breakdown.afterYears', { years: inputs.years })}
-                </div>
-              </div>
-
-              <div className="bd-formula-block">
-                <div className="bd-formula-title">{t('breakdown.renterNetWorth')} ({inputs.years} {t('units.years')})</div>
-                <div className="bd-formula-line">
-                  {t('breakdown.portfolioGross')}: {formatKr(summary.finalRenterNominalGross)}
-                </div>
-                {isAdvanced && summary.finalAskTax > 0 && (
-                  <div className="bd-formula-line">
-                    − {t('breakdown.askCapitalGainsTax')}: {formatKr(summary.finalAskTax)}
-                  </div>
-                )}
-                {isAdvanced && inputs.askShieldingRate > 0 && (
-                  <div className="bd-formula-note">
-                    {t('breakdown.shieldingNote', { rate: inputs.askShieldingRate })}
-                  </div>
-                )}
-                {isAdvanced && bsuActive && (
-                  <div className="bd-formula-note">
-                    {t('breakdown.bsuBenefit', { amount: Math.round(inputs.bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE) })}
-                  </div>
-                )}
-                <div className="bd-formula-line">
-                  ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
-                </div>
-                <div className="bd-formula-result bd-result-rent">
-                  = {formatKr(summary.finalRenterPortfolio)}
-                </div>
-              </div>
-
-              {isAdvanced && (
-                <div className="bd-formula-block">
-                  <div className="bd-formula-title">{t('breakdown.norwegianRules')}</div>
-                  <div className="bd-formula-line">{t('breakdown.wealthTaxHome')}</div>
-                  <div className="bd-formula-line">{t('breakdown.wealthTaxHomeTiered')}</div>
-                  <div className="bd-formula-line">{t('breakdown.wealthTaxSavings')}</div>
-                  <div className="bd-formula-line">{t('breakdown.wealthTaxAsk')}</div>
-                  <div className="bd-formula-line">
-                    {t('breakdown.wealthTaxThreshold')}
-                  </div>
-                </div>
-              )}
-            </div>
+            <BuyerColumn
+              t={t}
+              formatKr={formatKr}
+              inputs={inputs}
+              summary={summary}
+              yearlyData={yearlyData}
+              isAdvanced={isAdvanced}
+              finalYear={finalYear}
+            />
+            <RenterColumn
+              t={t}
+              formatKr={formatKr}
+              inputs={inputs}
+              summary={summary}
+              isAdvanced={isAdvanced}
+              bsuActive={bsuActive}
+              initialInvestment={initialInvestment}
+              securityDeposit={securityDeposit}
+            />
           </div>
 
           <div className="bd-section">
@@ -363,7 +414,6 @@ export default function CalculationBreakdown({ results, inputs, mode }: Props) {
             </div>
             <p className="bd-table-note">{t('breakdown.tableNote')}</p>
           </div>
-
         </div>
       )}
     </div>
