@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { formatInputNum } from '../utils/calculations'
 import { COLORS } from '../constants/theme'
+import { BSU_MAX_CONTRIBUTION } from '../constants/finance'
 import type { Inputs, Mode } from '../types'
 
 interface InputFieldProps {
@@ -224,7 +225,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
               onChange={onInputChange}
               tooltip={t('tooltips.bsuActive', { defaultValue: '' }) || undefined}
             />
-            {inputs.bsuActive === 1 && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: 27500, step: 500 })}
+            {inputs.bsuActive === 1 && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
           </div>
         </Section>
       )}
