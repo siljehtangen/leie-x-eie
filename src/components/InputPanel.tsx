@@ -26,6 +26,7 @@ interface InputFieldProps {
 }
 
 function InputField({ label, name, value, onChange, unit, tooltip, min, max, step }: InputFieldProps) {
+  const { t: tA11y } = useTranslation()
   const [focused, setFocused] = useState(false)
   const s = step ?? 1
 
@@ -51,10 +52,12 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
         )}
       </div>
       <div className="input-value-row">
-        <button className="input-stepper-btn" onClick={decrement} tabIndex={-1} type="button" aria-label={`Decrease ${label}`}>−</button>
+        <button className="input-stepper-btn" onClick={decrement} tabIndex={-1} type="button" aria-label={tA11y('a11y.decreaseField', { label })}>−</button>
         <input
           type="text"
           inputMode="decimal"
+          autoComplete="off"
+          spellCheck={false}
           aria-label={label}
           value={focused ? value : formatInputNum(value)}
           onFocus={() => setFocused(true)}
@@ -66,7 +69,7 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           }}
         />
         {unit && <span className="input-unit">{unit}</span>}
-        <button className="input-stepper-btn" onClick={increment} tabIndex={-1} type="button" aria-label={`Increase ${label}`}>+</button>
+        <button className="input-stepper-btn" onClick={increment} tabIndex={-1} type="button" aria-label={tA11y('a11y.increaseField', { label })}>+</button>
       </div>
     </div>
   )

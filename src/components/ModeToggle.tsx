@@ -12,18 +12,22 @@ export default function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
 
   return (
     <div className="mode-toggle-wrap">
-      <div className="mode-toggle">
+      <div className="mode-toggle" role="group" aria-label={t('mode.groupLabel')}>
         <button
+          type="button"
           className={`mode-btn ${mode === 'quick' ? 'active' : ''}`}
           onClick={() => onModeChange('quick')}
+          aria-pressed={mode === 'quick'}
         >
-          <Zap size={15} /> {t('mode.quick')}
+          <Zap size={15} aria-hidden /> {t('mode.quick')}
         </button>
         <button
+          type="button"
           className={`mode-btn ${mode === 'advanced' ? 'active' : ''}`}
           onClick={() => onModeChange('advanced')}
+          aria-pressed={mode === 'advanced'}
         >
-          <SlidersHorizontal size={15} /> {t('mode.advanced')}
+          <SlidersHorizontal size={15} aria-hidden /> {t('mode.advanced')}
         </button>
       </div>
       <p className="mode-desc">

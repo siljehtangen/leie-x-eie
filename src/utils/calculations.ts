@@ -77,7 +77,6 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
 
   const quickMonthlyReturn = investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX)
 
-  // In advanced mode, security deposit is locked cash — deduct from savings first
   const savingsInitial = isAdvanced ? Math.max(0, savingsAccountBalance - securityDeposit) : 0
   const askInitial = isAdvanced ? Math.max(0, askBalance) : 0
 
@@ -320,16 +319,19 @@ export function formatInputNum(v: number): string {
   return parts.join('.')
 }
 
-export function formatNOK(value: number, compact = false): string {
+export function formatNOK(value: number, compact = false, locale = 'nb-NO'): string {
   if (compact) {
     if (Math.abs(value) >= 1_000_000) {
-      return `${(value / 1_000_000).toFixed(1).replace('.', ',')} mill. kr`
+      const n = (value / 1_000_000).toFixed(1)
+      const num = locale.startsWith('en') ? n : n.replace('.', ',')
+      return locale.startsWith('en') ? `${num}m NOK` : `${num} mill. kr`
     }
     if (Math.abs(value) >= 1_000) {
-      return `${Math.round(value / 1_000)} 000 kr`
+      const k = Math.round(value / 1_000)
+      return locale.startsWith('en') ? `${k}k NOK` : `${k} 000 kr`
     }
   }
-  return new Intl.NumberFormat('nb-NO', {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'NOK',
     minimumFractionDigits: 0,
@@ -337,8 +339,9 @@ export function formatNOK(value: number, compact = false): string {
   }).format(value)
 }
 
-export function formatChartNOK(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`
+export function formatChartNOK(value: number, locale = 'nb-NO'): string {
+  const dec = locale.startsWith('en') ? '.' : ','
+  if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace('.', dec)}M`
   if (Math.abs(value) >= 1_000) return `${Math.round(value / 1_000)}k`
   return `${value}`
 }

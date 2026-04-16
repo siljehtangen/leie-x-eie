@@ -25,16 +25,24 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
           </span>
         </div>
 
-        <div className="lang-switcher">
+        <div className="lang-switcher" role="group" aria-label={t('header.langGroupLabel')}>
           <button
+            type="button"
+            lang="nb"
             className={`lang-btn ${lang === 'no' ? 'active' : ''}`}
             onClick={() => onLangChange('no')}
+            aria-pressed={lang === 'no'}
+            aria-label={t('a11y.langNorwegian')}
           >
             NO
           </button>
           <button
+            type="button"
+            lang="en"
             className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
             onClick={() => onLangChange('en')}
+            aria-pressed={lang === 'en'}
+            aria-label={t('a11y.langEnglish')}
           >
             EN
           </button>

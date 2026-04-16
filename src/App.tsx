@@ -60,6 +60,12 @@ export default function App() {
     document.title = t('header.pageTitle')
   }, [t])
 
+  useEffect(() => {
+    document.documentElement.lang = lang === 'no' ? 'nb' : 'en'
+    const meta = document.querySelector('meta[name="description"]')
+    if (meta) meta.setAttribute('content', t('meta.description'))
+  }, [lang, t])
+
   const handleLangChange = (newLang: Lang) => {
     setLang(newLang)
     i18n.changeLanguage(newLang)
@@ -88,16 +94,19 @@ export default function App() {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">
+        {t('a11y.skipToMain')}
+      </a>
       <Header lang={lang} onLangChange={handleLangChange} />
 
-      <main className="main">
+      <main className="main" id="main-content">
         <div className="container">
           <ModeToggle mode={mode} onModeChange={setMode} />
 
           <InputPanel inputs={inputs} onInputChange={handleInputChange} mode={mode} />
 
           <div className="calculate-section">
-            <button className="calculate-btn" onClick={handleCalculate}>
+            <button type="button" className="calculate-btn" onClick={handleCalculate}>
               <span>{results ? t('recalculate') : t('calculate')} →</span>
             </button>
           </div>
