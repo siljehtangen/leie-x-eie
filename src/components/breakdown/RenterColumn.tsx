@@ -70,7 +70,7 @@ export default function RenterColumn({ t, formatKr, inputs, summary, isAdvanced,
         )}
         <div className="bd-formula-line">{t('breakdown.monthlyDiffNote')}</div>
         <div className="bd-formula-result bd-result-rent">
-          → {formatKr(summary.finalRenterPortfolio)} {t('breakdown.afterYears', { years: inputs.years })}
+          → {formatKr(summary.finalRenterNominalGross)} {t('breakdown.afterYears', { years: inputs.years })}
         </div>
       </div>
 
