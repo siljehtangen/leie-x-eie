@@ -2,6 +2,23 @@
 
 En leie- vs. eie-kalkulator tilpasset det norske boligmarkedet. Legg inn tallene dine og få en tydelig anbefaling basert på langsiktig nettoformue.
 
+---
+
+## Skjermbilder
+
+<img src="assets/quick-1.png" width="680" alt="Landing page — Quick mode input form">
+
+<table>
+<tr>
+<td><img src="assets/quick-2.png" width="335" alt="Results — net worth and monthly cost charts"></td>
+<td><img src="assets/quick-3.png" width="335" alt="Recommendation card with breakeven year"></td>
+</tr>
+<tr>
+<td><img src="assets/quick-4.png" width="335" alt="Calculation breakdown with formulas"></td>
+<td><img src="assets/quick-5.png" width="335" alt="Year-by-year net worth table"></td>
+</tr>
+</table>
+
 ## Funksjoner
 
 - **Quick mode** — grunnleggende input:
