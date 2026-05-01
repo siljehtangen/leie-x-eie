@@ -126,7 +126,7 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
                 [t('pdf.rate'), `${inputs.mortgageRate}%`],
                 [t('inputs.loanTermYears'), `${inputs.loanTermYears} ${t('units.years')}`],
                 [t('pdf.hoaFee'), `${formatNOK(inputs.monthlyHoaFee, true)}/${t('breakdown.month')}`],
-                [t('inputs.stampDuty'), formatNOK(summary.closingCosts, true)],
+                [t('inputs.stampDuty'), formatNOK(inputs.stampDuty, true)],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -153,12 +153,10 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
                 <Text style={s.rowLabel}>{t('pdf.hoaFee')}</Text>
                 <Text style={s.rowValue}>+ {formatNOK(inputs.monthlyHoaFee, true)}</Text>
               </View>
-              {isAdvanced && (
-                <View style={[s.row, s.rowAlt]}>
-                  <Text style={s.rowLabel}>{t('breakdown.interestDeduction')} ({interestDeductionPct})</Text>
-                  <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * INTEREST_DEDUCTION, true)}</Text>
-                </View>
-              )}
+              <View style={[s.row, s.rowAlt]}>
+                <Text style={s.rowLabel}>{t('breakdown.interestDeduction')} ({interestDeductionPct})</Text>
+                <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * INTEREST_DEDUCTION, true)}</Text>
+              </View>
               <View style={[s.row, { backgroundColor: COLORS.buyLight }]}>
                 <Text style={[s.rowLabel, { fontWeight: 700 }]}>{t('breakdown.totalMonthly')}</Text>
                 <Text style={[s.rowValue, { color: COLORS.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
@@ -188,7 +186,7 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
                   : [t('breakdown.investReturn'), `${inputs.investmentReturn}%`],
                 isAdvanced
                   ? ['ASK', `${formatNOK(inputs.askBalance, true)} @ ${inputs.askRate}%`]
-                  : [t('pdf.taxOnReturn'), '37% (auto)'],
+                  : [t('pdf.taxOnReturn'), '22% (auto)'],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -200,7 +198,7 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.initialInvestment')}</Text>
               <Text style={s.step}>{t('inputs.downPayment')}: {formatNOK(inputs.downPayment, true)}</Text>
-              <Text style={s.step}>+ {t('inputs.stampDuty')}: {formatNOK(summary.closingCosts, true)}</Text>
+              <Text style={s.step}>+ {isAdvanced && inputs.otherClosingCosts > 0 ? t('pdf.closingCosts') : t('inputs.stampDuty')}: {formatNOK(summary.closingCosts, true)}</Text>
               <Text style={[s.result, s.resultRent]}>{formatNOK(initialInvestment, true)}</Text>
               <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>
             </View>
