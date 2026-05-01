@@ -167,7 +167,13 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
               <Text style={s.blockTitle}>{t('breakdown.buyerNetWorth')} ({t('units.years')} {inputs.years})</Text>
               <Text style={s.step}>{t('breakdown.homeValue')}: {formatNOK(finalYear.homeValue, true)}</Text>
               <Text style={s.step}>− {t('breakdown.remainingMortgage')}: {formatNOK(finalYear.remainingMortgage, true)}</Text>
+              {inputs.sharedDebt > 0 && (
+                <Text style={s.step}>− {t('inputs.sharedDebt')}: {formatNOK(inputs.sharedDebt, true)}</Text>
+              )}
               <Text style={s.step}>− {t('pdf.brokerFee')}: {formatNOK(inputs.brokerSellingFee, true)}</Text>
+              {isAdvanced && finalYear.cumulativeBuyerWealthTax > 0 && (
+                <Text style={s.step}>− {t('breakdown.accumulatedWealthTax')}: {formatNOK(finalYear.cumulativeBuyerWealthTax, true)}</Text>
+              )}
               <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {finalInflationFactor.toFixed(3)}</Text>
               <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.finalEquity)}</Text>
             </View>
