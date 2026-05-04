@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
+import i18next from 'i18next'
 
 interface Props {
   children: ReactNode
@@ -32,8 +33,8 @@ export class ErrorBoundary extends Component<Props, State> {
           background: '#F5F5F5',
           gap: 12,
         }}>
-          <h1 style={{ color: '#008080', margin: 0 }}>Noe gikk galt</h1>
-          <p style={{ color: '#555', margin: 0 }}>Prøv å laste siden på nytt.</p>
+          <h1 style={{ color: '#008080', margin: 0 }}>{i18next.t('error.title')}</h1>
+          <p style={{ color: '#555', margin: 0 }}>{i18next.t('error.message')}</p>
           <button
             onClick={() => window.location.reload()}
             style={{
@@ -47,7 +48,7 @@ export class ErrorBoundary extends Component<Props, State> {
               fontSize: 16,
             }}
           >
-            Last på nytt
+            {i18next.t('error.button')}
           </button>
         </div>
       )
