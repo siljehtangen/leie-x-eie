@@ -8,8 +8,7 @@
     "heroLine1": "Leie eller",
     "heroHighlight": "eie?",
     "pageTitle": "LeieXEie – Leie eller eie?",
-    "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge.",
-    "eyebrow": "Det norske boligmarkedet"
+    "tagline": "Din smarte guide til å velge om du skal leie eller eie bolig i Norge."
   },
   "a11y": {
     "decreaseField": "Reduser {{label}}",
@@ -244,6 +243,11 @@
     "notesBreakevenCross": "År {{year}} – da krysser linjene",
     "notesDisclaimer": "· Modellen er veiledende. Konsulter alltid en finansrådgiver ved store beslutninger.",
     "pageOf": "Side {{page}} / {{total}}"
+  },
+  "error": {
+    "title": "Noe gikk galt",
+    "message": "Prøv å laste siden på nytt.",
+    "button": "Last på nytt"
   },
   "units": {
     "kr": "kr",

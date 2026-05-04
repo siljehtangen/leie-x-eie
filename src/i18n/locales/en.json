@@ -8,8 +8,7 @@
     "heroLine1": "Rent or",
     "heroHighlight": "own?",
     "pageTitle": "LeieXEie – Rent or own?",
-    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway.",
-    "eyebrow": "Norwegian housing market"
+    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway."
   },
   "a11y": {
     "decreaseField": "Decrease {{label}}",
@@ -244,6 +243,11 @@
     "notesBreakevenCross": "Year {{year}} – where the lines cross",
     "notesDisclaimer": "· This model is indicative. Always consult a financial advisor for major decisions.",
     "pageOf": "Page {{page}} / {{total}}"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "message": "Try reloading the page.",
+    "button": "Reload"
   },
   "units": {
     "kr": "kr",
