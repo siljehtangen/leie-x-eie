@@ -119,14 +119,12 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
   return (
     <div className="input-section">
       <div className={`section-stripe stripe-${stripe}`} />
-      <div
+      <button
+        type="button"
         className="section-header"
-        role="button"
-        tabIndex={0}
         aria-expanded={open}
         aria-controls={bodyId}
         onClick={() => setOpen(o => !o)}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(o => !o) } }}
       >
         <div className={`section-icon ${id}`}>
           <Icon size={18} color={iconColor} strokeWidth={2} />
@@ -138,7 +136,7 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
           strokeWidth={2}
           style={{ marginLeft: '0.5rem', transition: 'transform 0.3s ease', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
         />
-      </div>
+      </button>
       {open && <div id={bodyId} className="section-body" role="region" aria-label={title}>{children}</div>}
     </div>
   )
