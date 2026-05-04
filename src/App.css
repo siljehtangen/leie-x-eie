@@ -347,6 +347,11 @@ body {
   align-items: center;
   gap: 0.85rem;
   padding: 1rem 1.5rem;
+  width: 100%;
+  background: none;
+  border: none;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
   user-select: none;
   transition: background 0.15s ease;
