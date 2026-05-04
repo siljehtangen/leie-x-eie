@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import Header from './components/Header'
 import ModeToggle from './components/ModeToggle'
@@ -6,7 +6,8 @@ import InputPanel from './components/InputPanel'
 import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
-import CalculationBreakdown from './components/CalculationBreakdown'
+
+const CalculationBreakdown = lazy(() => import('./components/CalculationBreakdown'))
 import { calculate } from './utils/calculations'
 import { BSU_MAX_CONTRIBUTION, STAMP_DUTY_RATE, DEFAULT_DOWN_PAYMENT_RATE } from './constants/finance'
 import { APP_NAME, SCROLL_DELAY_MS } from './constants/app'
@@ -118,7 +119,9 @@ export default function App() {
               <SplitResults results={results} years={inputs.years} />
               <Charts yearlyData={results.yearlyData} breakevenYear={results.breakevenYear} />
               <Recommendation results={results} years={inputs.years} />
-              <CalculationBreakdown results={results} inputs={inputs} mode={mode} />
+              <Suspense fallback={null}>
+                <CalculationBreakdown results={results} inputs={inputs} mode={mode} />
+              </Suspense>
             </div>
           )}
         </div>
