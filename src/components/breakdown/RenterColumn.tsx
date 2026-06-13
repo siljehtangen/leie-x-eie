@@ -1,12 +1,9 @@
 import { SECURITY_DEPOSIT_MONTHS, SAVINGS_TAX_RATE, ASK_TAX_RATE, BSU_TAX_DEDUCTION_RATE } from '../../constants/finance'
-import type { Inputs, Summary } from '../../types'
-
-type FormatFn = (value: number, compact?: boolean) => string
-type TFn = (key: string, opts?: Record<string, unknown>) => string
+import type { Inputs, Summary, FormatKrFn, TranslateFn } from '../../types'
 
 export interface RenterColumnProps {
-  t: TFn
-  formatKr: FormatFn
+  t: TranslateFn
+  formatKr: FormatKrFn
   inputs: Inputs
   summary: Summary
   isAdvanced: boolean
