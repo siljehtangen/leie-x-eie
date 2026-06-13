@@ -1,7 +1,7 @@
 import {
   Document, Page, View, Text, Font,
 } from '@react-pdf/renderer'
-import { formatNOK } from '../utils/calculations'
+import { formatNOK } from '../utils/formatting'
 import { COLORS } from '../constants/theme'
 import { INTEREST_DEDUCTION } from '../constants/finance'
 import { APP_NAME, APP_DOMAIN } from '../constants/app'
