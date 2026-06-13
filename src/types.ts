@@ -2,6 +2,17 @@ export type Mode = 'quick' | 'advanced'
 export type Lang = 'no' | 'en'
 export type RecommendationType = 'buy' | 'rent'
 
+export type NumericInputKey = {
+  [K in keyof Inputs]: Inputs[K] extends number ? K : never
+}[keyof Inputs]
+
+export type BooleanInputKey = {
+  [K in keyof Inputs]: Inputs[K] extends boolean ? K : never
+}[keyof Inputs]
+
+export type FormatKrFn = (value: number, compact?: boolean) => string
+export type TranslateFn = (key: string, opts?: Record<string, unknown>) => string
+
 export interface Inputs {
   monthlyRent: number
   rentIncrease: number
