@@ -8,16 +8,16 @@ import {
   ChevronDown,
   Info,
 } from 'lucide-react'
-import { formatInputNum } from '../utils/calculations'
+import { formatInputNum } from '../utils/formatting'
 import { COLORS } from '../constants/theme'
 import { BSU_MAX_CONTRIBUTION } from '../constants/finance'
-import type { Inputs, Mode } from '../types'
+import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
 
 interface InputFieldProps {
   label: string
-  name: keyof Inputs
+  name: NumericInputKey
   value: number
-  onChange: (name: keyof Inputs, value: number) => void
+  onChange: (name: NumericInputKey, value: number) => void
   unit?: string
   tooltip?: string
   min?: number
@@ -87,9 +87,9 @@ interface SectionProps {
 
 function CheckboxField({ label, name, value, onChange, tooltip }: {
   label: string
-  name: keyof Inputs
+  name: BooleanInputKey
   value: boolean
-  onChange: (name: keyof Inputs, value: boolean) => void
+  onChange: (name: BooleanInputKey, value: boolean) => void
   tooltip?: string
 }) {
   return (
@@ -152,12 +152,12 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
   const { t } = useTranslation()
   const isAdvanced = mode === 'advanced'
 
-  const field = (name: keyof Inputs, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
+  const field = (name: NumericInputKey, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
     <InputField
       key={name}
       label={t(`inputs.${name}`)}
       name={name}
-      value={inputs[name] as number}
+      value={inputs[name]}
       onChange={onInputChange}
       tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
       {...extra}
