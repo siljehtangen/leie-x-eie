@@ -1,12 +1,9 @@
 import { INTEREST_DEDUCTION } from '../../constants/finance'
-import type { Inputs, Summary, YearlyDataPoint } from '../../types'
-
-type FormatFn = (value: number, compact?: boolean) => string
-type TFn = (key: string, opts?: Record<string, unknown>) => string
+import type { Inputs, Summary, YearlyDataPoint, FormatKrFn, TranslateFn } from '../../types'
 
 export interface BuyerColumnProps {
-  t: TFn
-  formatKr: FormatFn
+  t: TranslateFn
+  formatKr: FormatKrFn
   inputs: Inputs
   summary: Summary
   yearlyData: YearlyDataPoint[]
