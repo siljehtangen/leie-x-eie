@@ -339,5 +339,3 @@ export function calculate(inputs: Inputs, mode: Mode): CalculationResult {
     ),
   }
 }
-
-export { getLocale, formatInputNum, formatNOK, formatChartNOK } from './formatting'
