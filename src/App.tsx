@@ -6,52 +6,21 @@ import InputPanel from './components/InputPanel'
 import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
-
-const CalculationBreakdown = lazy(() => import('./components/CalculationBreakdown'))
 import { calculate } from './utils/calculations'
-import { BSU_MAX_CONTRIBUTION, STAMP_DUTY_RATE, DEFAULT_DOWN_PAYMENT_RATE } from './constants/finance'
+import { applyInputChange } from './utils/inputUpdates'
+import { DEFAULT_INPUTS } from './constants/defaults'
 import { APP_NAME, SCROLL_DELAY_MS } from './constants/app'
 import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
-const DEFAULT_INPUTS: Inputs = {
-  monthlyRent: 12000,
-  rentIncrease: 2,
-  purchasePrice: 4000000,
-  downPayment: 600000,
-  mortgageRate: 5.5,
-  loanTermYears: 25,
-  monthlyHoaFee: 3000,
-  stampDuty: 100000,
-  brokerSellingFee: 100000,
-  years: 10,
-  appreciationRate: 2.5,
-  investmentReturn: 5,
-  contentsInsurance: 2400,
-  electricity: 12000,
-  internet: 6000,
-  parking: 0,
-  otherClosingCosts: 5000,
-  sharedDebt: 0,
-  municipalFees: 8000,
-  renovationPct: 1,
-  homeInsurance: 5000,
-  propertyTax: 0,
-  hoaFeeIncrease: 3,
-  sharedDebtRate: 5.0,
-  interestOnlyYears: 0,
-  inflation: 2.5,
-  savingsAccountBalance: 200000,
-  savingsAccountRate: 4.0,
-  askBalance: 400000,
-  askRate: 7.0,
-  askShieldingRate: 3.0,
-  bsuActive: false,
-  bsuYearlyContribution: BSU_MAX_CONTRIBUTION,
+const CalculationBreakdown = lazy(() => import('./components/CalculationBreakdown'))
+
+function resolveLang(language: string): Lang {
+  return language.startsWith('en') ? 'en' : 'no'
 }
 
 export default function App() {
   const { t, i18n } = useTranslation()
-  const [lang, setLang] = useState<Lang>('no')
+  const lang = resolveLang(i18n.language)
   const [mode, setMode] = useState<Mode>('quick')
   const [inputs, setInputs] = useState<Inputs>(DEFAULT_INPUTS)
   const [results, setResults] = useState<CalculationResult | null>(null)
@@ -68,23 +37,11 @@ export default function App() {
   }, [lang, t])
 
   const handleLangChange = (newLang: Lang) => {
-    setLang(newLang)
     i18n.changeLanguage(newLang)
   }
 
   const handleInputChange = (name: keyof Inputs, value: number | boolean) => {
-    setInputs(prev => {
-      const next: Inputs = { ...prev, [name]: value } as Inputs
-      if (name === 'purchasePrice' && typeof value === 'number') {
-        if (prev.stampDuty === Math.round(prev.purchasePrice * STAMP_DUTY_RATE)) {
-          next.stampDuty = Math.round(value * STAMP_DUTY_RATE)
-        }
-        if (prev.downPayment === Math.round(prev.purchasePrice * DEFAULT_DOWN_PAYMENT_RATE)) {
-          next.downPayment = Math.round(value * DEFAULT_DOWN_PAYMENT_RATE)
-        }
-      }
-      return next
-    })
+    setInputs(prev => applyInputChange(prev, name, value))
   }
 
   const handleCalculate = () => {
