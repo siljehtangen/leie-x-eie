@@ -1,11 +1,8 @@
-import type { YearlyDataPoint } from '../../types'
-
-type FormatFn = (value: number, compact?: boolean) => string
-type TFn = (key: string, opts?: Record<string, unknown>) => string
+import type { YearlyDataPoint, FormatKrFn, TranslateFn } from '../../types'
 
 interface YearlyTableProps {
-  t: TFn
-  formatKr: FormatFn
+  t: TranslateFn
+  formatKr: FormatKrFn
   yearlyData: YearlyDataPoint[]
 }
 
