@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { APP_NAME } from '../constants/app'
 import type { Lang } from '../types'
 
 interface HeaderProps {
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 export default function Header({ lang, onLangChange }: HeaderProps) {
   const { t } = useTranslation()
+  const [logoPrefix, logoSuffix] = APP_NAME.split('X')
 
   return (
     <header className="header">
@@ -21,7 +23,7 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
         <div className="logo">
           <div className="logo-icon">LXE</div>
           <span className="logo-text">
-            Leie<span>X</span>Eie
+            {logoPrefix}<span>X</span>{logoSuffix}
           </span>
         </div>
 
