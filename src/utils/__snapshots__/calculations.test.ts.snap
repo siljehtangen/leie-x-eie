@@ -1,0 +1,348 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`calculate — golden scenarios > advanced defaults 1`] = `
+{
+  "breakevenYear": null,
+  "difference": 408120,
+  "finalAskTax": 272310,
+  "finalEquity": 1925680,
+  "finalRemainingMortgage": 2555305,
+  "finalRenterPortfolio": 2333800,
+  "initialBuyerMonthly": 26397,
+  "monthlyMortgagePayment": 20879,
+  "netWorthByYear": [
+    [
+      1,
+      648951,
+      764065,
+    ],
+    [
+      2,
+      796217,
+      929872,
+    ],
+    [
+      3,
+      941899,
+      1097668,
+    ],
+    [
+      4,
+      1086097,
+      1267710,
+    ],
+    [
+      5,
+      1228912,
+      1440263,
+    ],
+    [
+      6,
+      1370441,
+      1615597,
+    ],
+    [
+      7,
+      1510785,
+      1792914,
+    ],
+    [
+      8,
+      1650040,
+      1971546,
+    ],
+    [
+      9,
+      1788306,
+      2151753,
+    ],
+    [
+      10,
+      1925680,
+      2333800,
+    ],
+  ],
+  "recommendation": "rent",
+  "totalBuyerPaid": 3320567,
+  "totalRenterPaid": 1780760,
+}
+`;
+
+exports[`calculate — golden scenarios > advanced with interest-only, shared debt and BSU 1`] = `
+{
+  "breakevenYear": null,
+  "difference": 457500,
+  "finalAskTax": 585903,
+  "finalEquity": 2671349,
+  "finalRemainingMortgage": 2048432,
+  "finalRenterPortfolio": 3128849,
+  "initialBuyerMonthly": 20613,
+  "monthlyMortgagePayment": 15583,
+  "netWorthByYear": [
+    [
+      1,
+      597561,
+      697716,
+    ],
+    [
+      2,
+      692742,
+      795960,
+    ],
+    [
+      3,
+      785602,
+      894873,
+    ],
+    [
+      4,
+      950315,
+      1068748,
+    ],
+    [
+      5,
+      1113282,
+      1244977,
+    ],
+    [
+      6,
+      1274615,
+      1423834,
+    ],
+    [
+      7,
+      1434425,
+      1605599,
+    ],
+    [
+      8,
+      1592824,
+      1789097,
+    ],
+    [
+      9,
+      1749921,
+      1974013,
+    ],
+    [
+      10,
+      1905829,
+      2160616,
+    ],
+    [
+      11,
+      2060655,
+      2349181,
+    ],
+    [
+      12,
+      2214511,
+      2539992,
+    ],
+    [
+      13,
+      2367505,
+      2733339,
+    ],
+    [
+      14,
+      2519748,
+      2929522,
+    ],
+    [
+      15,
+      2671349,
+      3128849,
+    ],
+  ],
+  "recommendation": "rent",
+  "totalBuyerPaid": 5024690,
+  "totalRenterPaid": 2755002,
+}
+`;
+
+exports[`calculate — golden scenarios > expensive home triggering wealth tax 1`] = `
+{
+  "breakevenYear": 12,
+  "difference": 7046644,
+  "finalAskTax": 9308356,
+  "finalEquity": 21797267,
+  "finalRemainingMortgage": 3214922,
+  "finalRenterPortfolio": 28843910,
+  "initialBuyerMonthly": 77830,
+  "monthlyMortgagePayment": 61409,
+  "netWorthByYear": [
+    [
+      1,
+      15314534,
+      8875726,
+    ],
+    [
+      2,
+      15718951,
+      9761320,
+    ],
+    [
+      3,
+      16113755,
+      10657882,
+    ],
+    [
+      4,
+      16499437,
+      11566546,
+    ],
+    [
+      5,
+      16876481,
+      12488482,
+    ],
+    [
+      6,
+      17245359,
+      13424901,
+    ],
+    [
+      7,
+      17606533,
+      14377050,
+    ],
+    [
+      8,
+      17960459,
+      15346223,
+    ],
+    [
+      9,
+      18307582,
+      16333757,
+    ],
+    [
+      10,
+      18648341,
+      17341036,
+    ],
+    [
+      11,
+      18983165,
+      18369495,
+    ],
+    [
+      12,
+      19312477,
+      19420623,
+    ],
+    [
+      13,
+      19636694,
+      20495961,
+    ],
+    [
+      14,
+      19956226,
+      21597112,
+    ],
+    [
+      15,
+      20271476,
+      22725739,
+    ],
+    [
+      16,
+      20582843,
+      23883568,
+    ],
+    [
+      17,
+      20890720,
+      25072395,
+    ],
+    [
+      18,
+      21195494,
+      26294087,
+    ],
+    [
+      19,
+      21497550,
+      27550586,
+    ],
+    [
+      20,
+      21797267,
+      28843910,
+    ],
+  ],
+  "recommendation": "rent",
+  "totalBuyerPaid": 22939420,
+  "totalRenterPaid": 3906821,
+}
+`;
+
+exports[`calculate — golden scenarios > quick defaults 1`] = `
+{
+  "breakevenYear": 6,
+  "difference": 201435,
+  "finalAskTax": 0,
+  "finalEquity": 1925680,
+  "finalRemainingMortgage": 2555305,
+  "finalRenterPortfolio": 1724245,
+  "initialBuyerMonthly": 20480,
+  "monthlyMortgagePayment": 20879,
+  "netWorthByYear": [
+    [
+      1,
+      648951,
+      811117,
+    ],
+    [
+      2,
+      796217,
+      920054,
+    ],
+    [
+      3,
+      941899,
+      1026905,
+    ],
+    [
+      4,
+      1086097,
+      1131764,
+    ],
+    [
+      5,
+      1228912,
+      1234725,
+    ],
+    [
+      6,
+      1370441,
+      1335879,
+    ],
+    [
+      7,
+      1510785,
+      1435318,
+    ],
+    [
+      8,
+      1650040,
+      1533133,
+    ],
+    [
+      9,
+      1788306,
+      1629412,
+    ],
+    [
+      10,
+      1925680,
+      1724245,
+    ],
+  ],
+  "recommendation": "buy",
+  "totalBuyerPaid": 2534295,
+  "totalRenterPaid": 1576760,
+}
+`;

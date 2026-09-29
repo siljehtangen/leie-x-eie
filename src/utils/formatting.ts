@@ -28,6 +28,10 @@ export function formatNOK(value: number, compact = false, locale = 'nb-NO'): str
   }).format(value)
 }
 
+export function formatPct(value: number, locale = 'nb-NO', maxDecimals = 2): string {
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: maxDecimals }).format(value)
+}
+
 export function formatChartNOK(value: number, locale = 'nb-NO'): string {
   const dec = locale.startsWith('en') ? '.' : ','
   if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace('.', dec)}M`
