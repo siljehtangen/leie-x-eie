@@ -6,13 +6,20 @@ import InputPanel from './components/InputPanel'
 import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
-import { calculate } from './utils/calculations'
+import { calculate, normalizeInputs } from './utils/calculations'
 import { applyInputChange } from './utils/inputUpdates'
+import { clearScenario, loadScenario, saveScenario } from './utils/scenarioStorage'
 import { DEFAULT_INPUTS } from './constants/defaults'
 import { APP_NAME, SCROLL_DELAY_MS } from './constants/app'
 import type { Inputs, Mode, Lang, CalculationResult } from './types'
 
 const CalculationBreakdown = lazy(() => import('./components/CalculationBreakdown'))
+
+interface CalculationSnapshot {
+  result: CalculationResult
+  inputs: Inputs
+  mode: Mode
+}
 
 function resolveLang(language: string): Lang {
   return language.startsWith('en') ? 'en' : 'no'
@@ -21,9 +28,10 @@ function resolveLang(language: string): Lang {
 export default function App() {
   const { t, i18n } = useTranslation()
   const lang = resolveLang(i18n.language)
-  const [mode, setMode] = useState<Mode>('quick')
-  const [inputs, setInputs] = useState<Inputs>(DEFAULT_INPUTS)
-  const [results, setResults] = useState<CalculationResult | null>(null)
+  const [initialScenario] = useState(() => loadScenario())
+  const [mode, setMode] = useState<Mode>(initialScenario?.mode ?? 'quick')
+  const [inputs, setInputs] = useState<Inputs>(initialScenario?.inputs ?? DEFAULT_INPUTS)
+  const [snapshot, setSnapshot] = useState<CalculationSnapshot | null>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -36,6 +44,10 @@ export default function App() {
     if (meta) meta.setAttribute('content', t('meta.description'))
   }, [lang, t])
 
+  useEffect(() => {
+    saveScenario({ mode, inputs })
+  }, [mode, inputs])
+
   const handleLangChange = (newLang: Lang) => {
     i18n.changeLanguage(newLang)
   }
@@ -45,11 +57,17 @@ export default function App() {
   }
 
   const handleCalculate = () => {
-    const result = calculate(inputs, mode)
-    setResults(result)
+    const normalized = normalizeInputs(inputs)
+    setSnapshot({ result: calculate(normalized, mode), inputs: normalized, mode })
     setTimeout(() => {
       resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, SCROLL_DELAY_MS)
+  }
+
+  const handleReset = () => {
+    clearScenario()
+    setInputs(DEFAULT_INPUTS)
+    setSnapshot(null)
   }
 
   return (
@@ -67,17 +85,20 @@ export default function App() {
 
           <div className="calculate-section">
             <button type="button" className="calculate-btn" onClick={handleCalculate}>
-              <span>{results ? t('recalculate') : t('calculate')} →</span>
+              <span>{snapshot ? t('recalculate') : t('calculate')} →</span>
+            </button>
+            <button type="button" className="reset-btn" onClick={handleReset}>
+              {t('resetInputs')}
             </button>
           </div>
 
-          {results && (
+          {snapshot && (
             <div className="results-section" ref={resultsRef}>
-              <SplitResults results={results} years={inputs.years} />
-              <Charts yearlyData={results.yearlyData} breakevenYear={results.breakevenYear} />
-              <Recommendation results={results} years={inputs.years} />
+              <SplitResults results={snapshot.result} years={snapshot.inputs.years} />
+              <Charts yearlyData={snapshot.result.yearlyData} breakevenYear={snapshot.result.breakevenYear} />
+              <Recommendation results={snapshot.result} years={snapshot.inputs.years} />
               <Suspense fallback={null}>
-                <CalculationBreakdown results={results} inputs={inputs} mode={mode} />
+                <CalculationBreakdown results={snapshot.result} inputs={snapshot.inputs} mode={snapshot.mode} />
               </Suspense>
             </div>
           )}
