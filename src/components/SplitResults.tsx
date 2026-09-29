@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trophy, Home, Building2 } from 'lucide-react'
-import { AnimatedNOK } from '../hooks/useAnimatedValue'
+import { AnimatedNOK } from './AnimatedNOK'
 import { useLocale } from '../hooks/useLocale'
 import type { CalculationResult } from '../types'
 
@@ -14,9 +13,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
   const { t } = useTranslation()
   const locale = useLocale()
   const { summary, recommendation } = results
-  const [tick, setTick] = useState(0)
-
-  useEffect(() => { setTick(n => n + 1) }, [results])
 
   const totalBuyOutlay = summary.downPayment + summary.closingCosts
 
@@ -37,18 +33,18 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
             {t('results.rent')}
           </div>
           <div className="split-card-headline">
-            <AnimatedNOK value={summary.initialMonthlyRent} trigger={tick} locale={locale} />
+            <AnimatedNOK value={summary.initialMonthlyRent} trigger={results} locale={locale} />
           </div>
           <div className="split-card-sub">{t('results.monthlyRentLabel')}</div>
           <div className="split-card-divider" />
           <div className="split-card-stats">
             <div className="stat-row">
               <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>
-              <AnimatedNOK value={summary.totalRenterPaid} trigger={tick} locale={locale} />
+              <AnimatedNOK value={summary.totalRenterPaid} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
               <span className="stat-label">{t('results.finalPortfolio')}</span>
-              <AnimatedNOK value={summary.finalRenterPortfolio} trigger={tick} large locale={locale} />
+              <AnimatedNOK value={summary.finalRenterPortfolio} trigger={results} large locale={locale} />
             </div>
           </div>
         </div>
@@ -67,26 +63,26 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
             {t('results.buy')}
           </div>
           <div className="split-card-headline">
-            <AnimatedNOK value={summary.monthlyMortgagePayment} trigger={tick} locale={locale} />
+            <AnimatedNOK value={summary.monthlyMortgagePayment} trigger={results} locale={locale} />
           </div>
           <div className="split-card-sub">{t('results.monthlyMortgage')}</div>
           <div className="split-card-divider" />
           <div className="split-card-stats">
             <div className="stat-row">
               <span className="stat-label">{t('results.initialOutlay')}</span>
-              <AnimatedNOK value={totalBuyOutlay} trigger={tick} locale={locale} />
+              <AnimatedNOK value={totalBuyOutlay} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
               <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>
-              <AnimatedNOK value={summary.totalBuyerPaid} trigger={tick} locale={locale} />
+              <AnimatedNOK value={summary.totalBuyerPaid} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
               <span className="stat-label">{t('results.homeValue')}</span>
-              <AnimatedNOK value={summary.finalHomeValue} trigger={tick} locale={locale} />
+              <AnimatedNOK value={summary.finalHomeValue} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
               <span className="stat-label">{t('results.finalEquity')}</span>
-              <AnimatedNOK value={summary.finalEquity} trigger={tick} large locale={locale} />
+              <AnimatedNOK value={summary.finalEquity} trigger={results} large locale={locale} />
             </div>
           </div>
         </div>

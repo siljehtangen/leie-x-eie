@@ -1,12 +1,13 @@
+import type { ReactNode } from 'react'
 import {
   Document, Page, View, Text, Font,
 } from '@react-pdf/renderer'
 import { formatNOK } from '../utils/formatting'
 import { COLORS } from '../constants/theme'
-import { INTEREST_DEDUCTION } from '../constants/finance'
 import { APP_NAME, APP_DOMAIN } from '../constants/app'
 import { s } from './PDFStyles'
-import type { CalculationResult, Inputs, Mode } from '../types'
+import type { BreakdownModel, TaxRuleParams } from '../utils/breakdownModel'
+import type { CalculationResult, Inputs, TranslateFn } from '../types'
 
 Font.register({
   family: 'Inter',
@@ -22,14 +23,12 @@ Font.register({
   ],
 })
 
-type TFn = (key: string, opts?: Record<string, unknown>) => string
-
 interface PageShellProps {
   headerTitle: string
   headerSub: string
   date: string
-  t: TFn
-  children: React.ReactNode
+  t: TranslateFn
+  children: ReactNode
 }
 
 function PDFPageShell({ headerTitle, headerSub, date, t, children }: PageShellProps) {
@@ -58,20 +57,20 @@ function PDFPageShell({ headerTitle, headerSub, date, t, children }: PageShellPr
 interface CalculationPDFProps {
   results: CalculationResult
   inputs: Inputs
-  mode: Mode
+  model: BreakdownModel
+  rules: TaxRuleParams
+  locale: string
   title: string
-  t: TFn
+  t: TranslateFn
 }
 
-export default function CalculationPDF({ results, inputs, mode, title, t }: CalculationPDFProps) {
-  const { summary, yearlyData, recommendation, difference, breakevenYear } = results
-  const isAdvanced = mode === 'advanced'
-  const { loanAmount, monthlyRate, numPayments: n, finalInflationFactor } = summary
-  const initialInvestment = inputs.downPayment + summary.closingCosts
+export default function CalculationPDF({ results, inputs, model, rules, locale, title, t }: CalculationPDFProps) {
+  const { yearlyData, recommendation, difference, breakevenYear } = results
+  const { isAdvanced, mortgage, years } = model
+  const fmt = (value: number, compact = true) => formatNOK(value, compact, locale)
   const isBuy = recommendation === 'buy'
-  const finalYear = yearlyData[inputs.years - 1]
-  const date = new Date().toLocaleDateString('nb-NO')
-  const interestDeductionPct = `${(INTEREST_DEDUCTION * 100).toFixed(0)}%`
+  const date = new Date().toLocaleDateString(locale)
+  const perMonth = `/${t('breakdown.month')}`
 
   return (
     <Document title={title} author={APP_NAME}>
@@ -83,25 +82,25 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
       >
         <View style={[s.recBox, isBuy ? s.recBoxBuy : s.recBoxRent]}>
           <View>
-            <Text style={s.recEyebrow}>{t('pdf.recommendationAfterYears', { years: inputs.years })}</Text>
+            <Text style={s.recEyebrow}>{t('pdf.recommendationAfterYears', { years })}</Text>
             <Text style={s.recTitle}>
               {t(isBuy ? 'recommendation.buy' : 'recommendation.rent')}
             </Text>
           </View>
           <View>
             <Text style={s.recAmountLabel}>{t('pdf.advantage')}</Text>
-            <Text style={s.recAmount}>{formatNOK(difference, true)}</Text>
+            <Text style={s.recAmount}>{fmt(difference)}</Text>
           </View>
         </View>
 
         <View style={s.metricsRow}>
           <View style={s.metricBox}>
-            <Text style={s.metricLabel}>{t('pdf.metricBuyerNetWorth', { years: inputs.years })}</Text>
-            <Text style={[s.metricValue, { color: COLORS.buy }]}>{formatNOK(summary.finalEquity, true)}</Text>
+            <Text style={s.metricLabel}>{t('pdf.metricBuyerNetWorth', { years })}</Text>
+            <Text style={[s.metricValue, { color: COLORS.buy }]}>{fmt(model.buyerNetWorth)}</Text>
           </View>
           <View style={s.metricBox}>
-            <Text style={s.metricLabel}>{t('pdf.metricRenterPortfolio', { years: inputs.years })}</Text>
-            <Text style={[s.metricValue, { color: COLORS.rent }]}>{formatNOK(summary.finalRenterPortfolio, true)}</Text>
+            <Text style={s.metricLabel}>{t('pdf.metricRenterPortfolio', { years })}</Text>
+            <Text style={[s.metricValue, { color: COLORS.rent }]}>{fmt(model.renterNetWorth)}</Text>
           </View>
           <View style={s.metricBox}>
             <Text style={s.metricLabel}>{t('recommendation.breakevenYear')}</Text>
@@ -120,13 +119,13 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.inputs')}</Text>
               {[
-                [t('inputs.purchasePrice'), formatNOK(inputs.purchasePrice, true)],
-                [t('inputs.downPayment'), formatNOK(inputs.downPayment, true)],
-                [t('breakdown.loanAmount'), formatNOK(loanAmount, true)],
-                [t('pdf.rate'), `${inputs.mortgageRate}%`],
-                [t('inputs.loanTermYears'), `${inputs.loanTermYears} ${t('units.years')}`],
-                [t('pdf.hoaFee'), `${formatNOK(inputs.monthlyHoaFee, true)}/${t('breakdown.month')}`],
-                [t('inputs.stampDuty'), formatNOK(inputs.stampDuty, true)],
+                [t('inputs.purchasePrice'), fmt(inputs.purchasePrice)],
+                [t('inputs.downPayment'), fmt(inputs.downPayment)],
+                [t('breakdown.loanAmount'), fmt(mortgage.loanAmount)],
+                [t('pdf.rate'), `${mortgage.ratePct}%`],
+                [t('inputs.loanTermYears'), `${mortgage.loanTermYears} ${t('units.years')}`],
+                [t('pdf.hoaFee'), `${fmt(inputs.monthlyHoaFee)}${perMonth}`],
+                [t('inputs.stampDuty'), fmt(inputs.stampDuty)],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -137,45 +136,44 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
 
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.monthlyMortgageCalc')}</Text>
-              <Text style={s.step}>r = {inputs.mortgageRate}% ÷ 12 = {(monthlyRate * 100).toFixed(4)}%/{t('breakdown.month')}</Text>
-              <Text style={s.step}>n = {inputs.loanTermYears} × 12 = {n} {t('breakdown.payments')}</Text>
+              <Text style={s.step}>r = {mortgage.ratePct}% ÷ 12 = {(mortgage.monthlyRate * 100).toFixed(4)}%{perMonth}</Text>
+              <Text style={s.step}>n = {mortgage.loanTermYears} × 12 = {mortgage.numPayments} {t('breakdown.payments')}</Text>
+              {mortgage.ioYears > 0 && (
+                <>
+                  <Text style={s.stepMuted}>{t('breakdown.ioPhase', { years: mortgage.ioYears })}</Text>
+                  <Text style={s.step}>{t('breakdown.payment')} = L × r = {fmt(mortgage.ioPayment, false)}{perMonth}</Text>
+                  <Text style={s.stepMuted}>
+                    {t('breakdown.amortizingPhase', { from: mortgage.ioYears + 1, months: mortgage.remainingTermMonths })}
+                  </Text>
+                </>
+              )}
               <Text style={s.step}>{t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)</Text>
-              <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.monthlyMortgagePayment)}/{t('breakdown.month')}</Text>
+              <Text style={[s.result, s.resultBuy]}>{fmt(mortgage.amortizingPayment, false)}{perMonth}</Text>
             </View>
 
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.year1MonthlyCost')}</Text>
-              <View style={[s.row, s.rowAlt]}>
-                <Text style={s.rowLabel}>{t('breakdown.mortgagePayment')}</Text>
-                <Text style={s.rowValue}>+ {formatNOK(summary.monthlyMortgagePayment, true)}</Text>
-              </View>
-              <View style={s.row}>
-                <Text style={s.rowLabel}>{t('pdf.hoaFee')}</Text>
-                <Text style={s.rowValue}>+ {formatNOK(inputs.monthlyHoaFee, true)}</Text>
-              </View>
-              <View style={[s.row, s.rowAlt]}>
-                <Text style={s.rowLabel}>{t('breakdown.interestDeduction')} ({interestDeductionPct})</Text>
-                <Text style={s.rowValue}>− {formatNOK(loanAmount * monthlyRate * INTEREST_DEDUCTION, true)}</Text>
-              </View>
+              {model.buyerCostLines.map((l, i) => (
+                <View key={l.id} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
+                  <Text style={s.rowLabel}>{t(l.labelKey, l.labelOpts)}</Text>
+                  <Text style={s.rowValue}>{l.sign} {fmt(l.amount)}</Text>
+                </View>
+              ))}
               <View style={[s.row, { backgroundColor: COLORS.buyLight }]}>
                 <Text style={[s.rowLabel, { fontWeight: 700 }]}>{t('breakdown.totalMonthly')}</Text>
-                <Text style={[s.rowValue, { color: COLORS.buy }]}>{formatNOK(yearlyData[0].buyerMonthlyCost, true)}</Text>
+                <Text style={[s.rowValue, { color: COLORS.buy }]}>{fmt(model.buyerMonthlyTotal)}</Text>
               </View>
             </View>
 
             <View style={s.block}>
-              <Text style={s.blockTitle}>{t('breakdown.buyerNetWorth')} ({t('units.years')} {inputs.years})</Text>
-              <Text style={s.step}>{t('breakdown.homeValue')}: {formatNOK(finalYear.homeValue, true)}</Text>
-              <Text style={s.step}>− {t('breakdown.remainingMortgage')}: {formatNOK(finalYear.remainingMortgage, true)}</Text>
-              {inputs.sharedDebt > 0 && (
-                <Text style={s.step}>− {t('inputs.sharedDebt')}: {formatNOK(inputs.sharedDebt, true)}</Text>
-              )}
-              <Text style={s.step}>− {t('pdf.brokerFee')}: {formatNOK(inputs.brokerSellingFee, true)}</Text>
-              {isAdvanced && finalYear.cumulativeBuyerWealthTax > 0 && (
-                <Text style={s.step}>− {t('breakdown.accumulatedWealthTax')}: {formatNOK(finalYear.cumulativeBuyerWealthTax, true)}</Text>
-              )}
-              <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {finalInflationFactor.toFixed(3)}</Text>
-              <Text style={[s.result, s.resultBuy]}>{formatNOK(summary.finalEquity)}</Text>
+              <Text style={s.blockTitle}>{t('breakdown.buyerNetWorth')} ({years} {t('units.years')})</Text>
+              {model.buyerNetWorthLines.map((l, i) => (
+                <Text key={l.id} style={s.step}>
+                  {i > 0 ? `${l.sign} ` : ''}{t(l.labelKey, l.labelOpts)}: {fmt(l.amount)}
+                </Text>
+              ))}
+              <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {model.inflationFactor.toFixed(3)}</Text>
+              <Text style={[s.result, s.resultBuy]}>{fmt(model.buyerNetWorth, false)}</Text>
             </View>
           </View>
 
@@ -185,14 +183,14 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.inputs')}</Text>
               {[
-                [t('inputs.monthlyRent'), `${formatNOK(inputs.monthlyRent, true)}/${t('breakdown.month')}`],
+                [t('inputs.monthlyRent'), `${fmt(inputs.monthlyRent)}${perMonth}`],
                 [t('inputs.rentIncrease'), `${inputs.rentIncrease}%`],
                 isAdvanced
-                  ? [t('pdf.savingsAccount'), `${formatNOK(inputs.savingsAccountBalance, true)} @ ${inputs.savingsAccountRate}%`]
+                  ? [t('pdf.savingsAccount'), `${fmt(inputs.savingsAccountBalance)} @ ${inputs.savingsAccountRate}%`]
                   : [t('breakdown.investReturn'), `${inputs.investmentReturn}%`],
                 isAdvanced
-                  ? ['ASK', `${formatNOK(inputs.askBalance, true)} @ ${inputs.askRate}%`]
-                  : [t('pdf.taxOnReturn'), '22% (auto)'],
+                  ? [t('pdf.askAccount'), `${fmt(inputs.askBalance)} @ ${inputs.askRate}%`]
+                  : [t('pdf.taxOnReturn'), t('pdf.taxAuto', { pct: rules.quickTax })],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -203,34 +201,61 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
 
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.initialInvestment')}</Text>
-              <Text style={s.step}>{t('inputs.downPayment')}: {formatNOK(inputs.downPayment, true)}</Text>
-              <Text style={s.step}>+ {isAdvanced && inputs.otherClosingCosts > 0 ? t('pdf.closingCosts') : t('inputs.stampDuty')}: {formatNOK(summary.closingCosts, true)}</Text>
-              <Text style={[s.result, s.resultRent]}>{formatNOK(initialInvestment, true)}</Text>
-              <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>
+              {isAdvanced ? (
+                <>
+                  <Text style={s.step}>{t('pdf.savingsAccount')}: {fmt(inputs.savingsAccountBalance)}</Text>
+                  <Text style={s.step}>+ {t('pdf.askAccount')}: {fmt(inputs.askBalance)}</Text>
+                  <Text style={s.step}>
+                    − {t('breakdown.securityDeposit')}: {fmt(model.securityDeposit)}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Text style={s.step}>{t('inputs.downPayment')}: {fmt(inputs.downPayment)}</Text>
+                  <Text style={s.step}>+ {t('inputs.stampDuty')}: {fmt(model.closingCosts)}</Text>
+                  <Text style={[s.result, s.resultRent]}>{fmt(model.initialInvestment)}</Text>
+                </>
+              )}
             </View>
 
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.portfolioGrowth')}</Text>
               {isAdvanced ? (
                 <>
-                  <Text style={s.step}>{t('pdf.savingsAccount')}: {formatNOK(inputs.savingsAccountBalance, true)} @ {inputs.savingsAccountRate}% ({t('pdf.savingsTaxNote')})</Text>
-                  <Text style={s.step}>ASK: {formatNOK(inputs.askBalance, true)} @ {inputs.askRate}% ({t('pdf.askTaxNote')})</Text>
+                  <Text style={s.step}>
+                    {t('pdf.savingsAccount')}: {fmt(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% ({t('pdf.savingsTaxNote', { pct: rules.savingsTax })})
+                  </Text>
+                  <Text style={s.step}>
+                    {t('pdf.askAccount')}: {fmt(inputs.askBalance)} @ {inputs.askRate}% ({t('pdf.askTaxNote', { pct: rules.askTax })})
+                  </Text>
                 </>
               ) : (
-                <Text style={s.step}>{t('pdf.investReturnLine', { return: inputs.investmentReturn })}</Text>
+                <Text style={s.step}>{t('pdf.investReturnLine', { return: inputs.investmentReturn, pct: rules.quickTax })}</Text>
               )}
               <Text style={s.step}>{t('pdf.monthlyDiffShort')}</Text>
-              <Text style={[s.result, s.resultRent]}>{formatNOK(summary.finalRenterPortfolio, true)} {t('breakdown.afterYears', { years: inputs.years })}</Text>
+              {model.renterNetWorthLines.map((l, i) => (
+                <Text key={l.id} style={s.step}>
+                  {i > 0 ? `${l.sign} ` : ''}{t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {fmt(l.amount)}
+                </Text>
+              ))}
+              <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {model.inflationFactor.toFixed(3)}</Text>
+              <Text style={[s.result, s.resultRent]}>
+                {fmt(model.renterNetWorth)} {t('breakdown.afterYears', { years })}
+              </Text>
             </View>
 
             <View style={s.block}>
               <Text style={s.blockTitle}>{t('breakdown.norwegianRules')}</Text>
-              <Text style={s.step}>{t('pdf.interestDeductionLine')}</Text>
+              <Text style={s.step}>{t('pdf.interestDeductionLine', { pct: rules.interestDeduction })}</Text>
               <Text style={s.step}>{t('pdf.inflationLine', { inflation: inputs.inflation })}</Text>
               {isAdvanced && (
                 <>
-                  <Text style={s.step}>{t('pdf.wealthTaxCombined')}</Text>
-                  <Text style={s.step}>{t('breakdown.wealthTaxThreshold')}</Text>
+                  <Text style={s.step}>
+                    {t('pdf.wealthTaxCombined', { home: rules.homeValuation, savings: rules.savingsValuation, ask: rules.askValuation })}
+                  </Text>
+                  <Text style={s.step}>
+                    {t('breakdown.wealthTaxThreshold', { threshold: rules.wealthTaxThreshold, rate: rules.wealthTaxRate })}
+                  </Text>
                 </>
               )}
               <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>
@@ -251,8 +276,8 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
           <Text style={[s.th, { flex: 0.9 }]}>{t('breakdown.renterMonthly')}</Text>
           <Text style={s.th}>{t('breakdown.homeValue')}</Text>
           <Text style={s.th}>{t('breakdown.remainingMortgage')}</Text>
-          <Text style={[s.th, { flex: 1.2, color: 'rgba(105,144,212,0.95)' }]}>{t('breakdown.buyerNetWorth')}</Text>
-          <Text style={[s.th, { flex: 1.2, color: 'rgba(196,146,100,0.95)' }]}>{t('breakdown.renterNetWorthLabel')}</Text>
+          <Text style={[s.th, s.thBuy, { flex: 1.2 }]}>{t('breakdown.buyerNetWorth')}</Text>
+          <Text style={[s.th, s.thRent, { flex: 1.2 }]}>{t('breakdown.renterNetWorthLabel')}</Text>
         </View>
 
         {yearlyData.map((row, idx) => {
@@ -260,15 +285,15 @@ export default function CalculationPDF({ results, inputs, mode, title, t }: Calc
           return (
             <View key={row.year} style={[s.tr, idx % 2 === 0 ? s.trAlt : {}]}>
               <Text style={[s.td, s.tdFirst, { flex: 0.35 }]}>{row.year}</Text>
-              <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.buyerMonthlyCost, true)}</Text>
-              <Text style={[s.td, { flex: 0.9 }]}>{formatNOK(row.renterMonthlyCost, true)}</Text>
-              <Text style={s.td}>{formatNOK(row.homeValue, true)}</Text>
-              <Text style={s.td}>{formatNOK(row.remainingMortgage, true)}</Text>
+              <Text style={[s.td, { flex: 0.9 }]}>{fmt(row.buyerMonthlyCost)}</Text>
+              <Text style={[s.td, { flex: 0.9 }]}>{fmt(row.renterMonthlyCost)}</Text>
+              <Text style={s.td}>{fmt(row.homeValue)}</Text>
+              <Text style={s.td}>{fmt(row.remainingMortgage)}</Text>
               <Text style={[s.td, { flex: 1.2 }, buyerWins ? s.tdBuyWin : {}]}>
-                {formatNOK(row.buyerNetWorth, true)}
+                {fmt(row.buyerNetWorth)}
               </Text>
               <Text style={[s.td, { flex: 1.2 }, !buyerWins ? s.tdRentWin : {}]}>
-                {formatNOK(row.renterNetWorth, true)}
+                {fmt(row.renterNetWorth)}
               </Text>
             </View>
           )

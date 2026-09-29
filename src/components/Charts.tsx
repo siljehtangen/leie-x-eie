@@ -21,9 +21,8 @@ import type { YearlyDataPoint } from '../types'
 
 const RENT_COLOR = COLORS.rent
 const BUY_COLOR  = COLORS.buy
-const MORTGAGE_LINE = '#5A6270'
+const MORTGAGE_LINE = COLORS.mortgageLine
 const GAP_LINE = COLORS.time
-
 
 interface TooltipPayloadItem {
   name: string
@@ -78,15 +77,15 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
 
   const xAxisProps = {
     dataKey: 'year' as const,
-    tick: { fontSize: 11, fill: '#999' },
+    tick: { fontSize: 11, fill: COLORS.chartAxis },
     tickLine: false,
     axisLine: false,
-    label: { value: t('results.year'), position: 'insideBottomRight' as const, offset: -5, fontSize: 11, fill: '#bbb' },
+    label: { value: t('results.year'), position: 'insideBottomRight' as const, offset: -5, fontSize: 11, fill: COLORS.chartAxisLabel },
   }
 
   const yAxisProps = {
     tickFormatter,
-    tick: { fontSize: 11, fill: '#999' },
+    tick: { fontSize: 11, fill: COLORS.chartAxis },
     tickLine: false,
     axisLine: false,
     width: 52,
@@ -165,7 +164,7 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
             <XAxis {...xAxisProps} />
             <YAxis {...yAxisProps} />
             <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
-            <ReferenceLine y={0} stroke="#B8B8C0" strokeWidth={1.5} />
+            <ReferenceLine y={0} stroke={COLORS.chartZeroLine} strokeWidth={1.5} />
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}

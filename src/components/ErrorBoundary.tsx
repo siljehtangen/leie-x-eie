@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react'
 import i18next from 'i18next'
+import { COLORS } from '../constants/theme'
 
 interface Props {
   children: ReactNode
@@ -30,18 +31,19 @@ export class ErrorBoundary extends Component<Props, State> {
           justifyContent: 'center',
           height: '100vh',
           fontFamily: 'Inter, sans-serif',
-          background: '#F5F5F5',
+          background: COLORS.bg,
           gap: 12,
         }}>
-          <h1 style={{ color: '#008080', margin: 0 }}>{i18next.t('error.title')}</h1>
-          <p style={{ color: '#555', margin: 0 }}>{i18next.t('error.message')}</p>
+          <h1 style={{ color: COLORS.text, margin: 0 }}>{i18next.t('error.title')}</h1>
+          <p style={{ color: COLORS.textSecondary, margin: 0 }}>{i18next.t('error.message')}</p>
           <button
+            type="button"
             onClick={() => window.location.reload()}
             style={{
               marginTop: 8,
               padding: '10px 28px',
-              background: '#008080',
-              color: '#fff',
+              background: COLORS.buy,
+              color: COLORS.surface,
               border: 'none',
               borderRadius: 8,
               cursor: 'pointer',

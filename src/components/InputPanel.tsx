@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Home,
@@ -7,10 +7,11 @@ import {
   Wallet,
   ChevronDown,
   Info,
+  type LucideIcon,
 } from 'lucide-react'
 import { formatInputNum } from '../utils/formatting'
 import { COLORS } from '../constants/theme'
-import { BSU_MAX_CONTRIBUTION } from '../constants/finance'
+import { BSU_MAX_CONTRIBUTION, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS } from '../constants/finance'
 import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
 
 interface InputFieldProps {
@@ -25,20 +26,20 @@ interface InputFieldProps {
   step?: number
 }
 
+function clamp(value: number, min?: number, max?: number): number {
+  let v = value
+  if (min !== undefined) v = Math.max(v, min)
+  if (max !== undefined) v = Math.min(v, max)
+  return v
+}
+
 function InputField({ label, name, value, onChange, unit, tooltip, min, max, step }: InputFieldProps) {
   const { t: tA11y } = useTranslation()
   const [focused, setFocused] = useState(false)
   const s = step ?? 1
 
-  const increment = () => {
-    const next = parseFloat((value + s).toFixed(10))
-    onChange(name, max !== undefined ? Math.min(next, max) : next)
-  }
-
-  const decrement = () => {
-    const next = parseFloat((value - s).toFixed(10))
-    onChange(name, min !== undefined ? Math.max(next, min) : next)
-  }
+  const increment = () => onChange(name, clamp(parseFloat((value + s).toFixed(10)), min, max))
+  const decrement = () => onChange(name, clamp(parseFloat((value - s).toFixed(10)), min, max))
 
   return (
     <div className="input-field">
@@ -61,7 +62,11 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           aria-label={label}
           value={focused ? value : formatInputNum(value)}
           onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onBlur={() => {
+            setFocused(false)
+            const clamped = clamp(value, min, max)
+            if (clamped !== value) onChange(name, clamped)
+          }}
           onChange={e => {
             const raw = e.target.value.replace(/[\s\u202f]/g, '').replace(',', '.')
             const v = raw === '' ? 0 : parseFloat(raw)
@@ -78,11 +83,11 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
 interface SectionProps {
   id: string
   title: string
-  icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>
+  icon: LucideIcon
   iconColor: string
   stripe: string
   defaultOpen?: boolean
-  children: React.ReactNode
+  children: ReactNode
 }
 
 function CheckboxField({ label, name, value, onChange, tooltip }: {
@@ -94,12 +99,11 @@ function CheckboxField({ label, name, value, onChange, tooltip }: {
 }) {
   return (
     <div className="input-field">
-      <label className="input-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', userSelect: 'none' }}>
+      <label className="input-label checkbox-label">
         <input
           type="checkbox"
           checked={value}
           onChange={e => onChange(name, e.target.checked)}
-          style={{ width: '1rem', height: '1rem', cursor: 'pointer', accentColor: 'var(--color-buy, #4CAF50)', flexShrink: 0 }}
         />
         <span>{label}</span>
         {tooltip && (
@@ -130,12 +134,7 @@ function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true,
           <Icon size={18} color={iconColor} strokeWidth={2} />
         </div>
         <span className="section-title">{title}</span>
-        <ChevronDown
-          size={16}
-          color="#9E9E9E"
-          strokeWidth={2}
-          style={{ marginLeft: '0.5rem', transition: 'transform 0.3s ease', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
-        />
+        <ChevronDown size={16} strokeWidth={2} className={`section-chevron${open ? ' open' : ''}`} aria-hidden />
       </button>
       {open && <div id={bodyId} className="section-body" role="region" aria-label={title}>{children}</div>}
     </div>
@@ -151,6 +150,10 @@ interface InputPanelProps {
 export default function InputPanel({ inputs, onInputChange, mode }: InputPanelProps) {
   const { t } = useTranslation()
   const isAdvanced = mode === 'advanced'
+  const kr = t('units.kr')
+  const krMonth = t('units.krPerMonth')
+  const krYear = t('units.krPerYear')
+  const years = t('units.years')
 
   const field = (name: NumericInputKey, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
     <InputField
@@ -168,43 +171,43 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     <div className="input-panel">
       <Section id="rent" title={t('sections.rent')} icon={Home} iconColor={COLORS.rent} stripe="rent">
         <div className="input-grid">
-          {field('monthlyRent',   { unit: 'kr / mnd', min: 0, step: 500 })}
+          {field('monthlyRent',   { unit: krMonth, min: 0, step: 500 })}
           {field('rentIncrease', { unit: '%', min: 0, max: 20, step: 0.1 })}
           {isAdvanced && <>
-            {field('contentsInsurance', { unit: 'kr / år',  min: 0, step: 100 })}
-            {field('electricity',       { unit: 'kr / år',  min: 0, step: 500 })}
-            {field('internet',          { unit: 'kr / år',  min: 0, step: 100 })}
-            {field('parking',           { unit: 'kr / mnd', min: 0, step: 100 })}
+            {field('contentsInsurance', { unit: krYear,  min: 0, step: 100 })}
+            {field('electricity',       { unit: krYear,  min: 0, step: 500 })}
+            {field('internet',          { unit: krYear,  min: 0, step: 100 })}
+            {field('parking',           { unit: krMonth, min: 0, step: 100 })}
           </>}
         </div>
       </Section>
 
       <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy} stripe="buy">
         <div className="input-grid">
-          {field('purchasePrice',   { unit: 'kr',         min: 0,   step: 100000 })}
-          {field('downPayment',     { unit: 'kr',         min: 0,   step: 50000  })}
-          {field('mortgageRate',    { unit: '%',          min: 0.1, max: 15, step: 0.1 })}
-          {field('loanTermYears',   { unit: t('units.years'), min: 1, max: 30, step: 1 })}
-          {field('monthlyHoaFee',   { unit: 'kr / mnd',   min: 0,   step: 100   })}
-          {field('stampDuty',       { unit: 'kr',         min: 0,   step: 10000 })}
-          {field('brokerSellingFee',{ unit: 'kr',         min: 0,   step: 10000 })}
+          {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
+          {field('downPayment',     { unit: kr,      min: 0,   step: 50000  })}
+          {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1 })}
+          {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
+          {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}
+          {field('stampDuty',       { unit: kr,      min: 0,   step: 10000 })}
+          {field('brokerSellingFee',{ unit: kr,      min: 0,   step: 10000 })}
           {isAdvanced && <>
-            {field('otherClosingCosts',  { unit: 'kr',       min: 0, step: 1000  })}
-            {field('sharedDebt',         { unit: 'kr',       min: 0, step: 10000 })}
-            {field('sharedDebtRate',     { unit: '%',        min: 0, max: 15, step: 0.1 })}
-            {field('interestOnlyYears',  { unit: t('units.years'), min: 0, max: 10, step: 1 })}
-            {field('municipalFees',      { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('renovationPct',      { unit: '%',        min: 0, max: 5, step: 0.1 })}
-            {field('homeInsurance',      { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('propertyTax',        { unit: 'kr / år',  min: 0, step: 500   })}
-            {field('hoaFeeIncrease',     { unit: '%',        min: 0, max: 10, step: 0.1 })}
+            {field('otherClosingCosts',  { unit: kr,     min: 0, step: 1000  })}
+            {field('sharedDebt',         { unit: kr,     min: 0, step: 10000 })}
+            {field('sharedDebtRate',     { unit: '%',    min: 0, max: 15, step: 0.1 })}
+            {field('interestOnlyYears',  { unit: years,  min: 0, max: 10, step: 1 })}
+            {field('municipalFees',      { unit: krYear, min: 0, step: 500   })}
+            {field('renovationPct',      { unit: '%',    min: 0, max: 5, step: 0.1 })}
+            {field('homeInsurance',      { unit: krYear, min: 0, step: 500   })}
+            {field('propertyTax',        { unit: krYear, min: 0, step: 500   })}
+            {field('hoaFeeIncrease',     { unit: '%',    min: 0, max: 10, step: 0.1 })}
           </>}
         </div>
       </Section>
 
       <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor={COLORS.time} stripe="time">
         <div className="input-grid">
-          {field('years',            { unit: t('units.years'), min: 1, max: 30, step: 1 })}
+          {field('years',            { unit: years, min: 1, max: MAX_HORIZON_YEARS, step: 1 })}
           {field('appreciationRate', { unit: '%', min: 0, max: 15, step: 0.1 })}
           {field('inflation',        { unit: '%', min: 0, max: 10, step: 0.1 })}
           {!isAdvanced && field('investmentReturn', { unit: '%', min: 0, max: 20, step: 0.1 })}
@@ -214,11 +217,11 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor={COLORS.financial} stripe="fin">
           <div className="input-grid">
-            {field('savingsAccountBalance', { unit: 'kr', min: 0, step: 10000 })}
-            {field('savingsAccountRate',    { unit: '%',  min: 0, max: 20, step: 0.1 })}
-            {field('askBalance',            { unit: 'kr', min: 0, step: 10000 })}
-            {field('askRate',               { unit: '%',  min: 0, max: 30, step: 0.1 })}
-            {field('askShieldingRate',      { unit: '%',  min: 0, max: 10, step: 0.1 })}
+            {field('savingsAccountBalance', { unit: kr, min: 0, step: 10000 })}
+            {field('savingsAccountRate',    { unit: '%', min: 0, max: 20, step: 0.1 })}
+            {field('askBalance',            { unit: kr, min: 0, step: 10000 })}
+            {field('askRate',               { unit: '%', min: 0, max: 30, step: 0.1 })}
+            {field('askShieldingRate',      { unit: '%', min: 0, max: 10, step: 0.1 })}
             <CheckboxField
               label={t('inputs.bsuActive')}
               name="bsuActive"
@@ -226,7 +229,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
               onChange={onInputChange}
               tooltip={t('tooltips.bsuActive', { defaultValue: '' }) || undefined}
             />
-            {inputs.bsuActive && field('bsuYearlyContribution', { unit: 'kr / år', min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
+            {inputs.bsuActive && field('bsuYearlyContribution', { unit: krYear, min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
           </div>
         </Section>
       )}

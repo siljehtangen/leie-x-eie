@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { useFormatNOK } from '../hooks/useFormatNOK'
+import { COLORS } from '../constants/theme'
 import type { CalculationResult } from '../types'
 
 interface RecommendationProps {
@@ -84,7 +85,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
       </div>
 
       <p className="rec-disclaimer">
-        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: '#9E9E9E' }} aria-hidden />
+        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: COLORS.textMuted }} aria-hidden />
         {t('recommendation.disclaimer')}
       </p>
     </div>

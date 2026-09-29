@@ -129,6 +129,8 @@ export const s = StyleSheet.create({
   },
   th: { flex: 1, fontSize: 7, fontWeight: 700, color: 'rgba(255,255,255,0.70)', textAlign: 'right' },
   thFirst: { textAlign: 'left' },
+  thBuy: { color: COLORS.buyMid },
+  thRent: { color: COLORS.rentMid },
   tr: {
     flexDirection: 'row',
     paddingTop: 4,

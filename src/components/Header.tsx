@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { APP_NAME } from '../constants/app'
+import { COLORS } from '../constants/theme'
 import type { Lang } from '../types'
 
 interface HeaderProps {
@@ -36,7 +37,7 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
             aria-pressed={lang === 'no'}
             aria-label={t('a11y.langNorwegian')}
           >
-            NO
+            {t('language.no')}
           </button>
           <button
             type="button"
@@ -46,7 +47,7 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
             aria-pressed={lang === 'en'}
             aria-label={t('a11y.langEnglish')}
           >
-            EN
+            {t('language.en')}
           </button>
         </div>
       </div>
@@ -68,7 +69,7 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#F5F2EC" />
+        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill={COLORS.bg} />
       </svg>
     </header>
   )
