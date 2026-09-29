@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculate, computeAnnualWealthTax, findBreakevenYear, normalizeInputs } from './calculations'
+import { calculate, computeAnnualWealthTax, findBreakevenYear, normalizeInputs, wealthTaxOn } from './calculations'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import {
   BSU_TAX_DEDUCTION_RATE,
@@ -221,19 +221,31 @@ describe('computeAnnualWealthTax', () => {
     expect(computeAnnualWealthTax(4_000_000, 3_000_000, 0, 200_000, 400_000)).toEqual({ buyerWealthTax: 0, renterWealthTax: 0 })
   })
 
-  it('applies tiered primary-residence valuation above 10 MNOK', () => {
+  it('applies tiered primary-residence valuation above 14 MNOK', () => {
     const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 0, 0, 0, 0)
-    expect(buyerWealthTax).toBeCloseTo((10_000_000 * 0.25 + 10_000_000 * 0.7 - 1_700_000) * 0.01, 6)
+    expect(buyerWealthTax).toBeCloseTo((14_000_000 * 0.25 + 6_000_000 * 0.7 - 1_900_000) * 0.01, 6)
   })
 
   it('subtracts mortgage and shared debt from taxable home wealth', () => {
     const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 2_000_000, 1_000_000, 0, 0)
-    expect(buyerWealthTax).toBeCloseTo((9_500_000 - 3_000_000 - 1_700_000) * 0.01, 6)
+    expect(buyerWealthTax).toBeCloseTo((7_700_000 - 3_000_000 - 1_900_000) * 0.01, 6)
   })
 
   it('values savings at 100% and ASK at 80%', () => {
     const { renterWealthTax } = computeAnnualWealthTax(0, 0, 0, 2_000_000, 1_000_000)
-    expect(renterWealthTax).toBeCloseTo((2_000_000 + 800_000 - 1_700_000) * 0.01, 6)
+    expect(renterWealthTax).toBeCloseTo((2_000_000 + 800_000 - 1_900_000) * 0.01, 6)
+  })
+})
+
+describe('wealthTaxOn', () => {
+  it('is zero up to the 1.9 MNOK allowance', () => {
+    expect(wealthTaxOn(0)).toBe(0)
+    expect(wealthTaxOn(1_900_000)).toBe(0)
+  })
+
+  it('charges 1.0% up to 21.5 MNOK and 1.1% above', () => {
+    expect(wealthTaxOn(21_500_000)).toBeCloseTo(19_600_000 * 0.01, 6)
+    expect(wealthTaxOn(30_000_000)).toBeCloseTo(19_600_000 * 0.01 + 8_500_000 * 0.011, 6)
   })
 })
 

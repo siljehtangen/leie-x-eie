@@ -4,6 +4,8 @@ import type {
 import {
   WEALTH_TAX_THRESHOLD,
   WEALTH_TAX_RATE,
+  WEALTH_TAX_HIGH_THRESHOLD,
+  WEALTH_TAX_HIGH_RATE,
   PRIMARY_RESIDENCE_VALUATION,
   PRIMARY_RESIDENCE_HIGH_THRESHOLD,
   PRIMARY_RESIDENCE_HIGH_VALUATION,
@@ -155,15 +157,21 @@ export function computeAnnualWealthTax(
     Math.max(0, homeValue - PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_HIGH_VALUATION
 
   const buyerTaxableWealth = Math.max(0, homeValueForWealthTax - remainingMortgage - sharedDebt)
-  const buyerWealthTax = Math.max(0, buyerTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
-
   const renterTaxableWealth = Math.max(
     0,
     savingsPortfolio * SAVINGS_VALUATION + askPortfolio * FINANCIAL_ASSET_VALUATION,
   )
-  const renterWealthTax = Math.max(0, renterTaxableWealth - WEALTH_TAX_THRESHOLD) * (WEALTH_TAX_RATE / 100)
 
-  return { buyerWealthTax, renterWealthTax }
+  return {
+    buyerWealthTax: wealthTaxOn(buyerTaxableWealth),
+    renterWealthTax: wealthTaxOn(renterTaxableWealth),
+  }
+}
+
+export function wealthTaxOn(netWealth: number): number {
+  const lowBand = Math.max(0, Math.min(netWealth, WEALTH_TAX_HIGH_THRESHOLD) - WEALTH_TAX_THRESHOLD)
+  const highBand = Math.max(0, netWealth - Math.max(WEALTH_TAX_HIGH_THRESHOLD, WEALTH_TAX_THRESHOLD))
+  return lowBand * (WEALTH_TAX_RATE / 100) + highBand * (WEALTH_TAX_HIGH_RATE / 100)
 }
 
 export function findBreakevenYear(yearlyData: YearlyDataPoint[]): number | null {

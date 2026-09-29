@@ -265,6 +265,9 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                   <Text style={s.step}>
                     {t('breakdown.wealthTaxThreshold', { threshold: rules.wealthTaxThreshold, rate: rules.wealthTaxRate })}
                   </Text>
+                  <Text style={s.step}>
+                    {t('breakdown.wealthTaxHighTier', { threshold: rules.wealthTaxHighThreshold, rate: rules.wealthTaxHighRate })}
+                  </Text>
                 </>
               )}
               <Text style={s.stepMuted}>{t('pdf.realTermsNote')}</Text>

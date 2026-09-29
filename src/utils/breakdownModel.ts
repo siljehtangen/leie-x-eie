@@ -10,6 +10,8 @@ import {
   SAVINGS_VALUATION,
   WEALTH_TAX_RATE,
   WEALTH_TAX_THRESHOLD,
+  WEALTH_TAX_HIGH_RATE,
+  WEALTH_TAX_HIGH_THRESHOLD,
 } from '../constants/finance'
 import { formatPct } from './formatting'
 import type { CalculationResult, FormatKrFn, Inputs, Mode, YearlyDataPoint } from '../types'
@@ -67,6 +69,8 @@ export interface TaxRuleParams {
   askValuation: string
   wealthTaxRate: string
   wealthTaxThreshold: string
+  wealthTaxHighRate: string
+  wealthTaxHighThreshold: string
 }
 
 export function buildTaxRuleParams(locale: string, formatKr: FormatKrFn): TaxRuleParams {
@@ -83,6 +87,8 @@ export function buildTaxRuleParams(locale: string, formatKr: FormatKrFn): TaxRul
     askValuation: pct(FINANCIAL_ASSET_VALUATION),
     wealthTaxRate: formatPct(WEALTH_TAX_RATE, locale, 2),
     wealthTaxThreshold: formatKr(WEALTH_TAX_THRESHOLD),
+    wealthTaxHighRate: formatPct(WEALTH_TAX_HIGH_RATE, locale, 2),
+    wealthTaxHighThreshold: formatKr(WEALTH_TAX_HIGH_THRESHOLD),
   }
 }
 

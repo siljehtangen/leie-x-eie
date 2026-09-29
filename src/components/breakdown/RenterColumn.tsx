@@ -108,6 +108,9 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
           <div className="bd-formula-line">
             {t('breakdown.wealthTaxThreshold', { threshold: rules.wealthTaxThreshold, rate: rules.wealthTaxRate })}
           </div>
+          <div className="bd-formula-line">
+            {t('breakdown.wealthTaxHighTier', { threshold: rules.wealthTaxHighThreshold, rate: rules.wealthTaxHighRate })}
+          </div>
         </div>
       )}
     </div>

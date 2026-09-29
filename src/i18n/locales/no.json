@@ -98,7 +98,7 @@
     "askRate": "Forventet årlig avkastning på aksjer/fond i Aksjesparekonto (ASK). Historisk snitt er ~7% per år. Gevinst skattes med 37,84% (aksjonærmodellen) kun ved uttak — dette modelleres automatisk.",
     "askShieldingRate": "Skjermingsfradraget reduserer gevinstskatten i ASK. Renten fastsettes av Skatteetaten hvert år (normalt 3–5%). Kun gevinst over akkumulert skjerming skattes med 37,84%.",
     "bsuActive": "Boligsparing for ungdom (BSU): maks 27 500 kr/år i sparing gir 10% skattefradrag (maks 2 750 kr/år). Tilgjengelig til du fyller 34 år og ikke har brukt BSU til kjøp. Fradraget reduserer leietakers effektive kostnad.",
-    "bsuYearlyContribution": "Beløp du sparer i BSU dette året. Maks 27 500 kr (2024). Du får 10% av beløpet tilbake som skattefradrag."
+    "bsuYearlyContribution": "Beløp du sparer i BSU dette året. Maks 27 500 kr (2026). Du får 10% av beløpet tilbake som skattefradrag."
   },
   "footer": {
     "disclaimer": "Kun for illustrasjonsformål. Ikke finansiell rådgivning.",
@@ -258,6 +258,7 @@
     "wealthTaxSavings": "Bankinnskudd: {{pct}}% av markedsverdi",
     "wealthTaxAsk": "Aksjer/ASK: {{pct}}% av markedsverdi",
     "wealthTaxThreshold": "Bunnfradrag: {{threshold}} · Sats: {{rate}}%",
+    "wealthTaxHighTier": "Nettoformue over {{threshold}}: {{rate}}%",
     "taxFreeHomeSale": "Gevinst ved boligsalg er skattefri (primærbolig, eid og bodd 12 av siste 24 mnd)",
     "shieldingNote": "Skjermingsfradrag ({{rate}}%/år) er trukket fra gevinstgrunnlaget",
     "bsuBenefit": "BSU-fradrag: {{amount}} per år reduserer leiers effektive kostnad",

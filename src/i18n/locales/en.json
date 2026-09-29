@@ -98,7 +98,7 @@
     "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
     "askShieldingRate": "The shielding deduction (skjermingsfradrag) reduces taxable ASK gains. Skatteetaten sets the rate annually (typically 3–5%). Only gains above accumulated shielding are taxed at 37.84%.",
     "bsuActive": "BSU (Boligsparing for ungdom): save up to 27,500 kr/year and get a 10% tax deduction (max 2,750 kr/year). Available until age 34 if you haven't used BSU for a purchase. The deduction reduces the renter's effective cost.",
-    "bsuYearlyContribution": "Amount saved in BSU this year. Max 27,500 kr (2024). You get 10% back as a tax deduction."
+    "bsuYearlyContribution": "Amount saved in BSU this year. Max 27,500 kr (2026). You get 10% back as a tax deduction."
   },
   "footer": {
     "disclaimer": "For educational purposes only. Not financial advice.",
@@ -258,6 +258,7 @@
     "wealthTaxSavings": "Bank savings: {{pct}}% of market value",
     "wealthTaxAsk": "Stocks/ASK: {{pct}}% of market value",
     "wealthTaxThreshold": "Threshold: {{threshold}} · Rate: {{rate}}%",
+    "wealthTaxHighTier": "Net wealth above {{threshold}}: {{rate}}%",
     "taxFreeHomeSale": "Capital gain on home sale is tax-free (primary residence, owned & lived in 12 of last 24 months)",
     "shieldingNote": "Shielding deduction ({{rate}}%/yr) has been applied to ASK gains",
     "bsuBenefit": "BSU deduction: {{amount}} per year reduces renter's effective cost",
