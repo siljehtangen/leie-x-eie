@@ -33,10 +33,9 @@ interface SimParams {
   monthlyAmortizingPayment: number
   initialInvestment: number
   securityDeposit: number
-  quickMonthlyReturn: number
   savingsInitial: number
   askInitial: number
-  savingsMonthlyReturn: number
+  cashMonthlyReturn: number
   askMonthlyReturn: number
   bsuMonthlySaving: number
   advancedRentMonthly: number
@@ -113,10 +112,11 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     monthlyAmortizingPayment,
     initialInvestment: downPayment + closingCosts,
     securityDeposit,
-    quickMonthlyReturn: investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX),
-    savingsInitial: isAdvanced ? Math.max(0, savingsAccountBalance - securityDeposit) : 0,
-    askInitial: isAdvanced ? Math.max(0, askBalance) : 0,
-    savingsMonthlyReturn: savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE),
+    savingsInitial: isAdvanced ? savingsAccountBalance : 0,
+    askInitial: isAdvanced ? askBalance : 0,
+    cashMonthlyReturn: isAdvanced
+      ? savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
+      : investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX),
     askMonthlyReturn: askRate / 100 / 12,
     bsuMonthlySaving: isAdvanced && bsuActive ? bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE / 12 : 0,
     advancedRentMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
@@ -145,22 +145,60 @@ function computeMonthlyMortgage(
   return { effectiveMortgage: principalPayment + interestPayment, principalPayment, interestPayment }
 }
 
+export interface FinancialAssets {
+  savings: number
+  ask: number
+}
+
+interface Holdings extends FinancialAssets {
+  askCostBasis: number
+  askShielding: number
+}
+
+function newHoldings(savings: number, ask: number): Holdings {
+  return { savings, ask, askCostBasis: ask, askShielding: 0 }
+}
+
+function invest(h: Holdings, amount: number, isAdvanced: boolean): void {
+  if (isAdvanced) {
+    h.ask += amount
+    h.askCostBasis += amount
+  } else {
+    h.savings += amount
+  }
+}
+
+// Draws from savings, then ASK (deposits come out tax-free first); any remainder leaves savings negative.
+function withdraw(h: Holdings, amount: number): void {
+  const fromSavings = Math.max(0, Math.min(amount, h.savings))
+  const fromAsk = Math.max(0, Math.min(amount - fromSavings, h.ask))
+  h.ask -= fromAsk
+  h.askCostBasis = Math.max(0, h.askCostBasis - fromAsk)
+  h.savings -= amount - fromAsk
+}
+
+function askTaxOnExit(h: Holdings): number {
+  const gains = Math.max(0, h.ask - h.askCostBasis)
+  return Math.max(0, gains - h.askShielding) * ASK_TAX_RATE
+}
+
 export function computeAnnualWealthTax(
   homeValue: number,
   remainingMortgage: number,
   sharedDebt: number,
-  savingsPortfolio: number,
-  askPortfolio: number,
+  buyerAssets: FinancialAssets,
+  renterAssets: FinancialAssets,
 ): { buyerWealthTax: number; renterWealthTax: number } {
   const homeValueForWealthTax =
     Math.min(homeValue, PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_VALUATION +
     Math.max(0, homeValue - PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_HIGH_VALUATION
+  const financialValue = (a: FinancialAssets) => a.savings * SAVINGS_VALUATION + a.ask * FINANCIAL_ASSET_VALUATION
 
-  const buyerTaxableWealth = Math.max(0, homeValueForWealthTax - remainingMortgage - sharedDebt)
-  const renterTaxableWealth = Math.max(
+  const buyerTaxableWealth = Math.max(
     0,
-    savingsPortfolio * SAVINGS_VALUATION + askPortfolio * FINANCIAL_ASSET_VALUATION,
+    homeValueForWealthTax + financialValue(buyerAssets) - remainingMortgage - sharedDebt,
   )
+  const renterTaxableWealth = Math.max(0, financialValue(renterAssets))
 
   return {
     buyerWealthTax: wealthTaxOn(buyerTaxableWealth),
@@ -208,6 +246,8 @@ interface SummaryExtras {
   totalRenterPaid: number
   finalRenterNominalGross: number
   finalAskTax: number
+  finalBuyerPortfolioGross: number
+  finalBuyerAskTax: number
   year1BuyerCosts: BuyerCostBreakdown
   year1RenterCosts: RenterCostBreakdown
 }
@@ -237,6 +277,8 @@ function buildSummary(
     finalRenterPortfolio: finalYear.renterNetWorth,
     finalRenterNominalGross: extras.finalRenterNominalGross,
     finalAskTax: extras.finalAskTax,
+    finalBuyerPortfolioGross: extras.finalBuyerPortfolioGross,
+    finalBuyerAskTax: extras.finalBuyerAskTax,
     finalRemainingMortgage: finalYear.remainingMortgage,
     initialMonthlyRent: inputs.monthlyRent,
     initialBuyerMonthly: yearlyData[0].buyerMonthlyCost,
@@ -254,19 +296,20 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
   const isAdvanced = mode === 'advanced'
   const p = computeSimParams(inputs, isAdvanced)
 
-  let renterPortfolio = p.initialInvestment
-  let savingsPortfolio = p.savingsInitial
-  let askPortfolio = p.askInitial
-  let askCostBasis = p.askInitial
-  let accumulatedShielding = 0
+  const buyer = newHoldings(p.savingsInitial, p.askInitial)
+  const renter = newHoldings(p.savingsInitial, p.askInitial)
+  invest(renter, p.initialInvestment, isAdvanced)
+  withdraw(renter, p.securityDeposit)
+
   let remainingMortgage = p.loanAmount
-  let cumulativeBuyerWealthTax = 0
   let currentMonthlyRent = inputs.monthlyRent
   let currentHoaFee = inputs.monthlyHoaFee
   let totalBuyerPaid = 0
   let totalRenterPaid = 0
   let lastRenterNominalGross = 0
   let lastAskTax = 0
+  let lastBuyerPortfolioGross = 0
+  let lastBuyerAskTax = 0
   const year1Buyer = emptyBuyerCosts()
   const year1Renter: RenterCostBreakdown = { rent: 0, extras: 0, bsuDeduction: 0, total: 0 }
 
@@ -277,7 +320,9 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     let yearlyRenterCashflow = 0
 
     if (isAdvanced && inputs.askShieldingRate > 0) {
-      accumulatedShielding += (askCostBasis + accumulatedShielding) * (inputs.askShieldingRate / 100)
+      for (const h of [buyer, renter]) {
+        h.askShielding += (h.askCostBasis + h.askShielding) * (inputs.askShieldingRate / 100)
+      }
     }
 
     const isInterestOnly = p.ioYears > 0 && year <= p.ioYears
@@ -319,23 +364,12 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         year1Renter.total += renterMonthlyCost
       }
 
-      if (isAdvanced) {
-        savingsPortfolio *= (1 + p.savingsMonthlyReturn)
-        askPortfolio *= (1 + p.askMonthlyReturn)
-        if (monthlyDiff >= 0) {
-          askPortfolio += monthlyDiff
-          askCostBasis += monthlyDiff
-        } else {
-          const shortfall = -monthlyDiff
-          const fromSavings = Math.min(shortfall, savingsPortfolio)
-          savingsPortfolio -= fromSavings
-          const fromAsk = shortfall - fromSavings
-          askPortfolio = Math.max(0, askPortfolio - fromAsk)
-          askCostBasis = Math.max(0, askCostBasis - fromAsk)
-        }
-      } else {
-        renterPortfolio = renterPortfolio * (1 + p.quickMonthlyReturn) + monthlyDiff
+      for (const h of [buyer, renter]) {
+        h.savings *= 1 + p.cashMonthlyReturn
+        h.ask *= 1 + p.askMonthlyReturn
       }
+      if (monthlyDiff >= 0) invest(renter, monthlyDiff, isAdvanced)
+      else invest(buyer, -monthlyDiff, isAdvanced)
 
       remainingMortgage = Math.max(0, remainingMortgage - principalPayment)
 
@@ -347,49 +381,38 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     if (isAdvanced) {
       const { buyerWealthTax, renterWealthTax } = computeAnnualWealthTax(
-        homeValue, remainingMortgage, inputs.sharedDebt, savingsPortfolio, askPortfolio,
+        homeValue, remainingMortgage, inputs.sharedDebt,
+        buyer,
+        { savings: renter.savings + p.securityDeposit, ask: renter.ask },
       )
+      withdraw(buyer, buyerWealthTax)
+      withdraw(renter, renterWealthTax)
       totalBuyerPaid += buyerWealthTax
-      cumulativeBuyerWealthTax += buyerWealthTax
-
-      const fromSavings = Math.min(renterWealthTax, savingsPortfolio)
-      savingsPortfolio -= fromSavings
-      const fromAsk = renterWealthTax - fromSavings
-      if (fromAsk > 0) {
-        askPortfolio = Math.max(0, askPortfolio - fromAsk)
-        askCostBasis = Math.max(0, askCostBasis - fromAsk)
-      }
+      totalRenterPaid += renterWealthTax
     }
 
     totalBuyerPaid += yearlyBuyerCashflow
     totalRenterPaid += yearlyRenterCashflow
 
     const inflationFactor = Math.pow(1 + inputs.inflation / 100, year)
-    const buyerEquity = homeValue - remainingMortgage - inputs.sharedDebt - inputs.brokerSellingFee
-      - cumulativeBuyerWealthTax
 
-    let renterNetWorth: number
-    if (isAdvanced) {
-      const askGains = Math.max(0, askPortfolio - askCostBasis)
-      const taxableAskGains = Math.max(0, askGains - accumulatedShielding)
-      lastAskTax = taxableAskGains * ASK_TAX_RATE
-      lastRenterNominalGross = savingsPortfolio + askPortfolio + p.securityDeposit
-      renterNetWorth = (lastRenterNominalGross - lastAskTax) / inflationFactor
-    } else {
-      lastAskTax = 0
-      lastRenterNominalGross = renterPortfolio
-      renterNetWorth = renterPortfolio / inflationFactor
-    }
+    lastBuyerPortfolioGross = buyer.savings + buyer.ask
+    lastBuyerAskTax = askTaxOnExit(buyer)
+    const buyerPortfolio = lastBuyerPortfolioGross - lastBuyerAskTax
+    const buyerEquity = homeValue - remainingMortgage - inputs.sharedDebt - inputs.brokerSellingFee + buyerPortfolio
+
+    lastRenterNominalGross = renter.savings + renter.ask + p.securityDeposit
+    lastAskTax = askTaxOnExit(renter)
 
     yearlyData.push({
       year,
       buyerMonthlyCost: yearlyBuyerCashflow / 12,
       renterMonthlyCost: yearlyRenterCashflow / 12,
       buyerNetWorth: buyerEquity / inflationFactor,
-      renterNetWorth,
+      renterNetWorth: (lastRenterNominalGross - lastAskTax) / inflationFactor,
       homeValue,
       remainingMortgage,
-      cumulativeBuyerWealthTax,
+      buyerPortfolio,
     })
 
     currentMonthlyRent *= 1 + inputs.rentIncrease / 100
@@ -410,6 +433,8 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       totalRenterPaid,
       finalRenterNominalGross: lastRenterNominalGross,
       finalAskTax: lastAskTax,
+      finalBuyerPortfolioGross: lastBuyerPortfolioGross,
+      finalBuyerAskTax: lastBuyerAskTax,
       year1BuyerCosts: averageOverYear(year1Buyer),
       year1RenterCosts: averageOverYear(year1Renter),
     }),

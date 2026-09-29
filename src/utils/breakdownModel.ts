@@ -126,9 +126,11 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
     line('remainingMortgage', 'breakdown.remainingMortgage', finalYear.remainingMortgage, '−'),
     ...(inputs.sharedDebt > 0 ? [line('sharedDebt', 'inputs.sharedDebt', inputs.sharedDebt, '−')] : []),
     line('brokerSellingFee', 'inputs.brokerSellingFee', inputs.brokerSellingFee, '−'),
-    ...(finalYear.cumulativeBuyerWealthTax > 0
-      ? [line('wealthTax', 'breakdown.accumulatedWealthTax', finalYear.cumulativeBuyerWealthTax, '−')]
+    ...(summary.finalBuyerPortfolioGross !== 0
+      ? [line('portfolioGross', 'breakdown.portfolioGross', Math.abs(summary.finalBuyerPortfolioGross),
+          summary.finalBuyerPortfolioGross > 0 ? '+' : '−')]
       : []),
+    ...(summary.finalBuyerAskTax > 0 ? [line('askTax', 'breakdown.askCapitalGainsTax', summary.finalBuyerAskTax, '−')] : []),
   ]
 
   const renterNetWorthLines: BreakdownLine[] = [

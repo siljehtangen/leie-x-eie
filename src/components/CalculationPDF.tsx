@@ -178,7 +178,7 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
               <Text style={s.blockTitle}>{t('breakdown.buyerNetWorth')} ({years} {t('units.years')})</Text>
               {model.buyerNetWorthLines.map((l, i) => (
                 <Text key={l.id} style={s.step}>
-                  {i > 0 ? `${l.sign} ` : ''}{t(l.labelKey, l.labelOpts)}: {fmt(l.amount)}
+                  {i > 0 ? `${l.sign} ` : ''}{t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {fmt(l.amount)}
                 </Text>
               ))}
               <Text style={s.step}>÷ {t('breakdown.inflationFactor')}: {model.inflationFactor.toFixed(3)}</Text>
@@ -214,6 +214,9 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                 <>
                   <Text style={s.step}>{t('pdf.savingsAccount')}: {fmt(inputs.savingsAccountBalance)}</Text>
                   <Text style={s.step}>+ {t('pdf.askAccount')}: {fmt(inputs.askBalance)}</Text>
+                  <Text style={s.step}>
+                    + {t('inputs.downPayment')} + {t('inputs.stampDuty')}: {fmt(model.initialInvestment)} ({t('breakdown.initialInvestmentAskNote')})
+                  </Text>
                   <Text style={s.step}>
                     − {t('breakdown.securityDeposit')}: {fmt(model.securityDeposit)}
                   </Text>

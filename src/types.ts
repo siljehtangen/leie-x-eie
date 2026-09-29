@@ -57,7 +57,7 @@ export interface YearlyDataPoint {
   renterNetWorth: number
   homeValue: number
   remainingMortgage: number
-  cumulativeBuyerWealthTax: number
+  buyerPortfolio: number
 }
 
 export interface BuyerCostBreakdown {
@@ -95,6 +95,8 @@ export interface Summary {
   finalRenterPortfolio: number
   finalRenterNominalGross: number
   finalAskTax: number
+  finalBuyerPortfolioGross: number
+  finalBuyerAskTax: number
   finalRemainingMortgage: number
   initialMonthlyRent: number
   initialBuyerMonthly: number

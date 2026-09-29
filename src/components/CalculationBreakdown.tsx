@@ -98,7 +98,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
           </div>
 
           <div className="bd-two-col">
-            <BuyerColumn t={t} formatKr={formatKr} inputs={inputs} model={model} />
+            <BuyerColumn t={t} formatKr={formatKr} inputs={inputs} model={model} rules={rules} />
             <RenterColumn t={t} formatKr={formatKr} inputs={inputs} model={model} rules={rules} />
           </div>
 

@@ -35,15 +35,18 @@ describe('buildBreakdownModel', () => {
     expect(quick.buyerCostLines.map(l => l.id)).toEqual(['mortgage', 'hoaFee', 'interestDeduction'])
   })
 
-  it('shows wealth-tax and shared-debt lines only when relevant', () => {
+  it('shows portfolio, ASK-tax and shared-debt lines only when relevant', () => {
+    const quick = buildBreakdownModel(calculate(DEFAULT_INPUTS, 'quick'), DEFAULT_INPUTS, 'quick')
+    expect(quick.buyerNetWorthLines.map(l => l.id)).not.toContain('portfolioGross')
+
     const plain = buildBreakdownModel(calculate(DEFAULT_INPUTS, 'advanced'), DEFAULT_INPUTS, 'advanced')
     expect(plain.buyerNetWorthLines.map(l => l.id)).not.toContain('sharedDebt')
-    expect(plain.buyerNetWorthLines.map(l => l.id)).not.toContain('wealthTax')
+    expect(plain.buyerNetWorthLines.map(l => l.id)).toContain('portfolioGross')
 
     const [, rich, mode] = cases[3]
-    const withTax = buildBreakdownModel(calculate({ ...rich, sharedDebt: 100_000 }, mode), { ...rich, sharedDebt: 100_000 }, mode)
-    expect(withTax.buyerNetWorthLines.map(l => l.id)).toEqual(
-      expect.arrayContaining(['sharedDebt', 'wealthTax']),
+    const withDebt = buildBreakdownModel(calculate({ ...rich, sharedDebt: 100_000 }, mode), { ...rich, sharedDebt: 100_000 }, mode)
+    expect(withDebt.buyerNetWorthLines.map(l => l.id)).toEqual(
+      expect.arrayContaining(['sharedDebt', 'portfolioGross', 'askTax']),
     )
   })
 })

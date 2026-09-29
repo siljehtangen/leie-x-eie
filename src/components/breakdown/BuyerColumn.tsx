@@ -1,14 +1,15 @@
 import type { Inputs, FormatKrFn, TranslateFn } from '../../types'
-import type { BreakdownModel } from '../../utils/breakdownModel'
+import type { BreakdownModel, TaxRuleParams } from '../../utils/breakdownModel'
 
 export interface BuyerColumnProps {
   t: TranslateFn
   formatKr: FormatKrFn
   inputs: Inputs
   model: BreakdownModel
+  rules: TaxRuleParams
 }
 
-export default function BuyerColumn({ t, formatKr, inputs, model }: BuyerColumnProps) {
+export default function BuyerColumn({ t, formatKr, inputs, model, rules }: BuyerColumnProps) {
   const { mortgage, inflationFactor } = model
   const perMonth = `/ ${t('breakdown.month')}`
 
@@ -91,7 +92,7 @@ export default function BuyerColumn({ t, formatKr, inputs, model }: BuyerColumnP
         <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} ({model.years} {t('units.years')})</div>
         {model.buyerNetWorthLines.map((l, i) => (
           <div key={l.id} className="bd-formula-line">
-            {i > 0 && `${l.sign} `}{t(l.labelKey, l.labelOpts)}: {formatKr(l.amount)}
+            {i > 0 && `${l.sign} `}{t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {formatKr(l.amount)}
           </div>
         ))}
         <div className="bd-formula-line">

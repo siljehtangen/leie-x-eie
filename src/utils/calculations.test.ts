@@ -149,9 +149,34 @@ describe('calculate — net worth, recommendation and breakeven', () => {
     for (const y of yearlyData) {
       const infl = Math.pow(1 + inputs.inflation / 100, y.year)
       const expected = (y.homeValue - y.remainingMortgage - inputs.sharedDebt - inputs.brokerSellingFee
-        - y.cumulativeBuyerWealthTax) / infl
+        + y.buyerPortfolio) / infl
       expect(y.buyerNetWorth).toBeCloseTo(expected, 4)
     }
+  })
+
+  const flat = with_({
+    appreciationRate: 0, investmentReturn: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0,
+    savingsAccountRate: 0, askRate: 0, askShieldingRate: 0,
+  })
+
+  it.each(['quick', 'advanced'] as const)('gives the renter the down payment and closing costs as starting capital (%s)', mode => {
+    const { yearlyData, summary } = calculate(with_({ ...flat, years: 1 }), mode)
+    const y = yearlyData[0]
+    const existing = mode === 'advanced' ? flat.savingsAccountBalance + flat.askBalance : 0
+    const diff = 12 * (y.buyerMonthlyCost - y.renterMonthlyCost)
+    expect(diff).toBeGreaterThan(0)
+    expect(y.renterNetWorth).toBeCloseTo(existing + summary.initialInvestment + diff, 4)
+    expect(y.buyerPortfolio).toBeCloseTo(existing, 4)
+  })
+
+  it.each(['quick', 'advanced'] as const)('lets the buyer invest the difference when renting costs more (%s)', mode => {
+    const inputs = with_({ ...flat, monthlyRent: 40_000, savingsAccountBalance: 0, askBalance: 0, years: 5 })
+    const { yearlyData, summary } = calculate(inputs, mode)
+    const saved = yearlyData.reduce((acc, y) => acc + 12 * (y.renterMonthlyCost - y.buyerMonthlyCost), 0)
+    const last = yearlyData[yearlyData.length - 1]
+    expect(saved).toBeGreaterThan(0)
+    expect(last.buyerPortfolio).toBeCloseTo(saved, 4)
+    expect(last.renterNetWorth).toBeCloseTo(summary.initialInvestment, 4)
   })
 
   it.each(['quick', 'advanced'] as const)('gives the same year-N values regardless of horizon (%s)', mode => {
@@ -198,7 +223,7 @@ describe('calculate — net worth, recommendation and breakeven', () => {
 describe('findBreakevenYear', () => {
   const point = (year: number, buyer: number, renter: number): YearlyDataPoint => ({
     year, buyerNetWorth: buyer, renterNetWorth: renter,
-    buyerMonthlyCost: 0, renterMonthlyCost: 0, homeValue: 0, remainingMortgage: 0, cumulativeBuyerWealthTax: 0,
+    buyerMonthlyCost: 0, renterMonthlyCost: 0, homeValue: 0, remainingMortgage: 0, buyerPortfolio: 0,
   })
 
   it('returns null when one path leads throughout', () => {
@@ -217,23 +242,31 @@ describe('findBreakevenYear', () => {
 })
 
 describe('computeAnnualWealthTax', () => {
+  const none = { savings: 0, ask: 0 }
+
   it('is zero below the threshold', () => {
-    expect(computeAnnualWealthTax(4_000_000, 3_000_000, 0, 200_000, 400_000)).toEqual({ buyerWealthTax: 0, renterWealthTax: 0 })
+    const assets = { savings: 200_000, ask: 400_000 }
+    expect(computeAnnualWealthTax(4_000_000, 3_000_000, 0, assets, assets)).toEqual({ buyerWealthTax: 0, renterWealthTax: 0 })
   })
 
   it('applies tiered primary-residence valuation above 14 MNOK', () => {
-    const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 0, 0, 0, 0)
+    const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 0, 0, none, none)
     expect(buyerWealthTax).toBeCloseTo((14_000_000 * 0.25 + 6_000_000 * 0.7 - 1_900_000) * 0.01, 6)
   })
 
   it('subtracts mortgage and shared debt from taxable home wealth', () => {
-    const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 2_000_000, 1_000_000, 0, 0)
+    const { buyerWealthTax } = computeAnnualWealthTax(20_000_000, 2_000_000, 1_000_000, none, none)
     expect(buyerWealthTax).toBeCloseTo((7_700_000 - 3_000_000 - 1_900_000) * 0.01, 6)
   })
 
   it('values savings at 100% and ASK at 80%', () => {
-    const { renterWealthTax } = computeAnnualWealthTax(0, 0, 0, 2_000_000, 1_000_000)
+    const { renterWealthTax } = computeAnnualWealthTax(0, 0, 0, none, { savings: 2_000_000, ask: 1_000_000 })
     expect(renterWealthTax).toBeCloseTo((2_000_000 + 800_000 - 1_900_000) * 0.01, 6)
+  })
+
+  it("adds the buyer's savings and ASK to home wealth, net of all debt", () => {
+    const { buyerWealthTax } = computeAnnualWealthTax(8_000_000, 1_000_000, 0, { savings: 1_000_000, ask: 2_000_000 }, none)
+    expect(buyerWealthTax).toBeCloseTo((2_000_000 + 1_000_000 + 1_600_000 - 1_000_000 - 1_900_000) * 0.01, 6)
   })
 })
 

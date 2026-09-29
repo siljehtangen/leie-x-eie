@@ -27,8 +27,11 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
             <div className="bd-formula-line bd-formula-note">
               {t('inputs.askBalance')}: <strong>{formatKr(inputs.askBalance)}</strong>
             </div>
+            <div className="bd-formula-line bd-formula-note">
+              + {t('inputs.downPayment')} + {t('inputs.stampDuty')}: <strong>{formatKr(model.initialInvestment)}</strong> → {t('breakdown.initialInvestmentAskNote')}
+            </div>
             <div className="bd-formula-line">
-              {t('breakdown.total')}: <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance)}</strong>
+              {t('breakdown.total')}: <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance + model.initialInvestment)}</strong>
             </div>
             <div className="bd-formula-line bd-formula-note">
               − {t('breakdown.securityDepositMonths', { months: SECURITY_DEPOSIT_MONTHS })}: {formatKr(model.securityDeposit)} → {t('breakdown.securityDepositNote')}
