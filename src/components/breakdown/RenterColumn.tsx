@@ -63,7 +63,7 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
             <div className="bd-formula-line">
               {t('breakdown.investReturn')}: {t('breakdown.investReturnValue', { rate: inputs.investmentReturn })}
             </div>
-            <div className="bd-formula-line">{t('breakdown.quickTaxNote', { pct: rules.quickTax })}</div>
+            <div className="bd-formula-line">{t('breakdown.quickTaxNote', { pct: rules.savingsTax })}</div>
           </>
         )}
         <div className="bd-formula-line">{t('breakdown.monthlyDiffNote')}</div>

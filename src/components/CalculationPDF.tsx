@@ -199,7 +199,7 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                   : [t('breakdown.investReturn'), `${inputs.investmentReturn}%`],
                 isAdvanced
                   ? [t('pdf.askAccount'), `${fmt(inputs.askBalance)} @ ${inputs.askRate}%`]
-                  : [t('pdf.taxOnReturn'), t('pdf.taxAuto', { pct: rules.quickTax })],
+                  : [t('pdf.taxOnReturn'), t('pdf.taxAuto', { pct: rules.savingsTax })],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -242,7 +242,7 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                   </Text>
                 </>
               ) : (
-                <Text style={s.step}>{t('pdf.investReturnLine', { return: inputs.investmentReturn, pct: rules.quickTax })}</Text>
+                <Text style={s.step}>{t('pdf.investReturnLine', { return: inputs.investmentReturn, pct: rules.savingsTax })}</Text>
               )}
               <Text style={s.step}>{t('pdf.monthlyDiffShort')}</Text>
               {model.renterNetWorthLines.map((l, i) => (

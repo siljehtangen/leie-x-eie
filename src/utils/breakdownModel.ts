@@ -5,7 +5,6 @@ import {
   PRIMARY_RESIDENCE_HIGH_THRESHOLD,
   PRIMARY_RESIDENCE_HIGH_VALUATION,
   PRIMARY_RESIDENCE_VALUATION,
-  QUICK_INVESTMENT_TAX,
   SAVINGS_TAX_RATE,
   SAVINGS_VALUATION,
   WEALTH_TAX_RATE,
@@ -60,7 +59,6 @@ export const INTEREST_DEDUCTION_PCT = Math.round(INTEREST_DEDUCTION * 100)
 export interface TaxRuleParams {
   interestDeduction: string
   savingsTax: string
-  quickTax: string
   askTax: string
   homeValuation: string
   homeHighValuation: string
@@ -78,7 +76,6 @@ export function buildTaxRuleParams(locale: string, formatKr: FormatKrFn): TaxRul
   return {
     interestDeduction: pct(INTEREST_DEDUCTION),
     savingsTax: pct(SAVINGS_TAX_RATE),
-    quickTax: pct(QUICK_INVESTMENT_TAX),
     askTax: pct(ASK_TAX_RATE),
     homeValuation: pct(PRIMARY_RESIDENCE_VALUATION),
     homeHighValuation: pct(PRIMARY_RESIDENCE_HIGH_VALUATION),

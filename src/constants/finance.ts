@@ -28,8 +28,6 @@ export const SAVINGS_TAX_RATE = 0.22
 
 export const ASK_TAX_RATE = 0.3784
 
-export const QUICK_INVESTMENT_TAX = 0.22
-
 export const SECURITY_DEPOSIT_MONTHS = 3
 
 export const BSU_TAX_DEDUCTION_RATE = 0.10

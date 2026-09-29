@@ -32,7 +32,7 @@ En leie- vs. eie-kalkulator tilpasset det norske boligmarkedet. Legg inn tallene
   - Innboforsikring, strøm, internett, parkering (strøm og internett inngår i begge scenarier for å unngå skjevhet)
   - **Leie-depositum og alternativkostnad** (3 måneders husleie, returneres nominelt ved slutten av perioden)
   - **Formuesskatt**: primærbolig verdsettes til 25 % mot 80 % for finansielle eiendeler — en av de viktigste strukturelle fordelene ved boligkjøp i Norge
-  - **Etter-skatt avkastning på investeringer**: justerbar effektiv skattesats (standard 37,84 % under aksjonærmodellen); boligprisvekst er skattefri
+  - **Etter-skatt avkastning på investeringer**: enkel modus forutsetter sparekonto (renter skattes med 22 % årlig); i avansert modus skattes ASK-gevinst med 37,84 % ved salg etter skjerming; boligprisvekst er skattefri
 
 - Inflasjonsjustert nettoformue (i dagens kroner)
 - Beregning av break-even år
@@ -47,7 +47,7 @@ Kalkulatoren modellerer to scenarier side om side:
 
 **Kjøper** — betaler boliglån (med valgfri avdragsfri periode), felleskostnader og alle eierkostnader. Bygger egenkapital etter hvert som boligen øker i verdi (skattefritt). Formuesskatt beregnes med 25 % av boligverdi (mot 80 % for finansielle eiendeler).
 
-**Leietaker** — investerer egenkapital og kjøpskostnader ved start (minus depositum tilsvarende 3 måneders husleie), og investerer deretter månedlig differanse mellom leie og boligeiers kostnader. Avkastning beskattes årlig etter valgt skattesats. Porteføljen inngår i formuesskatt med 80 % verdsettelse.
+**Leietaker** — investerer egenkapital og kjøpskostnader ved start (minus depositum tilsvarende 3 måneders husleie). Hver måned investerer den med lavest kostnad differansen. Enkel modus: sparekontorenter skattes med 22 % årlig. Avansert modus: ASK-gevinst skattes med 37,84 % ved uttak. Fond inngår i formuesskatt med 80 % verdsettelse, bankinnskudd med 100 %.
 
 Begge scenarier justeres til dagens kroneverdi ved hjelp av inflasjon. Det alternativet som gir høyest nettoformue vinner.
 

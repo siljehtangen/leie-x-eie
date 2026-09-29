@@ -14,7 +14,6 @@ import {
   INTEREST_DEDUCTION,
   SAVINGS_TAX_RATE,
   ASK_TAX_RATE,
-  QUICK_INVESTMENT_TAX,
   SECURITY_DEPOSIT_MONTHS,
   BSU_TAX_DEDUCTION_RATE,
   DEFAULT_HOA_INCREASE_PCT,
@@ -72,6 +71,10 @@ export function normalizeInputs(inputs: Inputs): Inputs {
   return next
 }
 
+function monthlyFromAnnual(annualPct: number): number {
+  return Math.pow(Math.max(0, 1 + annualPct / 100), 1 / 12) - 1
+}
+
 function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
   const {
     purchasePrice, downPayment, mortgageRate, loanTermYears, stampDuty,
@@ -114,10 +117,8 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     securityDeposit,
     savingsInitial: isAdvanced ? savingsAccountBalance : 0,
     askInitial: isAdvanced ? askBalance : 0,
-    cashMonthlyReturn: isAdvanced
-      ? savingsAccountRate / 100 / 12 * (1 - SAVINGS_TAX_RATE)
-      : investmentReturn / 100 / 12 * (1 - QUICK_INVESTMENT_TAX),
-    askMonthlyReturn: askRate / 100 / 12,
+    cashMonthlyReturn: monthlyFromAnnual((isAdvanced ? savingsAccountRate : investmentReturn) * (1 - SAVINGS_TAX_RATE)),
+    askMonthlyReturn: monthlyFromAnnual(askRate),
     bsuMonthlySaving: isAdvanced && bsuActive ? bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE / 12 : 0,
     advancedRentMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
     sharedUtilitiesMonthly: isAdvanced ? (electricity + internet) / 12 : 0,

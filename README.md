@@ -40,7 +40,7 @@
 - Contents insurance, electricity, internet, and parking (electricity and internet applied to both sides to cancel asymmetry)
 - Security deposit opportunity cost (3 months rent, returned at face value)
 - **Wealth tax**: primary residence valued at 25% of market value vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway
-- **After-tax investment returns**: configurable effective tax rate (default 37.84% under aksjonærmodellen); home appreciation remains tax-free
+- **After-tax investment returns**: quick mode assumes a savings account (interest taxed at 22% yearly); in advanced mode ASK fund gains are taxed at 37.84% on sale after shielding; home appreciation remains tax-free
 
 **Output:**
 
@@ -55,7 +55,7 @@
 
 **Buyer** — pays mortgage (with optional interest-only period) + HOA + all ownership costs. Builds equity as the property appreciates tax-free. Wealth tax on 25% of home value.
 
-**Renter** — invests the down payment and closing costs upfront (minus a 3-month security deposit), then invests any monthly surplus vs. the buyer's total costs. Investment returns taxed annually at the configured rate. Wealth tax on 80% of portfolio value.
+**Renter** — invests the down payment and closing costs upfront (minus a 3-month security deposit). Each month, whichever side has lower costs invests the difference. Quick mode: savings account interest taxed at 22% yearly. Advanced mode: ASK gains taxed at 37.84% on exit. Wealth tax on 80% of fund value and 100% of bank savings.
 
 Both final net worths are deflated to today's kroner. The higher number wins.
 
@@ -114,7 +114,7 @@ For educational purposes only. Not financial advice.
 - Innboforsikring, strøm, internett og parkering (strøm og internett lagt til begge sider for å unngå asymmetri)
 - Depositumets alternativkostnad (3 måneder husleie, tilbakebetalt til pålydende)
 - **Formuesskatt**: primærbolig verdsatt til 25 % av markedsverdi vs. finansielle eiendeler til 80 % — en av de største strukturelle fordelene ved å eie bolig i Norge
-- **Avkastning etter skatt**: konfigurerbar effektiv skattesats (standard 37,84 % under aksjonærmodellen); boligverdistigning er skattefri
+- **Avkastning etter skatt**: enkel modus forutsetter sparekonto (renter skattes med 22 % årlig); i avansert modus skattes ASK-gevinst med 37,84 % ved salg etter skjerming; boligverdistigning er skattefri
 
 **Resultat:**
 
@@ -129,7 +129,7 @@ For educational purposes only. Not financial advice.
 
 **Kjøper** — betaler boliglån (med valgfri avdragsfri periode) + fellesutgifter + alle eierkostnader. Bygger egenkapital gjennom skattefri boligverdistigning. Formuesskatt på 25 % av boligverdi.
 
-**Leietaker** — investerer egenkapital og omkostninger ved oppstart (minus 3 måneder depositum), og investerer deretter eventuelt månedlig overskudd sammenlignet med kjøpers totale kostnader. Avkastning beskattes årlig etter konfigurert sats. Formuesskatt på 80 % av porteføljeverdi.
+**Leietaker** — investerer egenkapital og omkostninger ved oppstart (minus 3 måneder depositum). Hver måned investerer den med lavest kostnad differansen. Enkel modus: sparekontorenter skattes med 22 % årlig. Avansert modus: ASK-gevinst skattes med 37,84 % ved uttak. Formuesskatt på 80 % av fondsverdi og 100 % av bankinnskudd.
 
 Begge sluttformuene deflateres til dagens kroner. Den høyeste verdien vinner.
 

@@ -4,6 +4,7 @@ import { DEFAULT_INPUTS } from '../constants/defaults'
 import {
   BSU_TAX_DEDUCTION_RATE,
   INTEREST_DEDUCTION,
+  SAVINGS_TAX_RATE,
   SECURITY_DEPOSIT_MONTHS,
 } from '../constants/finance'
 import type { CalculationResult, Inputs, Mode, YearlyDataPoint } from '../types'
@@ -291,8 +292,30 @@ describe('calculate — ASK taxation', () => {
     expect(calculate(with_({ askRate: 3, askShieldingRate: 8 }), 'advanced').summary.finalAskTax).toBe(0)
   })
 
-  it('never has ASK tax in quick mode', () => {
-    expect(calculate(DEFAULT_INPUTS, 'quick').summary.finalAskTax).toBe(0)
+  it('taxes quick-mode returns as savings-account interest: 22% yearly, nothing on exit', () => {
+    const inputs = with_({ investmentReturn: 6, inflation: 0, years: 10, monthlyRent: 50_000 })
+    const { summary } = calculate(inputs, 'quick')
+    expect(summary.finalAskTax).toBe(0)
+    expect(summary.finalRenterNominalGross)
+      .toBeCloseTo(summary.initialInvestment * Math.pow(1 + 0.06 * (1 - SAVINGS_TAX_RATE), 10), 2)
+  })
+})
+
+describe('calculate — compounding', () => {
+  const lumpSum = (overrides: Partial<Inputs>) => with_({
+    inflation: 0, askShieldingRate: 0, years: 10, monthlyRent: 0, monthlyHoaFee: 0, purchasePrice: 0,
+    downPayment: 0, stampDuty: 0, otherClosingCosts: 0, electricity: 0, internet: 0, contentsInsurance: 0, municipalFees: 0,
+    homeInsurance: 0, ...overrides,
+  })
+
+  it('grows savings at the stated annual rate after 22% tax', () => {
+    const { summary } = calculate(lumpSum({ savingsAccountBalance: 1_000_000, savingsAccountRate: 5, askBalance: 0 }), 'advanced')
+    expect(summary.finalRenterNominalGross).toBeCloseTo(1_000_000 * Math.pow(1 + 0.05 * (1 - SAVINGS_TAX_RATE), 10), 2)
+  })
+
+  it('grows ASK at the stated annual rate', () => {
+    const { summary } = calculate(lumpSum({ savingsAccountBalance: 0, askBalance: 1_000_000, askRate: 7 }), 'advanced')
+    expect(summary.finalRenterNominalGross).toBeCloseTo(1_000_000 * Math.pow(1.07, 10), 2)
   })
 })
 
