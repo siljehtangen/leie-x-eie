@@ -23,6 +23,8 @@ const RENT_COLOR = COLORS.rent
 const BUY_COLOR  = COLORS.buy
 const MORTGAGE_LINE = COLORS.mortgageLine
 const GAP_LINE = COLORS.time
+const ACTIVE_DOT = { r: 4.5, strokeWidth: 2, stroke: COLORS.surface }
+const TOOLTIP_CURSOR = { stroke: COLORS.borderStrong, strokeDasharray: '3 3' }
 
 interface TooltipPayloadItem {
   name: string
@@ -95,11 +97,11 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
     <div className="charts-section">
       <div className="chart-card">
         <div className="chart-card-title">
-          <BarChart2 size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: COLORS.buy }} />
+          <span className="chart-card-icon"><BarChart2 size={15} color={COLORS.buy} strokeWidth={2.25} aria-hidden /></span>
           {t('results.netWorthOverTime')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
+          <AreaChart data={yearlyData} margin={{ top: 18, right: 8, bottom: 5, left: 0 }}>
             <defs>
               <linearGradient id="gradBuy" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%"  stopColor={COLORS.buy}  stopOpacity={0.25} />
@@ -110,20 +112,20 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
                 <stop offset="95%" stopColor={COLORS.rent} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
+            <CartesianGrid vertical={false} stroke={COLORS.chartGrid} />
             <XAxis {...xAxisProps} />
             <YAxis {...yAxisProps} />
-            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} cursor={TOOLTIP_CURSOR} />
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}
                 stroke={COLORS.breakeven}
-                strokeDasharray="5 3"
+                strokeDasharray="4 4"
                 label={{ value: t('results.chartBreakevenLabel', { year: breakevenYear }), fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
-            <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={COLORS.buy}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-            <Area type="monotone" dataKey="renterNetWorth" name={t('results.renterNetWorth')} stroke={COLORS.rent} strokeWidth={2.5} fill="url(#gradRent)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Area type="monotone" dataKey="buyerNetWorth"  name={t('results.buyerNetWorth')}  stroke={COLORS.buy}  strokeWidth={2.5} fill="url(#gradBuy)"  dot={false} activeDot={ACTIVE_DOT} />
+            <Area type="monotone" dataKey="renterNetWorth" name={t('results.renterNetWorth')} stroke={COLORS.rent} strokeWidth={2.5} fill="url(#gradRent)" dot={false} activeDot={ACTIVE_DOT} />
           </AreaChart>
         </ResponsiveContainer>
         <div className="chart-legend">
@@ -134,17 +136,17 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
 
       <div className="chart-card">
         <div className="chart-card-title">
-          <TrendingDown size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: COLORS.rent }} />
+          <span className="chart-card-icon"><TrendingDown size={15} color={COLORS.rent} strokeWidth={2.25} aria-hidden /></span>
           {t('results.monthlyCostOverTime')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
+          <LineChart data={yearlyData} margin={{ top: 18, right: 8, bottom: 5, left: 0 }}>
+            <CartesianGrid vertical={false} stroke={COLORS.chartGrid} />
             <XAxis {...xAxisProps} />
             <YAxis {...yAxisProps} />
-            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
-            <Line type="monotone" dataKey="buyerMonthlyCost"  name={t('results.buyCosts')}  stroke={BUY_COLOR}  strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-            <Line type="monotone" dataKey="renterMonthlyCost" name={t('results.rentCosts')} stroke={RENT_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} cursor={TOOLTIP_CURSOR} />
+            <Line type="monotone" dataKey="buyerMonthlyCost"  name={t('results.buyCosts')}  stroke={BUY_COLOR}  strokeWidth={2.5} dot={false} activeDot={ACTIVE_DOT} />
+            <Line type="monotone" dataKey="renterMonthlyCost" name={t('results.rentCosts')} stroke={RENT_COLOR} strokeWidth={2.5} dot={false} activeDot={ACTIVE_DOT} />
           </LineChart>
         </ResponsiveContainer>
         <div className="chart-legend">
@@ -155,21 +157,21 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
 
       <div className="chart-card">
         <div className="chart-card-title">
-          <Scale size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: GAP_LINE }} />
+          <span className="chart-card-icon"><Scale size={15} color={GAP_LINE} strokeWidth={2.25} aria-hidden /></span>
           {t('results.netWorthGapTitle')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={gapData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
+          <LineChart data={gapData} margin={{ top: 18, right: 8, bottom: 5, left: 0 }}>
+            <CartesianGrid vertical={false} stroke={COLORS.chartGrid} />
             <XAxis {...xAxisProps} />
             <YAxis {...yAxisProps} />
-            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} cursor={TOOLTIP_CURSOR} />
             <ReferenceLine y={0} stroke={COLORS.chartZeroLine} strokeWidth={1.5} />
             {breakevenYear && (
               <ReferenceLine
                 x={breakevenYear}
                 stroke={COLORS.breakeven}
-                strokeDasharray="5 3"
+                strokeDasharray="4 4"
                 label={{ value: t('results.chartBreakevenLabel', { year: breakevenYear }), fontSize: 10, fill: COLORS.breakevenDark, position: 'top' }}
               />
             )}
@@ -180,7 +182,7 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
               stroke={GAP_LINE}
               strokeWidth={2.5}
               dot={false}
-              activeDot={{ r: 5, strokeWidth: 0 }}
+              activeDot={ACTIVE_DOT}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -191,17 +193,17 @@ export default function Charts({ yearlyData, breakevenYear }: ChartsProps) {
 
       <div className="chart-card">
         <div className="chart-card-title">
-          <Landmark size={16} style={{ display: 'inline', marginRight: 6, verticalAlign: 'middle', color: BUY_COLOR }} />
+          <span className="chart-card-icon"><Landmark size={15} color={BUY_COLOR} strokeWidth={2.25} aria-hidden /></span>
           {t('results.homeAndLoanTitle')}
         </div>
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={yearlyData} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={COLORS.chartGrid} />
+          <LineChart data={yearlyData} margin={{ top: 18, right: 8, bottom: 5, left: 0 }}>
+            <CartesianGrid vertical={false} stroke={COLORS.chartGrid} />
             <XAxis {...xAxisProps} />
             <YAxis {...yAxisProps} />
-            <Tooltip content={<CustomTooltip t={t} locale={locale} />} />
-            <Line type="monotone" dataKey="homeValue" name={t('results.homeValue')} stroke={BUY_COLOR} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-            <Line type="monotone" dataKey="remainingMortgage" name={t('results.loanBalanceSeries')} stroke={MORTGAGE_LINE} strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
+            <Tooltip content={<CustomTooltip t={t} locale={locale} />} cursor={TOOLTIP_CURSOR} />
+            <Line type="monotone" dataKey="homeValue" name={t('results.homeValue')} stroke={BUY_COLOR} strokeWidth={2.5} dot={false} activeDot={ACTIVE_DOT} />
+            <Line type="monotone" dataKey="remainingMortgage" name={t('results.loanBalanceSeries')} stroke={MORTGAGE_LINE} strokeWidth={2.5} dot={false} activeDot={ACTIVE_DOT} />
           </LineChart>
         </ResponsiveContainer>
         <div className="chart-legend">

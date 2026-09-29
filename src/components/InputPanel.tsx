@@ -85,7 +85,6 @@ interface SectionProps {
   title: string
   icon: LucideIcon
   iconColor: string
-  stripe: string
   defaultOpen?: boolean
   children: ReactNode
 }
@@ -117,12 +116,11 @@ function CheckboxField({ label, name, value, onChange, tooltip }: {
   )
 }
 
-function Section({ id, title, icon: Icon, iconColor, stripe, defaultOpen = true, children }: SectionProps) {
+function Section({ id, title, icon: Icon, iconColor, defaultOpen = true, children }: SectionProps) {
   const [open, setOpen] = useState(defaultOpen)
   const bodyId = `section-body-${id}`
   return (
-    <div className="input-section">
-      <div className={`section-stripe stripe-${stripe}`} />
+    <div className={`input-section${open ? ' open' : ''}`}>
       <button
         type="button"
         className="section-header"
@@ -169,7 +167,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
   return (
     <div className="input-panel">
-      <Section id="rent" title={t('sections.rent')} icon={Home} iconColor={COLORS.rent} stripe="rent">
+      <Section id="rent" title={t('sections.rent')} icon={Home} iconColor={COLORS.rent}>
         <div className="input-grid">
           {field('monthlyRent',   { unit: krMonth, min: 0, step: 500 })}
           {field('rentIncrease', { unit: '%', min: 0, max: 20, step: 0.1 })}
@@ -182,7 +180,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy} stripe="buy">
+      <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy}>
         <div className="input-grid">
           {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
           {field('downPayment',     { unit: kr,      min: 0,   step: 50000  })}
@@ -205,7 +203,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         </div>
       </Section>
 
-      <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor={COLORS.time} stripe="time">
+      <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp} iconColor={COLORS.time}>
         <div className="input-grid">
           {field('years',            { unit: years, min: 1, max: MAX_HORIZON_YEARS, step: 1 })}
           {field('appreciationRate', { unit: '%', min: 0, max: 15, step: 0.1 })}
@@ -215,7 +213,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       </Section>
 
       {isAdvanced && (
-        <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor={COLORS.financial} stripe="fin">
+        <Section id="fin" title={t('sections.financial')} icon={Wallet} iconColor={COLORS.financial}>
           <div className="input-grid">
             {field('savingsAccountBalance', { unit: kr, min: 0, step: 10000 })}
             {field('savingsAccountRate',    { unit: '%', min: 0, max: 20, step: 0.1 })}

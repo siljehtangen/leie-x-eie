@@ -36,7 +36,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
             <AnimatedNOK value={summary.initialMonthlyRent} trigger={results} locale={locale} />
           </div>
           <div className="split-card-sub">{t('results.monthlyRentLabel')}</div>
-          <div className="split-card-divider" />
           <div className="split-card-stats">
             <div className="stat-row">
               <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>
@@ -66,7 +65,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
             <AnimatedNOK value={summary.monthlyMortgagePayment} trigger={results} locale={locale} />
           </div>
           <div className="split-card-sub">{t('results.monthlyMortgage')}</div>
-          <div className="split-card-divider" />
           <div className="split-card-stats">
             <div className="stat-row">
               <span className="stat-label">{t('results.initialOutlay')}</span>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ArrowRight } from 'lucide-react'
 import Header from './components/Header'
 import ModeToggle from './components/ModeToggle'
 import InputPanel from './components/InputPanel'
@@ -85,7 +86,10 @@ export default function App() {
 
           <div className="calculate-section">
             <button type="button" className="calculate-btn" onClick={handleCalculate}>
-              <span>{snapshot ? t('recalculate') : t('calculate')} →</span>
+              <span>{snapshot ? t('recalculate') : t('calculate')}</span>
+              <span className="calculate-btn-arrow" aria-hidden>
+                <ArrowRight size={16} strokeWidth={2.25} />
+              </span>
             </button>
             <button type="button" className="reset-btn" onClick={handleReset}>
               {t('resetInputs')}

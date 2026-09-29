@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { APP_NAME } from '../constants/app'
-import { COLORS } from '../constants/theme'
 import type { Lang } from '../types'
 
 interface HeaderProps {
@@ -18,11 +17,12 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
         <div className="shape shape-1" />
         <div className="shape shape-2" />
         <div className="shape shape-3" />
+        <div className="header-grid" />
       </div>
 
       <div className="header-inner">
         <div className="logo">
-          <div className="logo-icon">LXE</div>
+          <div className="logo-icon" aria-hidden>LXE</div>
           <span className="logo-text">
             {logoPrefix}<span>X</span>{logoSuffix}
           </span>
@@ -62,15 +62,6 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
         </h1>
         <p className="header-tagline">{t('header.tagline')}</p>
       </div>
-
-      <svg
-        className="header-wave"
-        viewBox="0 0 1440 60"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill={COLORS.bg} />
-      </svg>
     </header>
   )
 }
