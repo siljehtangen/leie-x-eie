@@ -60,11 +60,34 @@ export interface YearlyDataPoint {
   cumulativeBuyerWealthTax: number
 }
 
+export interface BuyerCostBreakdown {
+  mortgage: number
+  hoaFee: number
+  utilities: number
+  maintenance: number
+  municipalFees: number
+  insurance: number
+  propertyTax: number
+  interestDeduction: number
+  total: number
+}
+
+export interface RenterCostBreakdown {
+  rent: number
+  extras: number
+  bsuDeduction: number
+  total: number
+}
+
 export interface Summary {
   monthlyMortgagePayment: number
   monthlyAmortizingPayment: number
   downPayment: number
   closingCosts: number
+  initialInvestment: number
+  securityDeposit: number
+  year1BuyerCosts: BuyerCostBreakdown
+  year1RenterCosts: RenterCostBreakdown
   totalBuyerPaid: number
   totalRenterPaid: number
   finalHomeValue: number
