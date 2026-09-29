@@ -86,6 +86,10 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run build` | Production build |
 | `npm run preview` | Preview production build |
 | `npm run typecheck` | Type-check without emitting |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest unit + golden tests (calculation engine, i18n parity, theme) |
+| `npm run format` | Prettier |
+| `npm run ci` | Typecheck, lint, test and build (same as GitHub Actions) |
 
 ### Disclaimer
 
@@ -156,6 +160,10 @@ npm run dev
 | `npm run build` | Produksjonsbygg |
 | `npm run preview` | Forhåndsvis produksjonsbygg |
 | `npm run typecheck` | Typesjekk uten å kompilere |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest enhets- og golden-tester (beregningsmotor, i18n-paritet, tema) |
+| `npm run format` | Prettier |
+| `npm run ci` | Typesjekk, lint, test og bygg (samme som GitHub Actions) |
 
 ### Ansvarsfraskrivelse
 
