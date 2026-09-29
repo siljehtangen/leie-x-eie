@@ -148,6 +148,15 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                 </>
               )}
               <Text style={s.step}>{t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)</Text>
+              <Text style={s.stepMuted}>{t('breakdown.formulaWhere')}</Text>
+              <Text style={s.stepMuted}>L = {t('breakdown.formulaL', { amount: fmt(mortgage.loanAmount, false) })}</Text>
+              <Text style={s.stepMuted}>r = {t('breakdown.formulaR', { rate: `${(mortgage.monthlyRate * 100).toFixed(4)}%` })}</Text>
+              <Text style={s.stepMuted}>
+                n = {mortgage.ioYears > 0
+                  ? t('breakdown.formulaNAfterIo', { count: mortgage.remainingTermMonths })
+                  : t('breakdown.formulaN', { count: mortgage.remainingTermMonths })}
+              </Text>
+              <Text style={s.stepMuted}>{t('breakdown.formulaExplainer')}</Text>
               <Text style={[s.result, s.resultBuy]}>{fmt(mortgage.amortizingPayment, false)}{perMonth}</Text>
             </View>
 

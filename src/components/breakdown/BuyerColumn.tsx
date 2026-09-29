@@ -47,6 +47,22 @@ export default function BuyerColumn({ t, formatKr, inputs, model }: BuyerColumnP
         <div className="bd-formula-line bd-formula-eq">
           {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
         </div>
+        <div className="bd-formula-legend">
+          <div className="bd-formula-legend-title">{t('breakdown.formulaWhere')}</div>
+          <dl>
+            <dt>L</dt>
+            <dd>{t('breakdown.formulaL', { amount: formatKr(mortgage.loanAmount) })}</dd>
+            <dt>r</dt>
+            <dd>{t('breakdown.formulaR', { rate: `${(mortgage.monthlyRate * 100).toFixed(4)}%` })}</dd>
+            <dt>n</dt>
+            <dd>
+              {mortgage.ioYears > 0
+                ? t('breakdown.formulaNAfterIo', { count: mortgage.remainingTermMonths })
+                : t('breakdown.formulaN', { count: mortgage.remainingTermMonths })}
+            </dd>
+          </dl>
+          <p className="bd-formula-note">{t('breakdown.formulaExplainer')}</p>
+        </div>
         <div className="bd-formula-result bd-result-buy">
           → {formatKr(mortgage.amortizingPayment)} {perMonth}
         </div>

@@ -170,6 +170,39 @@
   font-style: italic;
 }
 
+.bd-formula-legend {
+  margin-top: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--color-surface);
+  border: var(--hairline);
+  border-radius: 10px;
+}
+
+.bd-formula-legend-title {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.bd-formula-legend dl {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  row-gap: 0.3rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.bd-formula-legend dt {
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-buy);
+}
+
+.bd-formula-legend dd { color: var(--color-text-secondary); }
+
+.bd-formula-legend .bd-formula-note { margin-top: 0.55rem; }
+
 .bd-formula-note {
   font-size: 0.75rem;
   color: var(--color-text-muted);

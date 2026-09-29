@@ -160,6 +160,12 @@
   "breakdown": {
     "title": "Calculation Details",
     "payment": "Payment",
+    "formulaWhere": "Where:",
+    "formulaL": "the amount you borrow from the bank ({{amount}})",
+    "formulaR": "monthly interest rate — the annual rate divided by 12 ({{rate}})",
+    "formulaN": "number of monthly payments ({{count}})",
+    "formulaNAfterIo": "number of monthly payments after the interest-only period ({{count}})",
+    "formulaExplainer": "The formula gives a fixed monthly amount (annuity). Early on most of it is interest; later more of it pays down the loan.",
     "download": "Download PDF",
     "generating": "Generating...",
     "pdfDocTitle": "Rent vs Buy – Calculation",

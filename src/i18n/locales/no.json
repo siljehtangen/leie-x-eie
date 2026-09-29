@@ -160,6 +160,12 @@
   "breakdown": {
     "title": "Beregningsdetaljer",
     "payment": "Betaling",
+    "formulaWhere": "Der:",
+    "formulaL": "lånebeløpet du låner av banken ({{amount}})",
+    "formulaR": "månedlig rente — årsrenten delt på 12 ({{rate}})",
+    "formulaN": "antall månedlige betalinger ({{count}})",
+    "formulaNAfterIo": "antall månedlige betalinger etter den avdragsfrie perioden ({{count}})",
+    "formulaExplainer": "Formelen gir et fast månedsbeløp (annuitet). Tidlig i lånet går mest til renter, senere går mer til nedbetaling av lånet.",
     "download": "Last ned PDF",
     "generating": "Genererer...",
     "pdfDocTitle": "Leie vs Eie – Utregning",
