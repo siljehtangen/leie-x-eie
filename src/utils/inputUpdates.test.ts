@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { applyInputChange } from './inputUpdates'
+import { applyInputChange, applyPreset, matchesPreset } from './inputUpdates'
+import { CITY_PRESETS } from '../constants/presets'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 
 describe('applyInputChange', () => {
@@ -19,5 +20,22 @@ describe('applyInputChange', () => {
   it('updates other fields without side effects', () => {
     const next = applyInputChange(DEFAULT_INPUTS, 'bsuActive', true)
     expect(next).toEqual({ ...DEFAULT_INPUTS, bsuActive: true })
+  })
+})
+
+describe('applyPreset', () => {
+  const oslo = CITY_PRESETS.find(p => p.id === 'oslo')!.values
+
+  it('sets price, rent and HOA and keeps derived costs in sync', () => {
+    const next = applyPreset(DEFAULT_INPUTS, oslo)
+    expect(next).toMatchObject({ ...oslo, stampDuty: 137_500, downPayment: 825_000 })
+    expect(matchesPreset(next, oslo)).toBe(true)
+    expect(matchesPreset(DEFAULT_INPUTS, oslo)).toBe(false)
+  })
+
+  it('leaves unrelated inputs untouched', () => {
+    const next = applyPreset({ ...DEFAULT_INPUTS, years: 20 }, oslo)
+    expect(next.years).toBe(20)
+    expect(next.mortgageRate).toBe(DEFAULT_INPUTS.mortgageRate)
   })
 })

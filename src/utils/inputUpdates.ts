@@ -1,4 +1,5 @@
 import { STAMP_DUTY_RATE, DEFAULT_DOWN_PAYMENT_RATE } from '../constants/finance'
+import type { PresetValues } from '../constants/presets'
 import type { Inputs } from '../types'
 
 export function applyInputChange(prev: Inputs, name: keyof Inputs, value: number | boolean): Inputs {
@@ -14,4 +15,16 @@ export function applyInputChange(prev: Inputs, name: keyof Inputs, value: number
   }
 
   return next
+}
+
+export function applyPreset(prev: Inputs, values: PresetValues): Inputs {
+  return {
+    ...applyInputChange(prev, 'purchasePrice', values.purchasePrice),
+    monthlyRent: values.monthlyRent,
+    monthlyHoaFee: values.monthlyHoaFee,
+  }
+}
+
+export function matchesPreset(inputs: Inputs, values: PresetValues): boolean {
+  return (Object.keys(values) as (keyof PresetValues)[]).every(key => inputs[key] === values[key])
 }

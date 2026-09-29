@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { formatInputNum } from '../utils/formatting'
 import { COLORS } from '../constants/theme'
-import { BSU_MAX_CONTRIBUTION, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS } from '../constants/finance'
+import { BSU_MAX_CONTRIBUTION, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS, MIN_DOWN_PAYMENT_RATE } from '../constants/finance'
 import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
 
 interface InputFieldProps {
@@ -24,6 +24,7 @@ interface InputFieldProps {
   min?: number
   max?: number
   step?: number
+  warning?: string
 }
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -33,7 +34,7 @@ function clamp(value: number, min?: number, max?: number): number {
   return v
 }
 
-function InputField({ label, name, value, onChange, unit, tooltip, min, max, step }: InputFieldProps) {
+function InputField({ label, name, value, onChange, unit, tooltip, min, max, step, warning }: InputFieldProps) {
   const { t: tA11y } = useTranslation()
   const [focused, setFocused] = useState(false)
   const s = step ?? 1
@@ -42,7 +43,7 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
   const decrement = () => onChange(name, clamp(parseFloat((value - s).toFixed(10)), min, max))
 
   return (
-    <div className="input-field">
+    <div className={`input-field${warning ? ' has-warning' : ''}`}>
       <div className="input-label">
         {label}
         {tooltip && (
@@ -76,6 +77,7 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
         {unit && <span className="input-unit">{unit}</span>}
         <button className="input-stepper-btn" onClick={increment} tabIndex={-1} type="button" aria-label={tA11y('a11y.increaseField', { label })}>+</button>
       </div>
+      {warning && <p className="input-warning" role="status">{warning}</p>}
     </div>
   )
 }
@@ -153,6 +155,13 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
   const krYear = t('units.krPerYear')
   const years = t('units.years')
 
+  const downPaymentWarning =
+    inputs.downPayment > inputs.purchasePrice
+      ? t('warnings.downPaymentTooHigh')
+      : inputs.purchasePrice > 0 && inputs.downPayment < inputs.purchasePrice * MIN_DOWN_PAYMENT_RATE
+        ? t('warnings.downPaymentTooLow', { pct: MIN_DOWN_PAYMENT_RATE * 100 })
+        : undefined
+
   const field = (name: NumericInputKey, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
     <InputField
       key={name}
@@ -183,7 +192,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy}>
         <div className="input-grid">
           {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
-          {field('downPayment',     { unit: kr,      min: 0,   step: 50000  })}
+          {field('downPayment',     { unit: kr,      min: 0,   step: 50000, warning: downPaymentWarning })}
           {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1 })}
           {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
           {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}

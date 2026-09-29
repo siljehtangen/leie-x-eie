@@ -69,7 +69,7 @@
     "monthlyRent": "Your current monthly rent. Used as the baseline cost for the renting scenario.",
     "rentIncrease": "How much your landlord raises the rent each year. Norwegian average is around 3–5%.",
     "purchasePrice": "The asking price of the home you want to buy.",
-    "downPayment": "Auto-set to 15% of the purchase price. Norwegian law requires a minimum 15% down payment (10% for first-time buyers under 34).",
+    "downPayment": "Auto-set to 15% of the purchase price. Norwegian lending rules (utlånsforskriften) require at least a 10% down payment.",
     "mortgageRate": "The annual interest rate on your mortgage. Check with your bank for a current offer.",
     "loanTermYears": "How many years until your mortgage is fully paid off. 25–30 years is most common in Norway.",
     "monthlyHoaFee": "Monthly joint costs in a shared housing cooperative — includes maintenance, insurance, and management fees.",
@@ -101,11 +101,52 @@
     "bsuYearlyContribution": "Amount saved in BSU this year. Max 27,500 kr (2024). You get 10% back as a tax deduction."
   },
   "footer": {
-    "disclaimer": "For educational purposes only. Not financial advice."
+    "disclaimer": "For educational purposes only. Not financial advice.",
+    "taxYear": "Tax rules: {{year}}"
   },
   "calculate": "Calculate",
-  "recalculate": "Recalculate",
+  "showResults": "See results",
+  "liveHint": "Results update automatically as you change the numbers.",
   "resetInputs": "Reset to defaults",
+  "presets": {
+    "groupLabel": "City presets",
+    "label": "Start from a city",
+    "note": "Approximate price, rent and shared costs for a typical two-bedroom flat. Adjust them to the home you're looking at."
+  },
+  "warnings": {
+    "downPaymentTooLow": "Below the {{pct}}% minimum down payment banks require.",
+    "downPaymentTooHigh": "The down payment is higher than the purchase price."
+  },
+  "share": {
+    "copy": "Copy share link",
+    "copied": "Link copied",
+    "failed": "Couldn't copy automatically. Copy the link here:"
+  },
+  "scenarios": {
+    "title": "Compare scenarios",
+    "subtitle": "Save variations of your inputs and see them side by side.",
+    "nameLabel": "Scenario name",
+    "namePlaceholder": "e.g. Flat in Grünerløkka",
+    "defaultName": "Scenario {{n}}",
+    "save": "Save current",
+    "limit": "You can save up to {{max}} scenarios. Delete one to save another.",
+    "empty": "No saved scenarios yet. Save the current inputs, change something, and compare.",
+    "current": "Current inputs",
+    "summary": "{{mode}} · {{years}} years",
+    "colScenario": "Scenario",
+    "colWinner": "Best choice",
+    "colAdvantage": "Advantage",
+    "colBreakeven": "Breakeven",
+    "colBuyMonthly": "Owning / month",
+    "colRentMonthly": "Renting / month",
+    "colActions": "Actions",
+    "yearN": "Year {{year}}",
+    "none": "—",
+    "load": "Load into the form",
+    "loadLabel": "Load {{name}} into the form",
+    "delete": "Delete",
+    "deleteLabel": "Delete {{name}}"
+  },
   "results": {
     "title": "Your Rent vs Buy Analysis",
     "after": "after",

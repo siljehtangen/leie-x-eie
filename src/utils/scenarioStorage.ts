@@ -63,3 +63,42 @@ export function clearScenario(storage: StorageLike | null = defaultStorage()): v
     return
   }
 }
+
+export const SAVED_SCENARIOS_STORAGE_KEY = 'leiexeie:saved:v1'
+export const MAX_SAVED_SCENARIOS = 6
+
+export interface SavedScenario extends Scenario {
+  id: string
+  name: string
+}
+
+export function parseSavedScenarios(raw: unknown): SavedScenario[] {
+  if (!Array.isArray(raw)) return []
+  const out: SavedScenario[] = []
+  for (const entry of raw) {
+    if (!entry || typeof entry !== 'object') continue
+    const { id, name } = entry as { id?: unknown; name?: unknown }
+    if (typeof id !== 'string' || typeof name !== 'string') continue
+    const scenario = parseScenario(entry)
+    if (scenario) out.push({ id, name, ...scenario })
+  }
+  return out.slice(0, MAX_SAVED_SCENARIOS)
+}
+
+export function loadSavedScenarios(storage: StorageLike | null = defaultStorage()): SavedScenario[] {
+  if (!storage) return []
+  try {
+    const raw = storage.getItem(SAVED_SCENARIOS_STORAGE_KEY)
+    return raw ? parseSavedScenarios(JSON.parse(raw)) : []
+  } catch {
+    return []
+  }
+}
+
+export function storeSavedScenarios(list: SavedScenario[], storage: StorageLike | null = defaultStorage()): void {
+  try {
+    storage?.setItem(SAVED_SCENARIOS_STORAGE_KEY, JSON.stringify(list))
+  } catch {
+    return
+  }
+}

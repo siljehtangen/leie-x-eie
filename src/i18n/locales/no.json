@@ -69,7 +69,7 @@
     "monthlyRent": "Din nåværende månedlige husleie. Brukes som grunnkostnad i leiescenarioet.",
     "rentIncrease": "Hvor mye utleier øker husleien hvert år. Norsk snitt er ca. 3–5%.",
     "purchasePrice": "Prisantydningen på boligen du ønsker å kjøpe.",
-    "downPayment": "Settes automatisk til 15% av kjøpesummen. Norsk lov krever minimum 15% egenkapital (10% for unge under 34 år).",
+    "downPayment": "Settes automatisk til 15% av kjøpesummen. Utlånsforskriften krever minimum 10% egenkapital.",
     "mortgageRate": "Årlig rente på boliglånet ditt. Sjekk med banken din for et aktuelt tilbud.",
     "loanTermYears": "Antall år til boliglånet er nedbetalt. 25–30 år er vanligst i Norge.",
     "monthlyHoaFee": "Månedlige felleskostnader i et borettslag eller sameie — inkluderer vedlikehold, forsikring og administrasjon.",
@@ -101,11 +101,52 @@
     "bsuYearlyContribution": "Beløp du sparer i BSU dette året. Maks 27 500 kr (2024). Du får 10% av beløpet tilbake som skattefradrag."
   },
   "footer": {
-    "disclaimer": "Kun for illustrasjonsformål. Ikke finansiell rådgivning."
+    "disclaimer": "Kun for illustrasjonsformål. Ikke finansiell rådgivning.",
+    "taxYear": "Skatteregler: {{year}}"
   },
   "calculate": "Beregn",
-  "recalculate": "Beregn på nytt",
+  "showResults": "Se resultatet",
+  "liveHint": "Resultatet oppdateres automatisk når du endrer tallene.",
   "resetInputs": "Tilbakestill til standardverdier",
+  "presets": {
+    "groupLabel": "Byforslag",
+    "label": "Start med en by",
+    "note": "Omtrentlig pris, leie og felleskostnader for en typisk treromsleilighet. Juster dem til boligen du ser på."
+  },
+  "warnings": {
+    "downPaymentTooLow": "Under kravet om minst {{pct}}% egenkapital.",
+    "downPaymentTooHigh": "Egenkapitalen er høyere enn kjøpesummen."
+  },
+  "share": {
+    "copy": "Kopier delingslenke",
+    "copied": "Lenke kopiert",
+    "failed": "Kunne ikke kopiere automatisk. Kopier lenken her:"
+  },
+  "scenarios": {
+    "title": "Sammenlign scenarioer",
+    "subtitle": "Lagre varianter av tallene og se dem side om side.",
+    "nameLabel": "Navn på scenario",
+    "namePlaceholder": "f.eks. Leilighet på Grünerløkka",
+    "defaultName": "Scenario {{n}}",
+    "save": "Lagre nåværende",
+    "limit": "Du kan lagre opptil {{max}} scenarioer. Slett ett for å lagre et nytt.",
+    "empty": "Ingen lagrede scenarioer ennå. Lagre tallene, endre noe, og sammenlign.",
+    "current": "Nåværende tall",
+    "summary": "{{mode}} · {{years}} år",
+    "colScenario": "Scenario",
+    "colWinner": "Best valg",
+    "colAdvantage": "Fordel",
+    "colBreakeven": "Break-even",
+    "colBuyMonthly": "Eie / mnd",
+    "colRentMonthly": "Leie / mnd",
+    "colActions": "Handlinger",
+    "yearN": "År {{year}}",
+    "none": "—",
+    "load": "Hent inn i skjemaet",
+    "loadLabel": "Hent {{name}} inn i skjemaet",
+    "delete": "Slett",
+    "deleteLabel": "Slett {{name}}"
+  },
   "results": {
     "title": "Din leie vs kjøp-analyse",
     "after": "etter",
