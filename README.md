@@ -33,19 +33,22 @@
 
 **Advanced mode** — full Norwegian financial model:
 
-- Shared debt (fellesgjeld) as a permanent liability with its own tax-deductible interest
+- Housing cooperative (borettslag) or freehold (selveier): borettslag skips the 2.5% stamp duty and adds shared debt (fellesgjeld) that is paid down over its own term, with tax-deductible interest
 - Interest-only period with recalculated amortisation afterwards
+- Mortgage rate change from a chosen year, with the payment recalculated on the remaining loan
 - Maintenance costs inflation-adjusted year over year
 - Municipal fees, home insurance, property tax
-- Contents insurance, electricity, internet, and parking (electricity and internet applied to both sides to cancel asymmetry)
-- Security deposit opportunity cost (3 months rent, returned at face value)
-- **Wealth tax**: primary residence valued at 25% of market value vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway
+- Contents insurance, electricity, internet, and parking applied to both sides
+- Security deposit (3 months rent) earning savings-account interest
+- **Wealth tax**: primary residence valued at 25% of market value vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway. Couples taxed jointly get double thresholds
 - **After-tax investment returns**: quick mode assumes a savings account (interest taxed at 22% yearly); in advanced mode ASK fund gains are taxed at 37.84% on sale after shielding; home appreciation remains tax-free
 
 **Output:**
 
 - Inflation-deflated net worth comparison (real kroner)
 - Breakeven year detection
+- Stress test of the monthly payment (rate + 3 percentage points, at least 7%, as in the lending regulations)
+- Sensitivity grid: how the answer changes with house-price growth and mortgage rate
 - Year-by-year breakdown table (costs, equity, portfolio growth)
 - PDF export of the full breakdown
 - Interactive charts (net worth over time, monthly costs)
@@ -99,48 +102,51 @@ For educational purposes only. Not financial advice.
 
 ## Norsk
 
-**LeieXEie** modellerer to scenarioer side om side — leie og kjøp — og viser deg hvilken strategi gir høyest formue etter *N* år, i dagens kroner.
+**LeieXEie** regner på to alternativer side om side – å leie og å eie – og viser hvilket som gir høyest formue etter *N* år, i dagens kroner.
 
 ### Funksjoner
 
-**Hurtigmodus** — seks nøkkelinput: husleie, kjøpesum, egenkapital, boliglånsrente, HOA-avgift og tidshorisont. Rask estimering uten kompliserte innstillinger.
+**Enkel modus** – seks nøkkeltall: husleie, kjøpesum, egenkapital, boliglånsrente, felleskostnader og tidshorisont. Et raskt overslag uten kompliserte innstillinger.
 
-**Avansert modus** — fullstendig norsk finansmodell:
+**Avansert modus** – full modell med norske skatteregler:
 
-- Fellesgjeld som permanent forpliktelse med egen rentefradragsberettiget rente
-- Avdragsfri periode med ny amortiseringsplan etterpå
+- Borettslag eller selveier: i borettslag betales ingen dokumentavgift (2,5 %), og fellesgjelden nedbetales over sin egen løpetid, med rentefradrag
+- Avdragsfri periode med ny nedbetalingsplan etterpå
+- Renteendring fra et valgt år, med nytt terminbeløp beregnet ut fra restgjelden
 - Vedlikeholdskostnader justert for inflasjon hvert år
-- Kommunale avgifter, innboforsikring, boligforsikring, eiendomsskatt
-- Innboforsikring, strøm, internett og parkering (strøm og internett lagt til begge sider for å unngå asymmetri)
-- Depositumets alternativkostnad (3 måneder husleie, tilbakebetalt til pålydende)
-- **Formuesskatt**: primærbolig verdsatt til 25 % av markedsverdi vs. finansielle eiendeler til 80 % — en av de største strukturelle fordelene ved å eie bolig i Norge
-- **Avkastning etter skatt**: enkel modus forutsetter sparekonto (renter skattes med 22 % årlig); i avansert modus skattes ASK-gevinst med 37,84 % ved salg etter skjerming; boligverdistigning er skattefri
+- Kommunale avgifter, boligforsikring og eiendomsskatt
+- Innboforsikring, strøm, internett og parkering regnes med på begge sider
+- Depositum (3 måneders husleie) som gir sparerente
+- **Formuesskatt**: primærbolig verdsettes til 25 % av markedsverdien, mot 80 % for aksjer og fond – en av de største strukturelle fordelene ved å eie bolig i Norge. Par som skattlegges samlet, får dobbelt bunnfradrag
+- **Avkastning etter skatt**: enkel modus forutsetter sparekonto (renter skattes med 22 % hvert år). I avansert modus skattes ASK-gevinst med 37,84 % ved uttak, etter skjerming. Gevinst ved salg av egen bolig er skattefri
 
-**Resultat:**
+**Resultater:**
 
-- Formuesammenligning deflatert til reelle kroner
-- Deteksjon av break-even-år
-- Detaljert beregningstabell år for år (kostnader, egenkapital, porteføljevekst)
+- Sammenligning av formue i dagens kroner (justert for inflasjon)
+- Break-even-år: når det ene alternativet går forbi det andre
+- Stresstest av terminbeløpet (rente + 3 prosentpoeng, minst 7 %, som i utlånsforskriften)
+- Følsomhetstabell: hvordan svaret endres med boligprisvekst og rente
+- Detaljert tabell år for år (kostnader, egenkapital og porteføljevekst)
 - PDF-eksport av hele beregningen
-- Interaktive grafer (formue over tid, månedlige kostnader)
-- Norsk og engelsk brukergrensesnitt
+- Interaktive grafer (formue over tid og månedlige kostnader)
+- Norsk og engelsk språk
 
 ### Slik fungerer det
 
-**Kjøper** — betaler boliglån (med valgfri avdragsfri periode) + fellesutgifter + alle eierkostnader. Bygger egenkapital gjennom skattefri boligverdistigning. Formuesskatt på 25 % av boligverdi.
+**Kjøper** – betaler boliglån (med valgfri avdragsfri periode), felleskostnader og alle eierkostnader. Bygger egenkapital etter hvert som boligen stiger i verdi, skattefritt. Formuesskatt beregnes av 25 % av boligverdien.
 
-**Leietaker** — investerer egenkapital og omkostninger ved oppstart (minus 3 måneder depositum). Hver måned investerer den med lavest kostnad differansen. Enkel modus: sparekontorenter skattes med 22 % årlig. Avansert modus: ASK-gevinst skattes med 37,84 % ved uttak. Formuesskatt på 80 % av fondsverdi og 100 % av bankinnskudd.
+**Leietaker** – sparer egenkapitalen og kjøpsomkostningene fra start (minus 3 måneders depositum). Den som har lavest kostnad, sparer differansen hver måned. Enkel modus: renter på sparekonto skattes med 22 % hvert år. Avansert modus: ASK-gevinst skattes med 37,84 % ved uttak. Formuesskatt beregnes av 80 % av fondsverdien og 100 % av bankinnskudd.
 
-Begge sluttformuene deflateres til dagens kroner. Den høyeste verdien vinner.
+Begge sluttformuene regnes om til dagens kroner. Den høyeste formuen vinner.
 
 ### Teknisk stack
 
 | Bibliotek | Formål |
 |---|---|
-| Vite 5 + React 18 + TypeScript | Applikasjonsrammeverk |
+| Vite 5 + React 18 + TypeScript | Rammeverk for appen |
 | Recharts | Interaktive grafer |
 | @react-pdf/renderer | PDF-eksport |
-| react-i18next | Norsk / engelsk brukergrensesnitt |
+| react-i18next | Norsk og engelsk språk |
 | lucide-react | Ikoner |
 
 ### Kom i gang
@@ -156,15 +162,15 @@ npm run dev
 
 | Kommando | Beskrivelse |
 |---|---|
-| `npm run dev` | Start utviklingsserver |
-| `npm run build` | Produksjonsbygg |
-| `npm run preview` | Forhåndsvis produksjonsbygg |
-| `npm run typecheck` | Typesjekk uten å kompilere |
-| `npm run lint` | ESLint |
-| `npm test` | Vitest enhets- og golden-tester (beregningsmotor, i18n-paritet, tema) |
-| `npm run format` | Prettier |
-| `npm run ci` | Typesjekk, lint, test og bygg (samme som GitHub Actions) |
+| `npm run dev` | Starter utviklingsserveren |
+| `npm run build` | Bygger for produksjon |
+| `npm run preview` | Forhåndsviser produksjonsbygget |
+| `npm run typecheck` | Typesjekker uten å kompilere |
+| `npm run lint` | Kjører ESLint |
+| `npm test` | Kjører enhetstester og fasittester med Vitest (beregningsmotor, like nøkler i begge språk, tema) |
+| `npm run format` | Formaterer koden med Prettier |
+| `npm run ci` | Typesjekk, lint, tester og bygg (det samme som GitHub Actions kjører) |
 
 ### Ansvarsfraskrivelse
 
-Kun til informasjonsformål. Ikke finansiell rådgivning.
+Kun til informasjon. Ikke finansiell rådgivning.
