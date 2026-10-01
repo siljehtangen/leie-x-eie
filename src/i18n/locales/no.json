@@ -1,6 +1,6 @@
 {
   "meta": {
-    "description": "LeieXEie – sammenlign leie og eie med norske skatte- og finansregler. Til læring, ikke finansiell rådgivning."
+    "description": "LeieXEie – sammenlign leie og eie med norske skatte- og finansregler. Kun veiledende, ikke finansiell rådgivning."
   },
   "header": {
     "eyebrow": "Det norske boligmarkedet",
@@ -77,7 +77,7 @@
     "bsuYearlyContribution": "BSU-sparing per år"
   },
   "tooltips": {
-    "monthlyRent": "Husleien per måned for boligen du ville leid. Er grunnkostnaden i leiealternativet.",
+    "monthlyRent": "Husleien per måned for boligen du ville leid. Dette er den største kostnaden når du leier.",
     "rentIncrease": "Hvor mye husleien øker hvert år. Snittet i Norge er ca. 3–5 %.",
     "purchasePrice": "Det du regner med å betale for boligen, enten prisantydningen eller forventet budpris.",
     "downPayment": "Settes automatisk til 15 % av kjøpesummen. Utlånsforskriften krever minst 10 % egenkapital.",
@@ -105,7 +105,7 @@
     "inflation": "Den generelle prisveksten, som brukes til å regne om fremtidige beløp til dagens kroneverdi. Norges Bank har et inflasjonsmål på 2 %.",
     "savingsAccountBalance": "Sparepenger du har i tillegg til egenkapitalen, som en buffer. Både kjøper og leietaker beholder dem. Renten skattes med 22 % hvert år (beregnes automatisk).",
     "savingsAccountRate": "Renten på sparekontoen din – sjekk hos banken din. Beregningen trekker automatisk 22 % skatt av renteinntektene.",
-    "askBalance": "Fond du har i aksjesparekonto (ASK) i tillegg til egenkapitalen. Både kjøper og leietaker beholder dem. Det løper ingen skatt før du tar ut pengene – da beregnes 37,84 % skatt på gevinsten automatisk.",
+    "askBalance": "Fond du har i aksjesparekonto (ASK) i tillegg til egenkapitalen. Både kjøper og leietaker beholder dem. Du betaler ingen skatt før du tar ut pengene – da beregnes 37,84 % skatt på gevinsten automatisk.",
     "askRate": "Forventet årlig avkastning på aksjer og fond i aksjesparekontoen. Historisk har snittet vært ca. 7 % i året. Gevinsten skattes med 37,84 % (aksjonærmodellen) først ved uttak – dette beregnes automatisk.",
     "askShieldingRate": "Skjermingsfradraget reduserer skatten på gevinst i ASK. Skjermingsrenten fastsettes av Skatteetaten hvert år (normalt 3–5 %). Bare gevinst utover samlet skjerming skattes med 37,84 %.",
     "bsuActive": "Boligsparing for ungdom (BSU): sparer du inntil 27 500 kr i året, får du 10 % i skattefradrag (inntil 2 750 kr i året). Du kan spare til og med året du fyller 33, så lenge du ikke har eid bolig. Fradraget reduserer leietakerens reelle kostnad.",
@@ -117,7 +117,7 @@
     "isCouple": "Ektefeller, og samboere som skattlegges som ektefeller, får dobbelt bunnfradrag i formuesskatten (3 800 000 kr i stedet for 1 900 000 kr). Gjelder både kjøper og leietaker."
   },
   "footer": {
-    "disclaimer": "Kun til illustrasjon. Ikke finansiell rådgivning.",
+    "disclaimer": "Kun veiledende. Ikke finansiell rådgivning.",
     "taxYear": "Skatteregler: {{year}}"
   },
   "calculate": "Beregn",
@@ -153,7 +153,7 @@
     "colScenario": "Scenario",
     "colWinner": "Beste valg",
     "colAdvantage": "Fordel",
-    "colBreakeven": "Break-even",
+    "colBreakeven": "Går likt",
     "colBuyMonthly": "Eie / mnd",
     "colRentMonthly": "Leie / mnd",
     "colActions": "Handlinger",
@@ -166,7 +166,7 @@
   },
   "sensitivity": {
     "title": "Hvor robust er svaret?",
-    "subtitle": "Fordelen etter {{years}} år i dagens kroner hvis boligprisveksten og renten blir en annen enn du har lagt inn. Ruten med ramme viser tallene dine slik de er nå.",
+    "subtitle": "Fordelen etter {{years}} år i dagens kroner hvis boligprisveksten og renten blir en annen enn du har lagt inn. Ruten med ramme rundt viser resultatet med tallene du har lagt inn.",
     "caption": "Fordelen ved å eie eller leie ved ulik boligprisvekst og boliglånsrente",
     "rowAxis": "Boligprisvekst per år",
     "colAxis": "Boliglånsrente",
@@ -174,7 +174,7 @@
       "buy": "Eie lønner seg med {{amount}} ved {{appreciation}} prisvekst og {{rate}} rente",
       "rent": "Leie lønner seg med {{amount}} ved {{appreciation}} prisvekst og {{rate}} rente"
     },
-    "note": "Alle andre tall er slik du har lagt dem inn. En planlagt renteendring flyttes like mye."
+    "note": "Alle andre tall er slik du har lagt dem inn. Har du lagt inn en senere renteendring, endres den nye renten like mye."
   },
   "results": {
     "title": "Din analyse: leie eller eie",
@@ -184,7 +184,7 @@
     "monthlyTotal": "Totalkostnad per måned",
     "totalPaid": "Totalt betalt",
     "finalEquity": "Egenkapital ved slutten",
-    "finalPortfolio": "Investeringsportefølje",
+    "finalPortfolio": "Sparepenger ved slutten",
     "monthlyRentLabel": "Husleie per måned (år 1)",
     "homeValue": "Estimert boligverdi",
     "netWorthOverTime": "Formue over tid",
@@ -195,7 +195,7 @@
     "loanBalanceSeries": "Restgjeld",
     "chartBreakevenLabel": "Like gode · år {{year}}",
     "buyerNetWorth": "Kjøperens formue",
-    "renterNetWorth": "Leietakerens portefølje",
+    "renterNetWorth": "Leietakerens sparepenger",
     "buyCosts": "Eie",
     "rentCosts": "Leie",
     "year": "År",
@@ -209,13 +209,13 @@
     "stressTest": "Stresstest ved {{rate}} % rente",
     "stressTestHint": "Banken skal sjekke at du tåler en renteøkning på 3 prosentpoeng, og minst 7 % rente (utlånsforskriften). Høyere rente på eventuell fellesgjeld er tatt med.",
     "splitTitle": "Leie og eie side om side",
-    "unitsNote": "Egenkapital og portefølje er i dagens kroner. Terminbeløp, totalt betalt og boligverdi er nominelle beløp."
+    "unitsNote": "Egenkapital og sparepenger er i dagens kroner. Terminbeløp, totalt betalt og boligverdi er vist uten justering for inflasjon."
   },
   "recommendation": {
     "buy": "Det lønner seg å eie",
     "rent": "Det lønner seg å leie",
     "buyDesc": "Etter {{years}} år er du {{amount}} bedre stilt ved å eie. Etter at boligen er solgt, sitter du igjen med {{equity}}, mot {{portfolio}} som du ville bygd opp ved å leie og spare differansen.",
-    "rentDesc": "Etter {{years}} år er du {{amount}} bedre stilt ved å leie og spare. Investeringsporteføljen din på {{portfolio}} er større enn de {{equity}} du ville sittet igjen med etter å ha solgt boligen.",
+    "rentDesc": "Etter {{years}} år er du {{amount}} bedre stilt ved å leie og spare. Sparepengene dine på {{portfolio}} er mer enn de {{equity}} du ville sittet igjen med etter å ha solgt boligen.",
     "breakevenAt": "De to alternativene er like gode i år {{year}}. Før det var det andre alternativet best.",
     "noBreakevenBuy": "Å eie er best gjennom hele perioden på {{years}} år.",
     "noBreakevenRent": "Å leie er best gjennom hele perioden på {{years}} år.",
@@ -223,8 +223,8 @@
     "buyingCostsMore": "Å eie koster mer per måned (år 1)",
     "rentingCostsMore": "Å leie koster mer per måned (år 1)",
     "equityBuilt": "Igjen etter salg (år {{years}})",
-    "investmentGrowth": "Leietakerens portefølje etter {{years}} år",
-    "breakevenYear": "Break-even-år",
+    "investmentGrowth": "Leietakerens sparepenger etter {{years}} år",
+    "breakevenYear": "Eie og leie går likt",
     "notApplicable": "–",
     "year": "År",
     "disclaimer": "Dette er et estimat basert på tallene du har lagt inn og antakelser om fremtidige markedsforhold. Snakk alltid med en kvalifisert finansrådgiver før du tar store økonomiske beslutninger.",
@@ -243,14 +243,14 @@
     "generating": "Lager PDF …",
     "pdfDocTitle": "Leie eller eie – utregning",
     "pdfFileName": "leie-eller-eie-utregning.pdf",
-    "inputs": "Grunnlagstall",
+    "inputs": "Tallene du har lagt inn",
     "buyerCalc": "Regnestykket for å eie",
     "renterCalc": "Regnestykket for å leie",
     "yearTable": "År for år",
     "loanAmount": "Lånebeløp",
     "monthlyMortgageCalc": "Terminbeløp per måned",
     "ioPhase": "Avdragsfri periode (år 1–{{years}}): bare renter",
-    "amortizingPhase": "Annuitet fra år {{from}} ({{months}} mnd igjen)",
+    "amortizingPhase": "Nedbetaling fra år {{from}} ({{months}} mnd igjen)",
     "month": "mnd",
     "payments": "innbetalinger",
     "year1MonthlyCost": "Månedlig kostnad i år 1",
@@ -263,7 +263,7 @@
     "total": "Totalt",
     "securityDeposit": "Depositum",
     "securityDepositNote": "står på depositumskonto med sparerente og betales tilbake ved utflytting",
-    "portfolioGrowth": "Porteføljevekst",
+    "portfolioGrowth": "Vekst i sparepengene",
     "investReturn": "Avkastning",
     "quickTaxNote": "Forutsetter vanlig sparekonto: {{pct}} % skatt på renteinntektene hvert år, trekkes automatisk",
     "investReturnValue": "{{rate}} % i året",
@@ -280,7 +280,7 @@
     "homeValue": "Boligverdi",
     "remainingMortgage": "Restgjeld",
     "inflationFactor": "Inflasjonsfaktor",
-    "portfolioGross": "Portefølje (brutto, før justering for inflasjon)",
+    "portfolioGross": "Sparepenger (før justering for inflasjon)",
     "buyerMonthly": "Eie / mnd",
     "renterMonthly": "Leie / mnd",
     "tableNote": "Formuen er oppgitt i dagens kroner (justert for inflasjon). Uthevet tall viser hvem som ligger foran det året.",
@@ -307,7 +307,7 @@
     "recommendationAfterYears": "Anbefaling etter {{years}} år",
     "advantage": "Fordel",
     "metricBuyerNetWorth": "Kjøperens formue (år {{years}})",
-    "metricRenterPortfolio": "Leietakerens portefølje (år {{years}})",
+    "metricRenterPortfolio": "Leietakerens sparepenger (år {{years}})",
     "mode": "Modus",
     "rate": "Rente",
     "hoaFee": "Felleskostnader",
@@ -327,8 +327,8 @@
     "yearByYearSubtitle": "All formue i dagens kroner – justert for {{inflation}} % inflasjon i året",
     "notes": "Merknader",
     "notesBuyerEquity": "· Kjøperens formue = boligverdi − restgjeld − fellesgjeld − salgskostnader + sparing/ASK, justert for inflasjon",
-    "notesRenterEquity": "· Leietakerens formue = investeringsporteføljen etter beregnet skatt, justert for inflasjon",
-    "notesBreakeven": "· Break-even-år: {{value}}",
+    "notesRenterEquity": "· Leietakerens formue = sparepengene etter beregnet skatt, justert for inflasjon",
+    "notesBreakeven": "· Eie og leie går likt: {{value}}",
     "notesBreakevenNone": "Ikke aktuelt i denne perioden",
     "notesBreakevenCross": "År {{year}} – da krysser linjene",
     "notesDisclaimer": "· Modellen er bare veiledende. Snakk alltid med en finansrådgiver før store beslutninger.",
@@ -362,16 +362,16 @@
     "title": "Utvikling over tid",
     "unitGroupLabel": "Vis beløp",
     "unitReal": "Dagens kroner",
-    "unitNominal": "Nominelt",
+    "unitNominal": "Faktiske kroner",
     "unitRealShort": "dagens kr",
-    "unitNominalShort": "nominelt",
+    "unitNominalShort": "faktiske kr",
     "unitRealNote": "Alle beløp er regnet om til dagens kroneverdi, slik at de kan sammenlignes på tvers av år.",
     "unitNominalNote": "Beløpene er vist slik de faktisk vil se ut det året, uten justering for inflasjon."
   },
   "sticky": {
     "buyWins": "Eie lønner seg med",
     "rentWins": "Leie lønner seg med",
-    "breakeven": "Break-even år {{year}}",
+    "breakeven": "Går likt i år {{year}}",
     "afterYears": "etter {{years}} år"
   }
 }
