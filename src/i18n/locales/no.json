@@ -8,14 +8,20 @@
     "heroLine1": "Leie eller",
     "heroHighlight": "eie?",
     "pageTitle": "LeieXEie – Leie eller eie?",
-    "tagline": "Din guide til valget mellom å leie og å eie bolig i Norge."
+    "tagline": "Din guide til valget mellom å leie og å eie bolig i Norge.",
+    "darkMode": "Bytt til mørkt tema",
+    "lightMode": "Bytt til lyst tema",
+    "step1": "Velg en by eller fyll inn egne tall",
+    "step2": "Juster det som passer deg",
+    "step3": "Se hva som lønner seg"
   },
   "a11y": {
     "decreaseField": "Reduser {{label}}",
     "increaseField": "Øk {{label}}",
     "skipToMain": "Hopp til hovedinnholdet",
     "langNorwegian": "Norsk",
-    "langEnglish": "Engelsk"
+    "langEnglish": "Engelsk",
+    "moreInfo": "Mer informasjon"
   },
   "mode": {
     "groupLabel": "Beregningsmodus",
@@ -183,11 +189,10 @@
     "homeValue": "Estimert boligverdi",
     "netWorthOverTime": "Formue over tid",
     "monthlyCostOverTime": "Månedlig kostnad over tid",
-    "netWorthGapTitle": "Hvem ligger foran (i dagens kroner)",
+    "netWorthGapTitle": "Hvem ligger foran",
     "netWorthGapSeries": "Eie minus leie",
     "homeAndLoanTitle": "Boligverdi og restgjeld",
     "loanBalanceSeries": "Restgjeld",
-    "nominalChartNote": "Nominelle beløp (ikke justert for inflasjon).",
     "chartBreakevenLabel": "Like gode · år {{year}}",
     "buyerNetWorth": "Kjøperens formue",
     "renterNetWorth": "Leietakerens portefølje",
@@ -202,7 +207,9 @@
     "buy": "EIE",
     "winner": "VINNER",
     "stressTest": "Stresstest ved {{rate}} % rente",
-    "stressTestHint": "Banken skal sjekke at du tåler en renteøkning på 3 prosentpoeng, og minst 7 % rente (utlånsforskriften). Høyere rente på eventuell fellesgjeld er tatt med."
+    "stressTestHint": "Banken skal sjekke at du tåler en renteøkning på 3 prosentpoeng, og minst 7 % rente (utlånsforskriften). Høyere rente på eventuell fellesgjeld er tatt med.",
+    "splitTitle": "Leie og eie side om side",
+    "unitsNote": "Egenkapital og portefølje er i dagens kroner. Terminbeløp, totalt betalt og boligverdi er nominelle beløp."
   },
   "recommendation": {
     "buy": "Det lønner seg å eie",
@@ -341,5 +348,30 @@
     "percent": "%",
     "years": "år",
     "months": "mnd"
+  },
+  "fieldState": {
+    "changed": "Endret fra standardverdien",
+    "changedCount": "{{count}} endret"
+  },
+  "groups": {
+    "livingCosts": "Bokostnader (strøm, internett, forsikring, parkering)",
+    "loan": "Lånedetaljer (avdragsfrihet, renteendring)",
+    "ownerCosts": "Løpende eierkostnader og kjøpsomkostninger"
+  },
+  "charts": {
+    "title": "Utvikling over tid",
+    "unitGroupLabel": "Vis beløp",
+    "unitReal": "Dagens kroner",
+    "unitNominal": "Nominelt",
+    "unitRealShort": "dagens kr",
+    "unitNominalShort": "nominelt",
+    "unitRealNote": "Alle beløp er regnet om til dagens kroneverdi, slik at de kan sammenlignes på tvers av år.",
+    "unitNominalNote": "Beløpene er vist slik de faktisk vil se ut det året, uten justering for inflasjon."
+  },
+  "sticky": {
+    "buyWins": "Eie lønner seg med",
+    "rentWins": "Leie lønner seg med",
+    "breakeven": "Break-even år {{year}}",
+    "afterYears": "etter {{years}} år"
   }
 }

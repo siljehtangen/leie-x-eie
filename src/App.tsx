@@ -11,6 +11,7 @@ import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
 import ScenarioCompare from './components/ScenarioCompare'
 import Sensitivity from './components/Sensitivity'
+import StickySummary from './components/StickySummary'
 import { calculate, normalizeInputs } from './utils/calculations'
 import { applyInputChange, applyPreset } from './utils/inputUpdates'
 import {
@@ -163,9 +164,14 @@ export default function App() {
 
           {result && (
             <div className="results-section" ref={resultsRef}>
-              <SplitResults results={result} years={normalizedInputs.years} />
-              <Charts yearlyData={result.yearlyData} breakevenYear={result.breakevenYear} />
+              <h2 className="results-title">{t('results.title')}</h2>
               <Recommendation results={result} years={normalizedInputs.years} />
+              <SplitResults results={result} years={normalizedInputs.years} />
+              <Charts
+                yearlyData={result.yearlyData}
+                breakevenYear={result.breakevenYear}
+                inflation={normalizedInputs.inflation}
+              />
               <Sensitivity inputs={normalizedInputs} mode={deferredMode} />
               <ScenarioCompare
                 current={displayedScenario}
@@ -181,12 +187,18 @@ export default function App() {
             </div>
           )}
         </div>
+        {result && (
+          <StickySummary
+            result={result}
+            years={normalizedInputs.years}
+            targetRef={resultsRef}
+            onJump={scrollToResults}
+          />
+        )}
       </main>
 
       <footer className="footer">
         <span>{APP_NAME}</span>
-        <span className="footer-dot" />
-        <span>{new Date().getFullYear()}</span>
         <span className="footer-dot" />
         <span>{t('footer.taxYear', { year: TAX_RULES_YEAR })}</span>
         <span className="footer-dot" />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { COLORS, cssVarName, type ColorKey } from './theme'
+import { COLORS, DARK_COLORS, cssVarName, type ColorKey } from './theme'
 
 const stylesheets = import.meta.glob<string>('../styles/*.css', { query: '?raw', import: 'default', eager: true })
 
@@ -11,6 +11,11 @@ describe('theme', () => {
 
   it('finds the stylesheets', () => {
     expect(Object.keys(stylesheets).length).toBeGreaterThan(0)
+    expect(Object.values(stylesheets).every(css => css.length > 0)).toBe(true)
+  })
+
+  it('gives the dark palette the same keys as the light one', () => {
+    expect(Object.keys(DARK_COLORS).sort()).toEqual(Object.keys(COLORS).sort())
   })
 
   it('defines every --color-* variable referenced in the stylesheets', () => {

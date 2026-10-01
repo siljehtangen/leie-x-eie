@@ -9,7 +9,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           recharts: ['recharts'],
-          pdf: ['@react-pdf/renderer'],
         },
       },
     },
@@ -17,5 +16,6 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    css: true,
   },
 })

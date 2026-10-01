@@ -8,14 +8,20 @@
     "heroLine1": "Rent or",
     "heroHighlight": "own?",
     "pageTitle": "LeieXEie – Rent or own?",
-    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway."
+    "tagline": "Your smart guide to choosing whether to rent or own a home in Norway.",
+    "darkMode": "Switch to dark theme",
+    "lightMode": "Switch to light theme",
+    "step1": "Pick a city or enter your own numbers",
+    "step2": "Adjust what fits you",
+    "step3": "See what pays off"
   },
   "a11y": {
     "decreaseField": "Decrease {{label}}",
     "increaseField": "Increase {{label}}",
     "skipToMain": "Skip to main content",
     "langNorwegian": "Norwegian",
-    "langEnglish": "English"
+    "langEnglish": "English",
+    "moreInfo": "More information"
   },
   "mode": {
     "groupLabel": "Calculation mode",
@@ -183,11 +189,10 @@
     "homeValue": "Estimated Home Value",
     "netWorthOverTime": "Net Worth Over Time",
     "monthlyCostOverTime": "Monthly Cost Over Time",
-    "netWorthGapTitle": "Who's ahead (real NOK)",
+    "netWorthGapTitle": "Who's ahead",
     "netWorthGapSeries": "Buying minus renting",
     "homeAndLoanTitle": "Home value vs. loan balance",
     "loanBalanceSeries": "Remaining mortgage",
-    "nominalChartNote": "Nominal amounts (not adjusted for inflation).",
     "chartBreakevenLabel": "Breakeven · Year {{year}}",
     "buyerNetWorth": "Buyer's Net Worth",
     "renterNetWorth": "Renter's Portfolio",
@@ -202,7 +207,9 @@
     "buy": "OWN",
     "winner": "WINNER",
     "stressTest": "Stress test at {{rate}}% rate",
-    "stressTestHint": "Banks must check that you can afford a rate 3 percentage points higher than today, and at least 7% (utlånsforskriften). Includes higher interest on any shared debt."
+    "stressTestHint": "Banks must check that you can afford a rate 3 percentage points higher than today, and at least 7% (utlånsforskriften). Includes higher interest on any shared debt.",
+    "splitTitle": "Renting and buying side by side",
+    "unitsNote": "Equity and portfolio are in today's NOK. Mortgage payment, total paid and home value are nominal amounts."
   },
   "recommendation": {
     "buy": "Owning is Better for You",
@@ -341,5 +348,30 @@
     "percent": "%",
     "years": "years",
     "months": "months"
+  },
+  "fieldState": {
+    "changed": "Changed from the default value",
+    "changedCount": "{{count}} changed"
+  },
+  "groups": {
+    "livingCosts": "Living costs (electricity, internet, insurance, parking)",
+    "loan": "Loan details (interest-only, rate change)",
+    "ownerCosts": "Running ownership and closing costs"
+  },
+  "charts": {
+    "title": "Over time",
+    "unitGroupLabel": "Show amounts",
+    "unitReal": "Today's NOK",
+    "unitNominal": "Nominal",
+    "unitRealShort": "today's NOK",
+    "unitNominalShort": "nominal",
+    "unitRealNote": "All amounts are converted to today's money so they can be compared across years.",
+    "unitNominalNote": "Amounts are shown as they will actually look in that year, without adjusting for inflation."
+  },
+  "sticky": {
+    "buyWins": "Buying wins by",
+    "rentWins": "Renting wins by",
+    "breakeven": "Break-even year {{year}}",
+    "afterYears": "after {{years}} years"
   }
 }
