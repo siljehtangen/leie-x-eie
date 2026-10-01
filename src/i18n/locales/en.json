@@ -31,6 +31,7 @@
     "financial": "Financial"
   },
   "inputs": {
+    "isBorettslag": "Housing cooperative (borettslag)",
     "monthlyRent": "Monthly Rent",
     "rentIncrease": "Annual Rent Increase",
     "purchasePrice": "Purchase Price",
@@ -44,7 +45,7 @@
     "years": "Years You Plan to Live There",
     "appreciationRate": "Expected Home Price Growth",
     "investmentReturn": "Investment Return if Renting",
-    "contentsInsurance": "Renter's Insurance (Innboforsikring)",
+    "contentsInsurance": "Contents Insurance (Innboforsikring)",
     "electricity": "Electricity / Heating",
     "internet": "Internet",
     "parking": "Parking",
@@ -55,13 +56,17 @@
     "propertyTax": "Property Tax (Eiendomsskatt)",
     "hoaFeeIncrease": "Annual HOA Fee Increase",
     "sharedDebtRate": "Fellesgjeld Interest Rate",
+    "sharedDebtTermYears": "Shared Debt Repayment Term",
     "interestOnlyYears": "Interest-Only Period (Avdragsfrihet)",
+    "mortgageRateChangeYear": "Rate Change From Year",
+    "mortgageRateAfterChange": "New Mortgage Rate",
     "inflation": "Inflation Rate",
     "savingsAccountBalance": "Savings Account Balance",
     "savingsAccountRate": "Savings Account Rate",
     "askBalance": "ASK (Equity ISA) Balance",
     "askRate": "ASK (Equity ISA) Return",
     "askShieldingRate": "ASK Shielding Rate (Skjerming)",
+    "isCouple": "We are a couple taxed jointly for wealth tax",
     "bsuActive": "I save in BSU (under 34 and first-time buyer)",
     "bsuYearlyContribution": "Annual BSU Contribution"
   },
@@ -73,7 +78,7 @@
     "mortgageRate": "The annual interest rate on your mortgage. Check with your bank for a current offer.",
     "loanTermYears": "How many years until your mortgage is fully paid off. 25–30 years is most common in Norway.",
     "monthlyHoaFee": "Monthly joint costs in a shared housing cooperative — includes maintenance, insurance, and management fees.",
-    "stampDuty": "Automatically set to 2.5% of the purchase price. Set to 0 for new builds or housing cooperatives (borettslag).",
+    "stampDuty": "Auto-set to 2.5% of the purchase price for selveier. Set to 0 automatically for borettslag, and for new builds.",
     "otherClosingCosts": "Other one-time costs at purchase: tinglysning (deed + mortgage registration), bank setup fees, etc. Typically 5,000–15,000 kr.",
     "brokerSellingFee": "A typical broker fee in Norway is around 100,000 kr or 1–3% of the sale price.",
     "sharedDebt": "Shared debt in a borettslag that transfers with the unit. Affects total cost and tax deductions.",
@@ -85,10 +90,10 @@
     "years": "How long you plan to stay. The longer you own, the more the upfront buying costs are spread out.",
     "appreciationRate": "Norwegian average home price growth is approximately 2–4% per year.",
     "investmentReturn": "Expected annual interest on a regular savings account, before tax. Quick mode assumes the money is kept in a savings account, so 22% tax on the interest is deducted every year (automatically applied). Norwegian savings accounts typically pay 3–5% per year.",
-    "contentsInsurance": "Contents insurance covering your belongings. Typically 1,500–3,000 kr/year as a renter.",
+    "contentsInsurance": "Insurance for your belongings (innbo). Needed both when renting and owning. Typically 1,500–3,000 kr/year.",
     "electricity": "Annual electricity and heating costs. Varies widely — roughly 15,000–30,000 kr/year for an apartment.",
     "internet": "Annual broadband cost. Typically around 4,000–6,000 kr/year in Norway.",
-    "parking": "Monthly parking costs if applicable. Leave at 0 if included in rent or not relevant.",
+    "parking": "Monthly parking cost if applicable. Applies both when renting and owning. Leave at 0 if included.",
     "sharedDebtRate": "The interest rate on the housing cooperative's shared debt (fellesgjeld). This interest is included in monthly HOA fees and is also tax-deductible. Typically close to the current mortgage rate.",
     "interestOnlyYears": "Number of years paying interest only (avdragsfrihet), with no principal repayment. After this period the full loan amortises over the remaining term. Many Norwegian banks offer up to 5 years.",
     "inflation": "General price growth used to convert future amounts to today's money. Norwegian long-run target is 2%.",
@@ -98,7 +103,12 @@
     "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
     "askShieldingRate": "The shielding deduction (skjermingsfradrag) reduces taxable ASK gains. Skatteetaten sets the rate annually (typically 3–5%). Only gains above accumulated shielding are taxed at 37.84%.",
     "bsuActive": "BSU (Boligsparing for ungdom): save up to 27,500 kr/year and get a 10% tax deduction (max 2,750 kr/year). Available until age 34 if you haven't used BSU for a purchase. The deduction reduces the renter's effective cost.",
-    "bsuYearlyContribution": "Amount saved in BSU this year. Max 27,500 kr (2026). You get 10% back as a tax deduction."
+    "bsuYearlyContribution": "Amount you save in BSU this year. Max 27,500 kr per person (2026), so 55,000 kr for a couple. You get 10% back as a tax deduction.",
+    "isBorettslag": "Tick if the home is in a borettslag. No stamp duty (dokumentavgift) is paid, and you can enter the shared debt (fellesgjeld). Leave unticked for selveier/sameie, where 2.5% stamp duty applies.",
+    "sharedDebtTermYears": "Remaining repayment term on the cooperative's shared debt. Your share is paid down through the monthly HOA fee, so your remaining shared debt falls over time. Set 0 if the loan is interest-only.",
+    "mortgageRateChangeYear": "The year a new mortgage rate takes effect, e.g. when a fixed-rate period ends or you expect rates to fall. The payment is recalculated on the remaining loan. Set 0 for no change.",
+    "mortgageRateAfterChange": "The mortgage rate that applies from the chosen year until the end of the period.",
+    "isCouple": "Married, registered partners or cohabitants taxed jointly get double the wealth-tax allowance (3,800,000 kr instead of 1,900,000 kr). Applies to both buyer and renter."
   },
   "footer": {
     "disclaimer": "For educational purposes only. Not financial advice.",
@@ -115,7 +125,8 @@
   },
   "warnings": {
     "downPaymentTooLow": "Below the {{pct}}% minimum down payment banks require.",
-    "downPaymentTooHigh": "The down payment is higher than the purchase price."
+    "downPaymentTooHigh": "The down payment is higher than the purchase price.",
+    "downPaymentTooLowShared": "Below the {{pct}}% minimum down payment — for a borettslag the shared debt counts towards the price."
   },
   "share": {
     "copy": "Copy share link",
@@ -147,6 +158,18 @@
     "delete": "Delete",
     "deleteLabel": "Delete {{name}}"
   },
+  "sensitivity": {
+    "title": "How sensitive is the answer?",
+    "subtitle": "Advantage after {{years}} years in real kroner if house prices and mortgage rates turn out differently. The outlined cell is your current scenario.",
+    "caption": "Buy versus rent advantage by house-price growth and mortgage rate",
+    "rowAxis": "House prices / yr",
+    "colAxis": "Mortgage rate",
+    "cellTitle": {
+      "buy": "Buying wins by {{amount}} at {{appreciation}} price growth and {{rate}} rate",
+      "rent": "Renting wins by {{amount}} at {{appreciation}} price growth and {{rate}} rate"
+    },
+    "note": "Everything else is kept as you entered it. A rate change later in the period moves by the same amount."
+  },
   "results": {
     "title": "Your Rent vs Buy Analysis",
     "after": "after",
@@ -177,7 +200,9 @@
     "closingCosts": "Closing Costs",
     "rent": "RENT",
     "buy": "OWN",
-    "winner": "WINNER"
+    "winner": "WINNER",
+    "stressTest": "Stress test at {{rate}}% rate",
+    "stressTestHint": "Banks must check that you can afford a rate 3 percentage points higher than today, and at least 7% (utlånsforskriften). Includes higher interest on any shared debt."
   },
   "recommendation": {
     "buy": "Owning is Better for You",
@@ -230,7 +255,7 @@
     "initialInvestmentAskNote": "invested in ASK instead of buying",
     "total": "Total",
     "securityDeposit": "Security deposit",
-    "securityDepositNote": "locked, not invested — returned at move-out",
+    "securityDepositNote": "held in a deposit account earning savings interest, returned at move-out",
     "portfolioGrowth": "Portfolio Growth",
     "investReturn": "Investment Return",
     "quickTaxNote": "Assumes a regular savings account: {{pct}}% tax on interest every year, applied automatically",
@@ -238,7 +263,7 @@
     "savingsTaxAuto": "{{pct}}% tax applied automatically",
     "askTaxOnWithdrawal": "{{pct}}% on withdrawal",
     "securityDepositMonths": "Security deposit ({{months}} months)",
-    "utilities": "Electricity & Internet",
+    "utilities": "Electricity, internet, contents insurance & parking",
     "interestDeductionPct": "Interest Deduction ({{pct}}%)",
     "monthlyDiffNote": "Each month, whichever side has lower costs invests the difference",
     "afterYears": "after {{years}} years",
@@ -262,7 +287,9 @@
     "taxFreeHomeSale": "Capital gain on home sale is tax-free (primary residence, owned & lived in 12 of last 24 months)",
     "shieldingNote": "Shielding deduction ({{rate}}%/yr) has been applied to ASK gains",
     "bsuBenefit": "BSU deduction: {{amount}} per year reduces renter's effective cost",
-    "askCapitalGainsTax": "ASK capital gains tax after shielding ({{pct}}%)"
+    "askCapitalGainsTax": "ASK capital gains tax after shielding ({{pct}}%)",
+    "rateChangeNote": "From year {{year}} the rate is {{rate}}%: payment is recalculated to {{payment}} / month on the remaining loan",
+    "remainingSharedDebt": "Remaining shared debt"
   },
   "language": {
     "en": "EN",
@@ -292,7 +319,7 @@
     "realTermsNote": "All net worth figures are in real (inflation-adjusted) terms",
     "yearByYearSubtitle": "All net worth figures in real terms – adjusted for {{inflation}}% inflation per year",
     "notes": "Notes",
-    "notesBuyerEquity": "· Buyer's net worth = Home value − Remaining mortgage − Selling costs, inflation-adjusted",
+    "notesBuyerEquity": "· Buyer net worth = Home value − Mortgage − Shared debt − Selling costs + Savings/ASK, inflation-adjusted",
     "notesRenterEquity": "· Renter's net worth = Investment portfolio after estimated tax, inflation-adjusted",
     "notesBreakeven": "· Breakeven year: {{value}}",
     "notesBreakevenNone": "Not applicable in this period",
