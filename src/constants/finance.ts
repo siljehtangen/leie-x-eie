@@ -1,6 +1,8 @@
 export const TAX_RULES_YEAR = 2026
 
 export const STAMP_DUTY_RATE = 0.025
+export const STRESS_TEST_RATE_ADD_PCT = 3
+export const STRESS_TEST_MIN_RATE_PCT = 7
 export const DEFAULT_DOWN_PAYMENT_RATE = 0.15
 export const MIN_DOWN_PAYMENT_RATE = 0.10
 export const DEFAULT_HOA_INCREASE_PCT = 2
