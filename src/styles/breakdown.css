@@ -66,7 +66,7 @@
   font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 500;
-  color: white;
+  color: var(--color-on-text);
   background: var(--color-text);
   border: none;
   border-radius: 999px;

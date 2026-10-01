@@ -94,10 +94,10 @@
   box-shadow: inset 0 0 0 1px rgba(21,21,28,0.04);
 }
 
-.section-icon.rent  { background: var(--color-rent-light); }
-.section-icon.buy   { background: var(--color-buy-light); }
-.section-icon.time  { background: var(--color-time-light); }
-.section-icon.fin   { background: var(--color-financial-light); }
+.section-icon.rent  { background: var(--color-rent-light); color: var(--color-rent); }
+.section-icon.buy   { background: var(--color-buy-light); color: var(--color-buy); }
+.section-icon.time  { background: var(--color-time-light); color: var(--color-time); }
+.section-icon.fin   { background: var(--color-financial-light); color: var(--color-financial); }
 
 .section-title {
   font-size: 0.98rem;
@@ -122,7 +122,16 @@
 
 .section-chevron.open { transform: rotate(180deg); }
 
-.checkbox-label {
+.section-chevron.small {
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+}
+
+.checkbox-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   cursor: pointer;
   user-select: none;
 }
@@ -182,14 +191,30 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: help;
-  color: var(--color-text-muted);
-  transition: color 0.2s;
   position: relative;
   line-height: 1;
 }
 
-.tooltip-icon:hover { color: var(--color-text); }
+.tooltip-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  margin: -2px;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  cursor: help;
+  transition: color 0.2s;
+}
+
+.tooltip-trigger:hover,
+.tooltip-icon.open .tooltip-trigger { color: var(--color-text); }
+
+@media (pointer: coarse) {
+  .tooltip-trigger { padding: 8px; margin: -8px; }
+}
 
 .tooltip-popup {
   display: block;
@@ -210,16 +235,75 @@
   border-radius: 10px;
   width: 240px;
   z-index: 9999;
+  border: 1px solid rgba(255,255,255,0.08);
   box-shadow: var(--shadow-lg);
   pointer-events: none;
   white-space: normal;
   transition: opacity 0.18s var(--ease), transform 0.18s var(--ease), visibility 0.18s;
 }
 
-.tooltip-icon:hover .tooltip-popup {
+.tooltip-icon:hover .tooltip-popup,
+.tooltip-trigger:focus-visible + .tooltip-popup,
+.tooltip-icon.open .tooltip-popup {
   visibility: visible;
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+.changed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-buy);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.input-slider {
+  width: 100%;
+  height: 4px;
+  margin: 0.15rem 0 0.1rem;
+  accent-color: var(--color-text);
+  cursor: pointer;
+}
+
+.more-group {
+  margin-top: 0.75rem;
+  border-top: var(--hairline);
+  padding-top: 0.6rem;
+}
+
+.more-group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.35rem 0.25rem;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.more-group-toggle:hover { color: var(--color-text); }
+.more-group-toggle .section-chevron { margin-left: auto; }
+
+.more-group-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  color: var(--color-buy);
+  background: var(--color-buy-light);
+}
+
+.more-group-body {
+  margin-top: 0.5rem;
+  animation: fadeInUp 0.3s var(--ease) both;
 }
 
 .input-value-row {
@@ -251,7 +335,7 @@
 .input-stepper-btn:hover {
   background: var(--color-text);
   border-color: var(--color-text);
-  color: white;
+  color: var(--color-on-text);
 }
 
 .input-stepper-btn:active { transform: scale(0.92); }
@@ -326,7 +410,7 @@
   gap: 1rem;
   padding: 0.55rem 0.55rem 0.55rem 2rem;
   background: var(--color-text);
-  color: white;
+  color: var(--color-on-text);
   border: none;
   border-radius: 999px;
   cursor: pointer;
@@ -361,7 +445,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: var(--color-on-text);
   color: var(--color-text);
   transition: transform 0.35s var(--ease);
 }
@@ -375,6 +459,7 @@
 }
 
 .calculate-btn:hover::before { opacity: 1; }
+.calculate-btn:hover { color: white; }
 .calculate-btn:hover .calculate-btn-arrow { transform: translateX(3px) rotate(-45deg); }
 .calculate-btn:active { transform: translateY(0); }
 
