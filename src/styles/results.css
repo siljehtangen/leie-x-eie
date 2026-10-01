@@ -159,6 +159,19 @@
   white-space: nowrap;
 }
 
+.stat-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stat-sub {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.6);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 .stat-value.large {
   font-size: 1.3rem;
   letter-spacing: -0.03em;
