@@ -1,16 +1,16 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, Download } from 'lucide-react'
-import { PDFDownloadLink } from '@react-pdf/renderer'
+import { ChevronDown } from 'lucide-react'
 import { useFormatNOK } from '../hooks/useFormatNOK'
 import { useLocale } from '../hooks/useLocale'
 import { buildBreakdownModel, buildTaxRuleParams } from '../utils/breakdownModel'
 import { formatPercent } from '../utils/formatting'
 import type { CalculationResult, Inputs, Mode } from '../types'
-import CalculationPDF from './CalculationPDF'
 import BuyerColumn from './breakdown/BuyerColumn'
 import RenterColumn from './breakdown/RenterColumn'
 import YearlyTable from './breakdown/YearlyTable'
+
+const PdfDownload = lazy(() => import('./PdfDownload'))
 
 interface CalculationBreakdownProps {
   results: CalculationResult
@@ -46,28 +46,9 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
       {open && (
         <div className="breakdown-panel" role="region" aria-label={t('breakdown.title')}>
           <div className="breakdown-download-row">
-            <PDFDownloadLink
-              document={
-                <CalculationPDF
-                  results={results}
-                  inputs={inputs}
-                  model={model}
-                  rules={rules}
-                  locale={locale}
-                  title={t('breakdown.pdfDocTitle')}
-                  t={t}
-                />
-              }
-              fileName={t('breakdown.pdfFileName')}
-              className="breakdown-download-btn"
-            >
-              {({ loading }) => (
-                <>
-                  <Download size={13} />
-                  <span>{loading ? t('breakdown.generating') : t('breakdown.download')}</span>
-                </>
-              )}
-            </PDFDownloadLink>
+            <Suspense fallback={<span className="breakdown-download-btn" aria-busy>{t('breakdown.generating')}</span>}>
+              <PdfDownload results={results} inputs={inputs} model={model} rules={rules} locale={locale} />
+            </Suspense>
           </div>
 
           <div className="bd-section">

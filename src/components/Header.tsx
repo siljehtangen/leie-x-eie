@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
+import { Moon, Sun } from 'lucide-react'
 import { APP_NAME } from '../constants/app'
+import { useTheme } from '../hooks/useTheme'
 import type { Lang } from '../types'
 
 interface HeaderProps {
@@ -7,9 +9,13 @@ interface HeaderProps {
   onLangChange: (lang: Lang) => void
 }
 
+const STEPS = ['step1', 'step2', 'step3'] as const
+
 export default function Header({ lang, onLangChange }: HeaderProps) {
   const { t } = useTranslation()
+  const { theme, toggleTheme } = useTheme()
   const [logoPrefix, logoSuffix] = APP_NAME.split('X')
+  const isDark = theme === 'dark'
 
   return (
     <header className="header">
@@ -28,27 +34,39 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
           </span>
         </div>
 
-        <div className="lang-switcher" role="group" aria-label={t('header.langGroupLabel')}>
+        <div className="header-controls">
           <button
             type="button"
-            lang="nb"
-            className={`lang-btn ${lang === 'no' ? 'active' : ''}`}
-            onClick={() => onLangChange('no')}
-            aria-pressed={lang === 'no'}
-            aria-label={t('a11y.langNorwegian')}
+            className="theme-btn"
+            onClick={toggleTheme}
+            aria-label={t(isDark ? 'header.lightMode' : 'header.darkMode')}
+            title={t(isDark ? 'header.lightMode' : 'header.darkMode')}
           >
-            {t('language.no')}
+            {isDark ? <Sun size={15} aria-hidden /> : <Moon size={15} aria-hidden />}
           </button>
-          <button
-            type="button"
-            lang="en"
-            className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-            onClick={() => onLangChange('en')}
-            aria-pressed={lang === 'en'}
-            aria-label={t('a11y.langEnglish')}
-          >
-            {t('language.en')}
-          </button>
+
+          <div className="lang-switcher" role="group" aria-label={t('header.langGroupLabel')}>
+            <button
+              type="button"
+              lang="nb"
+              className={`lang-btn ${lang === 'no' ? 'active' : ''}`}
+              onClick={() => onLangChange('no')}
+              aria-pressed={lang === 'no'}
+              aria-label={t('a11y.langNorwegian')}
+            >
+              {t('language.no')}
+            </button>
+            <button
+              type="button"
+              lang="en"
+              className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+              onClick={() => onLangChange('en')}
+              aria-pressed={lang === 'en'}
+              aria-label={t('a11y.langEnglish')}
+            >
+              {t('language.en')}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -61,6 +79,14 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
           {t('header.heroLine1')} <span className="highlight">{t('header.heroHighlight')}</span>
         </h1>
         <p className="header-tagline">{t('header.tagline')}</p>
+        <ol className="header-steps">
+          {STEPS.map((step, i) => (
+            <li key={step} className="header-step">
+              <span className="header-step-num" aria-hidden>{i + 1}</span>
+              {t(`header.${step}`)}
+            </li>
+          ))}
+        </ol>
       </div>
     </header>
   )

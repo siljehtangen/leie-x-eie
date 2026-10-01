@@ -20,8 +20,13 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
   const totalBuyOutlay = summary.downPayment + summary.closingCosts
 
   return (
-    <div>
-      <h2 className="results-title">{t('results.title')}</h2>
+    <section className="results-block" aria-labelledby="split-heading">
+      <div className="results-block-head">
+        <div>
+          <h3 id="split-heading" className="results-block-title">{t('results.splitTitle')}</h3>
+          <p className="results-block-subtitle">{t('results.unitsNote')}</p>
+        </div>
+      </div>
 
       <div className="split-screen">
         <div className="split-card rent">
@@ -99,6 +104,6 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }

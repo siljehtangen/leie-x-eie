@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { useFormatNOK } from '../hooks/useFormatNOK'
-import { COLORS } from '../constants/theme'
 import type { CalculationResult } from '../types'
 
 interface RecommendationProps {
@@ -42,9 +41,9 @@ export default function Recommendation({ results, years }: RecommendationProps) 
           {t('recommendation.keyFactors')} – {years} {t('results.years')}
         </div>
 
-        <h2 className="rec-title">
+        <h3 className="rec-title">
           {isBuy ? t('recommendation.buy') : t('recommendation.rent')}
-        </h2>
+        </h3>
 
         <div className="rec-amount">{diffFormatted}</div>
 
@@ -85,7 +84,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
       </div>
 
       <p className="rec-disclaimer">
-        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: COLORS.textMuted }} aria-hidden />
+        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: 'var(--color-text-muted)' }} aria-hidden />
         {t('recommendation.disclaimer')}
       </p>
     </div>
