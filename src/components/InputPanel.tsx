@@ -9,7 +9,8 @@ import {
   Info,
   type LucideIcon,
 } from 'lucide-react'
-import { formatInputNum } from '../utils/formatting'
+import { formatInputDraft, formatInputNum, parseInputNum } from '../utils/formatting'
+import { useLocale } from '../hooks/useLocale'
 import { COLORS } from '../constants/theme'
 import { BSU_MAX_CONTRIBUTION, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS, MIN_DOWN_PAYMENT_RATE } from '../constants/finance'
 import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
@@ -36,7 +37,8 @@ function clamp(value: number, min?: number, max?: number): number {
 
 function InputField({ label, name, value, onChange, unit, tooltip, min, max, step, warning }: InputFieldProps) {
   const { t: tA11y } = useTranslation()
-  const [focused, setFocused] = useState(false)
+  const locale = useLocale()
+  const [draft, setDraft] = useState<string | null>(null)
   const s = step ?? 1
 
   const increment = () => onChange(name, clamp(parseFloat((value + s).toFixed(10)), min, max))
@@ -61,17 +63,16 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           autoComplete="off"
           spellCheck={false}
           aria-label={label}
-          value={focused ? value : formatInputNum(value)}
-          onFocus={() => setFocused(true)}
+          value={draft ?? formatInputNum(value, locale)}
+          onFocus={() => setDraft(formatInputDraft(value, locale))}
           onBlur={() => {
-            setFocused(false)
+            setDraft(null)
             const clamped = clamp(value, min, max)
             if (clamped !== value) onChange(name, clamped)
           }}
           onChange={e => {
-            const raw = e.target.value.replace(/[\s\u202f]/g, '').replace(',', '.')
-            const v = raw === '' ? 0 : parseFloat(raw)
-            onChange(name, isNaN(v) ? 0 : v)
+            setDraft(e.target.value)
+            onChange(name, parseInputNum(e.target.value))
           }}
         />
         {unit && <span className="input-unit">{unit}</span>}
@@ -155,12 +156,27 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
   const krYear = t('units.krPerYear')
   const years = t('units.years')
 
+  const showSharedDebt = isAdvanced && inputs.isBorettslag
+  const totalPriceForEquity = inputs.purchasePrice + (showSharedDebt ? inputs.sharedDebt : 0)
   const downPaymentWarning =
     inputs.downPayment > inputs.purchasePrice
       ? t('warnings.downPaymentTooHigh')
-      : inputs.purchasePrice > 0 && inputs.downPayment < inputs.purchasePrice * MIN_DOWN_PAYMENT_RATE
-        ? t('warnings.downPaymentTooLow', { pct: MIN_DOWN_PAYMENT_RATE * 100 })
+      : inputs.purchasePrice > 0 && inputs.downPayment < totalPriceForEquity * MIN_DOWN_PAYMENT_RATE
+        ? t(showSharedDebt && inputs.sharedDebt > 0 ? 'warnings.downPaymentTooLowShared' : 'warnings.downPaymentTooLow', {
+            pct: MIN_DOWN_PAYMENT_RATE * 100,
+          })
         : undefined
+
+  const checkbox = (name: BooleanInputKey) => (
+    <CheckboxField
+      key={name}
+      label={t(`inputs.${name}`)}
+      name={name}
+      value={inputs[name]}
+      onChange={onInputChange}
+      tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
+    />
+  )
 
   const field = (name: NumericInputKey, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
     <InputField
@@ -191,6 +207,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
       <Section id="buy" title={t('sections.buy')} icon={House} iconColor={COLORS.buy}>
         <div className="input-grid">
+          {checkbox('isBorettslag')}
           {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
           {field('downPayment',     { unit: kr,      min: 0,   step: 50000, warning: downPaymentWarning })}
           {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1 })}
@@ -200,9 +217,15 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           {field('brokerSellingFee',{ unit: kr,      min: 0,   step: 10000 })}
           {isAdvanced && <>
             {field('otherClosingCosts',  { unit: kr,     min: 0, step: 1000  })}
-            {field('sharedDebt',         { unit: kr,     min: 0, step: 10000 })}
-            {field('sharedDebtRate',     { unit: '%',    min: 0, max: 15, step: 0.1 })}
+            {showSharedDebt && <>
+              {field('sharedDebt',          { unit: kr,    min: 0, step: 10000 })}
+              {field('sharedDebtRate',      { unit: '%',   min: 0, max: 15, step: 0.1 })}
+              {field('sharedDebtTermYears', { unit: years, min: 0, max: 50, step: 1 })}
+            </>}
             {field('interestOnlyYears',  { unit: years,  min: 0, max: 10, step: 1 })}
+            {field('mortgageRateChangeYear', { unit: years, min: 0, max: MAX_HORIZON_YEARS, step: 1 })}
+            {inputs.mortgageRateChangeYear > 0 &&
+              field('mortgageRateAfterChange', { unit: '%', min: 0, max: 15, step: 0.1 })}
             {field('municipalFees',      { unit: krYear, min: 0, step: 500   })}
             {field('renovationPct',      { unit: '%',    min: 0, max: 5, step: 0.1 })}
             {field('homeInsurance',      { unit: krYear, min: 0, step: 500   })}
@@ -229,14 +252,11 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
             {field('askBalance',            { unit: kr, min: 0, step: 10000 })}
             {field('askRate',               { unit: '%', min: 0, max: 30, step: 0.1 })}
             {field('askShieldingRate',      { unit: '%', min: 0, max: 10, step: 0.1 })}
-            <CheckboxField
-              label={t('inputs.bsuActive')}
-              name="bsuActive"
-              value={inputs.bsuActive}
-              onChange={onInputChange}
-              tooltip={t('tooltips.bsuActive', { defaultValue: '' }) || undefined}
-            />
-            {inputs.bsuActive && field('bsuYearlyContribution', { unit: krYear, min: 0, max: BSU_MAX_CONTRIBUTION, step: 500 })}
+            {checkbox('isCouple')}
+            {checkbox('bsuActive')}
+            {inputs.bsuActive && field('bsuYearlyContribution', {
+              unit: krYear, min: 0, max: BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1), step: 500,
+            })}
           </div>
         </Section>
       )}

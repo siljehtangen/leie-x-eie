@@ -39,7 +39,7 @@ export default function Recommendation({ results, years }: RecommendationProps) 
         <div className="rec-bg-shape rec-bg-2" />
 
         <div className="rec-label">
-          {t('recommendation.keyFactors')} — {years} {t('results.years')}
+          {t('recommendation.keyFactors')} – {years} {t('results.years')}
         </div>
 
         <h2 className="rec-title">

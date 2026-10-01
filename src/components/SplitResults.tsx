@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { Trophy, Home, Building2 } from 'lucide-react'
 import { AnimatedNOK } from './AnimatedNOK'
 import { useLocale } from '../hooks/useLocale'
+import { useFormatNOK } from '../hooks/useFormatNOK'
+import { formatPct } from '../utils/formatting'
 import type { CalculationResult } from '../types'
 
 interface SplitResultsProps {
@@ -12,6 +14,7 @@ interface SplitResultsProps {
 export default function SplitResults({ results, years }: SplitResultsProps) {
   const { t } = useTranslation()
   const locale = useLocale()
+  const formatKr = useFormatNOK()
   const { summary, recommendation } = results
 
   const totalBuyOutlay = summary.downPayment + summary.closingCosts
@@ -69,6 +72,17 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
             <div className="stat-row">
               <span className="stat-label">{t('results.initialOutlay')}</span>
               <AnimatedNOK value={totalBuyOutlay} trigger={results} locale={locale} />
+            </div>
+            <div className="stat-row" title={t('results.stressTestHint')}>
+              <span className="stat-label">
+                {t('results.stressTest', { rate: formatPct(summary.stressTest.ratePct, locale) })}
+              </span>
+              <span className="stat-stack">
+                <AnimatedNOK value={summary.stressTest.monthlyPayment} trigger={results} locale={locale} />
+                <span className="stat-sub">
+                  +{formatKr(summary.stressTest.extraPerMonth)} {t('units.perMonth')}
+                </span>
+              </span>
             </div>
             <div className="stat-row">
               <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>

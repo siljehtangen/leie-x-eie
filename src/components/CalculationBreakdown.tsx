@@ -5,6 +5,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import { useFormatNOK } from '../hooks/useFormatNOK'
 import { useLocale } from '../hooks/useLocale'
 import { buildBreakdownModel, buildTaxRuleParams } from '../utils/breakdownModel'
+import { formatPercent } from '../utils/formatting'
 import type { CalculationResult, Inputs, Mode } from '../types'
 import CalculationPDF from './CalculationPDF'
 import BuyerColumn from './breakdown/BuyerColumn'
@@ -28,6 +29,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
   const { isAdvanced } = model
   const perMonth = `/${t('breakdown.month')}`
   const years = (n: number) => `${n} ${t('units.years')}`
+  const pct = (v: number) => formatPercent(v, locale)
 
   return (
     <div className="breakdown-wrap">
@@ -75,15 +77,15 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
                 [t('inputs.purchasePrice'), formatKr(inputs.purchasePrice)],
                 [t('inputs.downPayment'), formatKr(inputs.downPayment)],
                 [t('breakdown.loanAmount'), formatKr(model.mortgage.loanAmount)],
-                [t('inputs.mortgageRate'), `${inputs.mortgageRate}%`],
+                [t('inputs.mortgageRate'), pct(inputs.mortgageRate)],
                 [t('inputs.loanTermYears'), years(inputs.loanTermYears)],
                 [t('inputs.monthlyHoaFee'), `${formatKr(inputs.monthlyHoaFee)}${perMonth}`],
                 [t('inputs.monthlyRent'), `${formatKr(inputs.monthlyRent)}${perMonth}`],
-                [t('inputs.rentIncrease'), `${inputs.rentIncrease}%`],
-                [t('inputs.appreciationRate'), `${inputs.appreciationRate}%`],
+                [t('inputs.rentIncrease'), pct(inputs.rentIncrease)],
+                [t('inputs.appreciationRate'), pct(inputs.appreciationRate)],
                 [t('inputs.years'), years(model.years)],
-                [t('inputs.inflation'), `${inputs.inflation}%`],
-                ...(isAdvanced ? [] : [[t('inputs.investmentReturn'), `${inputs.investmentReturn}%`]]),
+                [t('inputs.inflation'), pct(inputs.inflation)],
+                ...(isAdvanced ? [] : [[t('inputs.investmentReturn'), pct(inputs.investmentReturn)]]),
                 [t('inputs.brokerSellingFee'), formatKr(inputs.brokerSellingFee)],
                 ...(model.mortgage.ioYears > 0
                   ? [[t('inputs.interestOnlyYears'), years(model.mortgage.ioYears)]]
@@ -98,8 +100,8 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
           </div>
 
           <div className="bd-two-col">
-            <BuyerColumn t={t} formatKr={formatKr} inputs={inputs} model={model} rules={rules} />
-            <RenterColumn t={t} formatKr={formatKr} inputs={inputs} model={model} rules={rules} />
+            <BuyerColumn t={t} formatKr={formatKr} locale={locale} inputs={inputs} model={model} rules={rules} />
+            <RenterColumn t={t} formatKr={formatKr} locale={locale} inputs={inputs} model={model} rules={rules} />
           </div>
 
           <YearlyTable t={t} formatKr={formatKr} yearlyData={results.yearlyData} />
