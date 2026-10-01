@@ -35,6 +35,8 @@ export function parseScenario(raw: unknown): Scenario | null {
       (merged as Record<keyof Inputs, number | boolean>)[key] = value
     }
   }
+  // Older scenarios predate the borettslag toggle; shared debt implies one.
+  if (typeof source.isBorettslag !== 'boolean' && merged.sharedDebt > 0) merged.isBorettslag = true
   return { mode, inputs: merged }
 }
 

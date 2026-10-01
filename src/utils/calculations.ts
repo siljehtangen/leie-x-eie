@@ -1,5 +1,6 @@
 import type {
   Inputs, Mode, CalculationResult, YearlyDataPoint, Summary, BuyerCostBreakdown, RenterCostBreakdown,
+  RateChange, StressTest,
 } from '../types'
 import {
   WEALTH_TAX_THRESHOLD,
@@ -18,6 +19,8 @@ import {
   BSU_TAX_DEDUCTION_RATE,
   DEFAULT_HOA_INCREASE_PCT,
   MAX_HORIZON_YEARS,
+  STRESS_TEST_RATE_ADD_PCT,
+  STRESS_TEST_MIN_RATE_PCT,
 } from '../constants/finance'
 
 interface SimParams {
@@ -30,6 +33,8 @@ interface SimParams {
   numPayments: number
   remainingTermMonths: number
   monthlyAmortizingPayment: number
+  rateChangeYear: number
+  rateAfterChangePct: number
   initialInvestment: number
   securityDeposit: number
   savingsInitial: number
@@ -37,12 +42,14 @@ interface SimParams {
   cashMonthlyReturn: number
   askMonthlyReturn: number
   bsuMonthlySaving: number
-  advancedRentMonthly: number
-  sharedUtilitiesMonthly: number
+  livingCostsMonthly: number
   municipalFeesBase: number
   insuranceMonthly: number
   propertyTaxMonthly: number
-  sharedDebtMonthlyInterest: number
+  sharedDebt: number
+  sharedDebtMonthlyRate: number
+  sharedDebtPayment: number
+  isCouple: boolean
 }
 
 function finiteOr(value: number, fallback: number): number {
@@ -62,17 +69,35 @@ export function normalizeInputs(inputs: Inputs): Inputs {
     'contentsInsurance', 'electricity', 'internet', 'parking', 'otherClosingCosts', 'sharedDebt',
     'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax', 'mortgageRate', 'sharedDebtRate',
     'savingsAccountBalance', 'askBalance', 'askShieldingRate', 'bsuYearlyContribution',
+    'mortgageRateAfterChange',
   ] as const
   for (const key of nonNegative) next[key] = Math.max(0, next[key])
 
   next.years = Math.min(MAX_HORIZON_YEARS, Math.max(1, Math.round(next.years)))
   next.loanTermYears = Math.max(1, Math.round(next.loanTermYears))
   next.interestOnlyYears = Math.max(0, Math.round(next.interestOnlyYears))
+  next.sharedDebtTermYears = Math.max(0, Math.round(next.sharedDebtTermYears))
+  next.mortgageRateChangeYear = Math.max(0, Math.round(next.mortgageRateChangeYear))
   return next
 }
 
 function monthlyFromAnnual(annualPct: number): number {
   return Math.pow(Math.max(0, 1 + annualPct / 100), 1 / 12) - 1
+}
+
+export function annuityPayment(principal: number, monthlyRate: number, months: number): number {
+  if (months <= 0 || principal <= 0) return 0
+  if (monthlyRate <= 0) return principal / months
+  return principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -months))
+}
+
+// Clears floating-point residue below one øre so repaid loans read as exactly zero.
+function settle(balance: number): number {
+  return balance < 0.01 ? 0 : balance
+}
+
+function effectiveSharedDebt(inputs: Inputs, isAdvanced: boolean): number {
+  return isAdvanced && inputs.isBorettslag ? inputs.sharedDebt : 0
 }
 
 function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
@@ -82,7 +107,7 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     savingsAccountBalance, askBalance, savingsAccountRate, askRate,
     bsuActive, bsuYearlyContribution, contentsInsurance, electricity,
     internet, parking, municipalFees, homeInsurance, propertyTax,
-    sharedDebt, sharedDebtRate,
+    sharedDebtRate, sharedDebtTermYears,
   } = inputs
 
   const loanAmount = Math.max(0, purchasePrice - downPayment)
@@ -91,17 +116,9 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
   const ioYears = isAdvanced ? Math.min(interestOnlyYears, loanTermYears - 1) : 0
   const numPayments = loanTermYears * 12
   const remainingTermMonths = numPayments - ioYears * 12
-
-  const monthlyAmortizingPayment =
-    remainingTermMonths > 0
-      ? monthlyRate > 0
-        ? loanAmount *
-          (monthlyRate * Math.pow(1 + monthlyRate, remainingTermMonths)) /
-          (Math.pow(1 + monthlyRate, remainingTermMonths) - 1)
-        : loanAmount / remainingTermMonths
-      : 0
-
   const securityDeposit = isAdvanced ? monthlyRent * SECURITY_DEPOSIT_MONTHS : 0
+  const sharedDebt = effectiveSharedDebt(inputs, isAdvanced)
+  const sharedDebtMonthlyRate = sharedDebtRate / 100 / 12
 
   return {
     effectivePrice: purchasePrice + sharedDebt,
@@ -112,7 +129,9 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     ioYears,
     numPayments,
     remainingTermMonths,
-    monthlyAmortizingPayment,
+    monthlyAmortizingPayment: annuityPayment(loanAmount, monthlyRate, remainingTermMonths),
+    rateChangeYear: isAdvanced ? inputs.mortgageRateChangeYear : 0,
+    rateAfterChangePct: inputs.mortgageRateAfterChange,
     initialInvestment: downPayment + closingCosts,
     securityDeposit,
     savingsInitial: isAdvanced ? savingsAccountBalance : 0,
@@ -120,12 +139,14 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     cashMonthlyReturn: monthlyFromAnnual((isAdvanced ? savingsAccountRate : investmentReturn) * (1 - SAVINGS_TAX_RATE)),
     askMonthlyReturn: monthlyFromAnnual(askRate),
     bsuMonthlySaving: isAdvanced && bsuActive ? bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE / 12 : 0,
-    advancedRentMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
-    sharedUtilitiesMonthly: isAdvanced ? (electricity + internet) / 12 : 0,
+    livingCostsMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
     municipalFeesBase: isAdvanced ? municipalFees / 12 : 0,
     insuranceMonthly: isAdvanced ? homeInsurance / 12 : 0,
     propertyTaxMonthly: isAdvanced ? propertyTax / 12 : 0,
-    sharedDebtMonthlyInterest: isAdvanced ? sharedDebt * (sharedDebtRate / 100) / 12 : 0,
+    sharedDebt,
+    sharedDebtMonthlyRate,
+    sharedDebtPayment: annuityPayment(sharedDebt, sharedDebtMonthlyRate, sharedDebtTermYears * 12),
+    isCouple: isAdvanced && inputs.isCouple,
   }
 }
 
@@ -144,6 +165,29 @@ function computeMonthlyMortgage(
   }
   const principalPayment = Math.min(monthlyAmortizingPayment - interestPayment, remainingMortgage)
   return { effectiveMortgage: principalPayment + interestPayment, principalPayment, interestPayment }
+}
+
+export function stressTestRate(ratePct: number): number {
+  return Math.max(ratePct + STRESS_TEST_RATE_ADD_PCT, STRESS_TEST_MIN_RATE_PCT)
+}
+
+export function computeStressTest(rawInputs: Inputs, mode: Mode): StressTest {
+  const inputs = normalizeInputs(rawInputs)
+  const loanAmount = Math.max(0, inputs.purchasePrice - inputs.downPayment)
+  const months = inputs.loanTermYears * 12
+  const ratePct = stressTestRate(inputs.mortgageRate)
+  const normalPayment = annuityPayment(loanAmount, inputs.mortgageRate / 100 / 12, months)
+  const stressedPayment = annuityPayment(loanAmount, ratePct / 100 / 12, months)
+
+  const sharedDebt = effectiveSharedDebt(inputs, mode === 'advanced')
+  const sharedDebtExtra =
+    sharedDebt * (stressTestRate(inputs.sharedDebtRate) - inputs.sharedDebtRate) / 100 / 12
+
+  return {
+    ratePct,
+    monthlyPayment: stressedPayment,
+    extraPerMonth: stressedPayment - normalPayment + sharedDebtExtra,
+  }
 }
 
 export interface FinancialAssets {
@@ -189,6 +233,7 @@ export function computeAnnualWealthTax(
   sharedDebt: number,
   buyerAssets: FinancialAssets,
   renterAssets: FinancialAssets,
+  isCouple = false,
 ): { buyerWealthTax: number; renterWealthTax: number } {
   const homeValueForWealthTax =
     Math.min(homeValue, PRIMARY_RESIDENCE_HIGH_THRESHOLD) * PRIMARY_RESIDENCE_VALUATION +
@@ -202,14 +247,17 @@ export function computeAnnualWealthTax(
   const renterTaxableWealth = Math.max(0, financialValue(renterAssets))
 
   return {
-    buyerWealthTax: wealthTaxOn(buyerTaxableWealth),
-    renterWealthTax: wealthTaxOn(renterTaxableWealth),
+    buyerWealthTax: wealthTaxOn(buyerTaxableWealth, isCouple),
+    renterWealthTax: wealthTaxOn(renterTaxableWealth, isCouple),
   }
 }
 
-export function wealthTaxOn(netWealth: number): number {
-  const lowBand = Math.max(0, Math.min(netWealth, WEALTH_TAX_HIGH_THRESHOLD) - WEALTH_TAX_THRESHOLD)
-  const highBand = Math.max(0, netWealth - Math.max(WEALTH_TAX_HIGH_THRESHOLD, WEALTH_TAX_THRESHOLD))
+export function wealthTaxOn(netWealth: number, isCouple = false): number {
+  const factor = isCouple ? 2 : 1
+  const threshold = WEALTH_TAX_THRESHOLD * factor
+  const highThreshold = WEALTH_TAX_HIGH_THRESHOLD * factor
+  const lowBand = Math.max(0, Math.min(netWealth, highThreshold) - threshold)
+  const highBand = Math.max(0, netWealth - Math.max(highThreshold, threshold))
   return lowBand * (WEALTH_TAX_RATE / 100) + highBand * (WEALTH_TAX_HIGH_RATE / 100)
 }
 
@@ -251,6 +299,8 @@ interface SummaryExtras {
   finalBuyerAskTax: number
   year1BuyerCosts: BuyerCostBreakdown
   year1RenterCosts: RenterCostBreakdown
+  rateChange: RateChange | null
+  stressTest: StressTest
 }
 
 function buildSummary(
@@ -289,6 +339,9 @@ function buildSummary(
     ioYears: p.ioYears,
     remainingTermMonths: p.remainingTermMonths,
     finalInflationFactor: Math.pow(1 + inputs.inflation / 100, inputs.years),
+    finalSharedDebt: finalYear.remainingSharedDebt,
+    rateChange: extras.rateChange,
+    stressTest: extras.stressTest,
   }
 }
 
@@ -303,6 +356,8 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
   withdraw(renter, p.securityDeposit)
 
   let remainingMortgage = p.loanAmount
+  let remainingSharedDebt = p.sharedDebt
+  let depositBalance = p.securityDeposit
   let currentMonthlyRent = inputs.monthlyRent
   let currentHoaFee = inputs.monthlyHoaFee
   let totalBuyerPaid = 0
@@ -311,6 +366,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
   let lastAskTax = 0
   let lastBuyerPortfolioGross = 0
   let lastBuyerAskTax = 0
+  let rateChange: RateChange | null = null
   const year1Buyer = emptyBuyerCosts()
   const year1Renter: RenterCostBreakdown = { rent: 0, extras: 0, bsuDeduction: 0, total: 0 }
 
@@ -327,6 +383,19 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     }
 
     const isInterestOnly = p.ioYears > 0 && year <= p.ioYears
+    const ratePct = p.rateChangeYear > 0 && year >= p.rateChangeYear ? p.rateAfterChangePct : inputs.mortgageRate
+    const monthlyRate = ratePct / 100 / 12
+    const monthlyPayment = isInterestOnly
+      ? 0
+      : annuityPayment(remainingMortgage, monthlyRate, p.numPayments - (year - 1) * 12)
+    if (year === p.rateChangeYear) {
+      rateChange = {
+        year,
+        ratePct,
+        monthlyPayment: isInterestOnly ? remainingMortgage * monthlyRate : monthlyPayment,
+      }
+    }
+
     const inflationMultiplier = Math.pow(1 + inputs.inflation / 100, year - 1)
     const maintenanceMonthly = isAdvanced
       ? (inputs.purchasePrice * inputs.renovationPct / 100 / 12) * inflationMultiplier
@@ -335,22 +404,25 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     for (let month = 0; month < 12; month++) {
       const { effectiveMortgage, principalPayment, interestPayment } =
-        computeMonthlyMortgage(remainingMortgage, p.monthlyRate, p.monthlyAmortizingPayment, isInterestOnly)
+        computeMonthlyMortgage(remainingMortgage, monthlyRate, monthlyPayment, isInterestOnly)
 
-      const taxDeductionMonthly = (interestPayment + p.sharedDebtMonthlyInterest) * INTEREST_DEDUCTION
+      const sharedDebtInterest = remainingSharedDebt * p.sharedDebtMonthlyRate
+      const sharedDebtPrincipal = Math.max(0, Math.min(p.sharedDebtPayment - sharedDebtInterest, remainingSharedDebt))
+
+      const taxDeductionMonthly = (interestPayment + sharedDebtInterest) * INTEREST_DEDUCTION
       const advancedBuyerMonthly = isAdvanced
         ? maintenanceMonthly + municipalFeesMonthly + p.insuranceMonthly + p.propertyTaxMonthly
         : 0
 
       const buyerMonthlyCost =
-        effectiveMortgage + currentHoaFee + p.sharedUtilitiesMonthly + advancedBuyerMonthly - taxDeductionMonthly
-      const renterMonthlyCost = currentMonthlyRent + p.advancedRentMonthly - p.bsuMonthlySaving
+        effectiveMortgage + currentHoaFee + p.livingCostsMonthly + advancedBuyerMonthly - taxDeductionMonthly
+      const renterMonthlyCost = currentMonthlyRent + p.livingCostsMonthly - p.bsuMonthlySaving
       const monthlyDiff = buyerMonthlyCost - renterMonthlyCost
 
       if (year === 1) {
         year1Buyer.mortgage += effectiveMortgage
         year1Buyer.hoaFee += currentHoaFee
-        year1Buyer.utilities += p.sharedUtilitiesMonthly
+        year1Buyer.utilities += p.livingCostsMonthly
         if (isAdvanced) {
           year1Buyer.maintenance += maintenanceMonthly
           year1Buyer.municipalFees += municipalFeesMonthly
@@ -360,7 +432,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         year1Buyer.interestDeduction += taxDeductionMonthly
         year1Buyer.total += buyerMonthlyCost
         year1Renter.rent += currentMonthlyRent
-        year1Renter.extras += p.advancedRentMonthly
+        year1Renter.extras += p.livingCostsMonthly
         year1Renter.bsuDeduction += p.bsuMonthlySaving
         year1Renter.total += renterMonthlyCost
       }
@@ -369,10 +441,12 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         h.savings *= 1 + p.cashMonthlyReturn
         h.ask *= 1 + p.askMonthlyReturn
       }
+      depositBalance *= 1 + p.cashMonthlyReturn
       if (monthlyDiff >= 0) invest(renter, monthlyDiff, isAdvanced)
       else invest(buyer, -monthlyDiff, isAdvanced)
 
-      remainingMortgage = Math.max(0, remainingMortgage - principalPayment)
+      remainingMortgage = settle(remainingMortgage - principalPayment)
+      remainingSharedDebt = settle(remainingSharedDebt - sharedDebtPrincipal)
 
       yearlyBuyerCashflow += buyerMonthlyCost
       yearlyRenterCashflow += renterMonthlyCost
@@ -382,9 +456,10 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     if (isAdvanced) {
       const { buyerWealthTax, renterWealthTax } = computeAnnualWealthTax(
-        homeValue, remainingMortgage, inputs.sharedDebt,
+        homeValue, remainingMortgage, remainingSharedDebt,
         buyer,
-        { savings: renter.savings + p.securityDeposit, ask: renter.ask },
+        { savings: renter.savings + depositBalance, ask: renter.ask },
+        p.isCouple,
       )
       withdraw(buyer, buyerWealthTax)
       withdraw(renter, renterWealthTax)
@@ -400,9 +475,9 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     lastBuyerPortfolioGross = buyer.savings + buyer.ask
     lastBuyerAskTax = askTaxOnExit(buyer)
     const buyerPortfolio = lastBuyerPortfolioGross - lastBuyerAskTax
-    const buyerEquity = homeValue - remainingMortgage - inputs.sharedDebt - inputs.brokerSellingFee + buyerPortfolio
+    const buyerEquity = homeValue - remainingMortgage - remainingSharedDebt - inputs.brokerSellingFee + buyerPortfolio
 
-    lastRenterNominalGross = renter.savings + renter.ask + p.securityDeposit
+    lastRenterNominalGross = renter.savings + renter.ask + depositBalance
     lastAskTax = askTaxOnExit(renter)
 
     yearlyData.push({
@@ -413,6 +488,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       renterNetWorth: (lastRenterNominalGross - lastAskTax) / inflationFactor,
       homeValue,
       remainingMortgage,
+      remainingSharedDebt,
       buyerPortfolio,
     })
 
@@ -438,6 +514,8 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       finalBuyerAskTax: lastBuyerAskTax,
       year1BuyerCosts: averageOverYear(year1Buyer),
       year1RenterCosts: averageOverYear(year1Renter),
+      rateChange,
+      stressTest: computeStressTest(inputs, mode),
     }),
   }
 }

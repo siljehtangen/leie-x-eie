@@ -4,14 +4,21 @@ import type { Inputs } from '../types'
 
 export function applyInputChange(prev: Inputs, name: keyof Inputs, value: number | boolean): Inputs {
   const next: Inputs = { ...prev, [name]: value }
+  const autoStampDuty = (inputs: Inputs) => inputs.isBorettslag ? 0 : Math.round(inputs.purchasePrice * STAMP_DUTY_RATE)
+  const stampDutyWasAuto = prev.stampDuty === autoStampDuty(prev)
 
   if (name === 'purchasePrice' && typeof value === 'number') {
-    if (prev.stampDuty === Math.round(prev.purchasePrice * STAMP_DUTY_RATE)) {
-      next.stampDuty = Math.round(value * STAMP_DUTY_RATE)
-    }
     if (prev.downPayment === Math.round(prev.purchasePrice * DEFAULT_DOWN_PAYMENT_RATE)) {
       next.downPayment = Math.round(value * DEFAULT_DOWN_PAYMENT_RATE)
     }
+  }
+
+  if (name === 'isBorettslag' && value === false) {
+    next.sharedDebt = 0
+  }
+
+  if ((name === 'purchasePrice' || name === 'isBorettslag') && stampDutyWasAuto) {
+    next.stampDuty = autoStampDuty(next)
   }
 
   return next

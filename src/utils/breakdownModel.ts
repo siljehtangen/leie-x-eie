@@ -13,7 +13,7 @@ import {
   WEALTH_TAX_HIGH_THRESHOLD,
 } from '../constants/finance'
 import { formatPct } from './formatting'
-import type { CalculationResult, FormatKrFn, Inputs, Mode, YearlyDataPoint } from '../types'
+import type { CalculationResult, FormatKrFn, Inputs, Mode, RateChange, YearlyDataPoint } from '../types'
 
 export type Sign = '+' | '−'
 
@@ -35,6 +35,7 @@ export interface MortgageModel {
   remainingTermMonths: number
   ioPayment: number
   amortizingPayment: number
+  rateChange: RateChange | null
 }
 
 export interface BreakdownModel {
@@ -121,7 +122,9 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
   const buyerNetWorthLines: BreakdownLine[] = [
     line('homeValue', 'breakdown.homeValue', finalYear.homeValue, '+'),
     line('remainingMortgage', 'breakdown.remainingMortgage', finalYear.remainingMortgage, '−'),
-    ...(inputs.sharedDebt > 0 ? [line('sharedDebt', 'inputs.sharedDebt', inputs.sharedDebt, '−')] : []),
+    ...(summary.finalSharedDebt > 0
+      ? [line('sharedDebt', 'breakdown.remainingSharedDebt', summary.finalSharedDebt, '−')]
+      : []),
     line('brokerSellingFee', 'inputs.brokerSellingFee', inputs.brokerSellingFee, '−'),
     ...(summary.finalBuyerPortfolioGross !== 0
       ? [line('portfolioGross', 'breakdown.portfolioGross', Math.abs(summary.finalBuyerPortfolioGross),
@@ -150,6 +153,7 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
       remainingTermMonths: summary.remainingTermMonths,
       ioPayment: summary.loanAmount * summary.monthlyRate,
       amortizingPayment: summary.monthlyAmortizingPayment,
+      rateChange: summary.rateChange,
     },
     buyerCostLines,
     buyerMonthlyTotal: costs.total,

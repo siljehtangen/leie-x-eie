@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { calculate, computeAnnualWealthTax, findBreakevenYear, normalizeInputs, wealthTaxOn } from './calculations'
+import {
+  annuityPayment, calculate, computeAnnualWealthTax, computeStressTest, findBreakevenYear, normalizeInputs, wealthTaxOn,
+} from './calculations'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import {
   BSU_TAX_DEDUCTION_RATE,
@@ -35,7 +37,10 @@ describe('calculate — golden scenarios', () => {
     ['quick defaults', DEFAULT_INPUTS, 'quick'],
     ['advanced defaults', DEFAULT_INPUTS, 'advanced'],
     ['advanced with interest-only, shared debt and BSU', with_({
-      interestOnlyYears: 3, sharedDebt: 500_000, bsuActive: true, years: 15,
+      interestOnlyYears: 3, isBorettslag: true, sharedDebt: 500_000, bsuActive: true, years: 15,
+    }), 'advanced'],
+    ['advanced couple with a rate change', with_({
+      isCouple: true, mortgageRateChangeYear: 4, mortgageRateAfterChange: 4, years: 12,
     }), 'advanced'],
     ['expensive home triggering wealth tax', with_({
       purchasePrice: 25_000_000, downPayment: 15_000_000, stampDuty: 625_000,
@@ -122,7 +127,9 @@ describe('calculate — year-1 cost breakdown', () => {
   })
 
   it('deducts 22% of mortgage and shared-debt interest', () => {
-    const inputs = with_({ interestOnlyYears: 2, sharedDebt: 600_000, sharedDebtRate: 5 })
+    const inputs = with_({
+      interestOnlyYears: 2, isBorettslag: true, sharedDebt: 600_000, sharedDebtRate: 5, sharedDebtTermYears: 0,
+    })
     const { summary } = calculate(inputs, 'advanced')
     const expected = (summary.loanAmount * summary.monthlyRate + 600_000 * 0.05 / 12) * INTEREST_DEDUCTION
     expect(summary.year1BuyerCosts.interestDeduction).toBeCloseTo(expected, 6)
@@ -145,11 +152,11 @@ describe('calculate — year-1 cost breakdown', () => {
 
 describe('calculate — net worth, recommendation and breakeven', () => {
   it('values every year as an exit at that point (broker fee and deposit included each year)', () => {
-    const inputs = with_({ sharedDebt: 300_000, years: 12 })
+    const inputs = with_({ isBorettslag: true, sharedDebt: 300_000, years: 12 })
     const { yearlyData } = calculate(inputs, 'advanced')
     for (const y of yearlyData) {
       const infl = Math.pow(1 + inputs.inflation / 100, y.year)
-      const expected = (y.homeValue - y.remainingMortgage - inputs.sharedDebt - inputs.brokerSellingFee
+      const expected = (y.homeValue - y.remainingMortgage - y.remainingSharedDebt - inputs.brokerSellingFee
         + y.buyerPortfolio) / infl
       expect(y.buyerNetWorth).toBeCloseTo(expected, 4)
     }
@@ -224,7 +231,7 @@ describe('calculate — net worth, recommendation and breakeven', () => {
 describe('findBreakevenYear', () => {
   const point = (year: number, buyer: number, renter: number): YearlyDataPoint => ({
     year, buyerNetWorth: buyer, renterNetWorth: renter,
-    buyerMonthlyCost: 0, renterMonthlyCost: 0, homeValue: 0, remainingMortgage: 0, buyerPortfolio: 0,
+    buyerMonthlyCost: 0, renterMonthlyCost: 0, homeValue: 0, remainingMortgage: 0, remainingSharedDebt: 0, buyerPortfolio: 0,
   })
 
   it('returns null when one path leads throughout', () => {
@@ -281,6 +288,12 @@ describe('wealthTaxOn', () => {
     expect(wealthTaxOn(21_500_000)).toBeCloseTo(19_600_000 * 0.01, 6)
     expect(wealthTaxOn(30_000_000)).toBeCloseTo(19_600_000 * 0.01 + 8_500_000 * 0.011, 6)
   })
+
+  it('doubles both thresholds for couples taxed jointly', () => {
+    expect(wealthTaxOn(3_800_000, true)).toBe(0)
+    expect(wealthTaxOn(5_000_000, true)).toBeCloseTo(1_200_000 * 0.01, 6)
+    expect(wealthTaxOn(50_000_000, true)).toBeCloseTo(39_200_000 * 0.01 + 7_000_000 * 0.011, 6)
+  })
 })
 
 describe('calculate — ASK taxation', () => {
@@ -298,6 +311,92 @@ describe('calculate — ASK taxation', () => {
     expect(summary.finalAskTax).toBe(0)
     expect(summary.finalRenterNominalGross)
       .toBeCloseTo(summary.initialInvestment * Math.pow(1 + 0.06 * (1 - SAVINGS_TAX_RATE), 10), 2)
+  })
+})
+
+describe('calculate — shared costs, shared debt and deposit', () => {
+  it('charges buyer and renter the same electricity, internet, contents insurance and parking', () => {
+    const inputs = with_({ contentsInsurance: 3_000, electricity: 15_000, internet: 6_000, parking: 800 })
+    const { summary } = calculate(inputs, 'advanced')
+    const expected = (3_000 + 15_000 + 6_000 + 800 * 12) / 12
+    expect(summary.year1BuyerCosts.utilities).toBeCloseTo(expected, 6)
+    expect(summary.year1RenterCosts.extras).toBeCloseTo(expected, 6)
+  })
+
+  it('ignores shared debt unless the home is a borettslag', () => {
+    const selveier = calculate(with_({ sharedDebt: 500_000, isBorettslag: false }), 'advanced')
+    expect(selveier.summary.finalSharedDebt).toBe(0)
+    expect(selveier.summary.finalEquity).toBeCloseTo(calculate(DEFAULT_INPUTS, 'advanced').summary.finalEquity, 6)
+  })
+
+  it('pays shared debt down over its term, or keeps it flat when interest-only', () => {
+    const base = { isBorettslag: true, sharedDebt: 500_000, sharedDebtRate: 5, years: 10 }
+    expect(calculate(with_({ ...base, sharedDebtTermYears: 10 }), 'advanced').summary.finalSharedDebt).toBe(0)
+    expect(calculate(with_({ ...base, sharedDebtTermYears: 0 }), 'advanced').summary.finalSharedDebt).toBe(500_000)
+    const halfway = calculate(with_({ ...base, sharedDebtTermYears: 20 }), 'advanced').summary.finalSharedDebt
+    const r = 0.05 / 12
+    const expected = 500_000 * (Math.pow(1 + r, 240) - Math.pow(1 + r, 120)) / (Math.pow(1 + r, 240) - 1)
+    expect(halfway).toBeCloseTo(expected, 4)
+  })
+
+  it('lets the security deposit earn savings interest after tax', () => {
+    const inputs = with_({
+      appreciationRate: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0, askRate: 0, askShieldingRate: 0,
+      savingsAccountRate: 5, savingsAccountBalance: 0, askBalance: 0, monthlyRent: 40_000, years: 5,
+    })
+    const { summary, yearlyData } = calculate(inputs, 'advanced')
+    const deposit = summary.securityDeposit
+    const grown = deposit * Math.pow(1 + 0.05 * (1 - SAVINGS_TAX_RATE), 5)
+    expect(yearlyData[4].renterNetWorth).toBeCloseTo(summary.initialInvestment - deposit + grown, 2)
+  })
+})
+
+describe('calculate — mortgage rate change', () => {
+  it('recalculates the payment on the remaining loan from the chosen year', () => {
+    const inputs = with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 3.5, years: 10 })
+    const { summary, yearlyData } = calculate(inputs, 'advanced')
+    const change = summary.rateChange!
+    expect(change.year).toBe(4)
+    expect(change.ratePct).toBe(3.5)
+    const monthsLeft = summary.numPayments - 36
+    expect(change.monthlyPayment).toBeCloseTo(annuityPayment(yearlyData[2].remainingMortgage, 0.035 / 12, monthsLeft), 6)
+    expect(change.monthlyPayment).toBeLessThan(summary.monthlyAmortizingPayment)
+  })
+
+  it('leaves years before the change untouched and repays the loan by the end of the term', () => {
+    const base = calculate(with_({ years: 10 }), 'advanced').yearlyData
+    const changed = calculate(with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 8, years: 10 }), 'advanced')
+    for (let i = 0; i < 3; i++) expect(changed.yearlyData[i].buyerMonthlyCost).toBeCloseTo(base[i].buyerMonthlyCost, 6)
+    expect(changed.yearlyData[3].buyerMonthlyCost).toBeGreaterThan(base[3].buyerMonthlyCost)
+    const full = calculate(with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 8, loanTermYears: 10, years: 10 }), 'advanced')
+    expect(full.summary.finalRemainingMortgage).toBe(0)
+  })
+
+  it('has no rate change when the year is 0, beyond the horizon, or in quick mode', () => {
+    expect(calculate(DEFAULT_INPUTS, 'advanced').summary.rateChange).toBeNull()
+    expect(calculate(with_({ mortgageRateChangeYear: 20, years: 10 }), 'advanced').summary.rateChange).toBeNull()
+    expect(calculate(with_({ mortgageRateChangeYear: 3 }), 'quick').summary.rateChange).toBeNull()
+  })
+})
+
+describe('computeStressTest', () => {
+  it('adds 3 percentage points to the mortgage rate', () => {
+    const inputs = with_({ mortgageRate: 5.5 })
+    const stress = computeStressTest(inputs, 'quick')
+    const loan = inputs.purchasePrice - inputs.downPayment
+    expect(stress.ratePct).toBe(8.5)
+    expect(stress.monthlyPayment).toBeCloseTo(annuityPayment(loan, 0.085 / 12, 300), 6)
+    expect(stress.extraPerMonth).toBeCloseTo(stress.monthlyPayment - annuityPayment(loan, 0.055 / 12, 300), 6)
+  })
+
+  it('uses at least 7%', () => {
+    expect(computeStressTest(with_({ mortgageRate: 3 }), 'quick').ratePct).toBe(7)
+  })
+
+  it('includes the higher interest on shared debt for a borettslag', () => {
+    const plain = computeStressTest(DEFAULT_INPUTS, 'advanced')
+    const coop = computeStressTest(with_({ isBorettslag: true, sharedDebt: 600_000, sharedDebtRate: 5 }), 'advanced')
+    expect(coop.extraPerMonth - plain.extraPerMonth).toBeCloseTo(600_000 * 0.03 / 12, 6)
   })
 })
 

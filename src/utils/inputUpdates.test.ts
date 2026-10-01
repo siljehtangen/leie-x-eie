@@ -17,6 +17,19 @@ describe('applyInputChange', () => {
     expect(next.downPayment).toBe(1_000_000)
   })
 
+  it('drops stamp duty for a borettslag and restores it for selveier', () => {
+    const coop = applyInputChange(DEFAULT_INPUTS, 'isBorettslag', true)
+    expect(coop.stampDuty).toBe(0)
+    expect(applyInputChange(coop, 'purchasePrice', 5_000_000).stampDuty).toBe(0)
+    const back = applyInputChange({ ...coop, sharedDebt: 400_000 }, 'isBorettslag', false)
+    expect(back.stampDuty).toBe(Math.round(DEFAULT_INPUTS.purchasePrice * 0.025))
+    expect(back.sharedDebt).toBe(0)
+  })
+
+  it('keeps a custom stamp duty when switching to borettslag', () => {
+    expect(applyInputChange({ ...DEFAULT_INPUTS, stampDuty: 12_345 }, 'isBorettslag', true).stampDuty).toBe(12_345)
+  })
+
   it('updates other fields without side effects', () => {
     const next = applyInputChange(DEFAULT_INPUTS, 'bsuActive', true)
     expect(next).toEqual({ ...DEFAULT_INPUTS, bsuActive: true })

@@ -2,10 +2,26 @@ export function getLocale(language: string): string {
   return language.startsWith('en') ? 'en-GB' : 'nb-NO'
 }
 
-export function formatInputNum(v: number): string {
+function decimalSeparator(locale: string): string {
+  return locale.startsWith('en') ? '.' : ','
+}
+
+export function formatInputNum(v: number, locale = 'nb-NO'): string {
   const parts = v.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')
-  return parts.join('.')
+  return parts.join(decimalSeparator(locale))
+}
+
+/** Ungrouped value for editing, with the locale's decimal separator. */
+export function formatInputDraft(v: number, locale = 'nb-NO'): string {
+  return v.toString().replace('.', decimalSeparator(locale))
+}
+
+/** Accepts both comma and point as decimal separator, ignoring digit grouping. */
+export function parseInputNum(raw: string): number {
+  const cleaned = raw.replace(/[\s\u202f\u00a0]/g, '').replace(',', '.')
+  const v = cleaned === '' ? 0 : parseFloat(cleaned)
+  return isNaN(v) ? 0 : v
 }
 
 export function formatNOK(value: number, compact = false, locale = 'nb-NO'): string {
@@ -30,6 +46,19 @@ export function formatNOK(value: number, compact = false, locale = 'nb-NO'): str
 
 export function formatPct(value: number, locale = 'nb-NO', maxDecimals = 2): string {
   return new Intl.NumberFormat(locale, { maximumFractionDigits: maxDecimals }).format(value)
+}
+
+/** Norwegian writes a (non-breaking) space before the percent sign; English does not. */
+export function formatPercent(value: number, locale = 'nb-NO', maxDecimals = 2): string {
+  const space = locale.startsWith('en') ? '' : '\u00a0'
+  return `${formatPct(value, locale, maxDecimals)}${space}%`
+}
+
+export function formatDecimal(value: number, locale = 'nb-NO', decimals = 3): string {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value)
 }
 
 export function formatChartNOK(value: number, locale = 'nb-NO'): string {

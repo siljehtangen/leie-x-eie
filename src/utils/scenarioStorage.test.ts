@@ -38,6 +38,13 @@ describe('scenarioStorage', () => {
     expect(parsed?.inputs).toEqual({ ...DEFAULT_INPUTS, purchasePrice: 3_000_000 })
   })
 
+  it('treats older scenarios with shared debt as a borettslag', () => {
+    const legacy = parseScenario({ mode: 'advanced', inputs: { sharedDebt: 400_000 } })
+    expect(legacy?.inputs.isBorettslag).toBe(true)
+    const explicit = parseScenario({ mode: 'advanced', inputs: { sharedDebt: 400_000, isBorettslag: false } })
+    expect(explicit?.inputs.isBorettslag).toBe(false)
+  })
+
   it('ignores corrupt JSON', () => {
     expect(loadScenario(memoryStorage({ [SCENARIO_STORAGE_KEY]: '{not json' }))).toBeNull()
   })
