@@ -10,6 +10,7 @@ import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
 import ScenarioCompare from './components/ScenarioCompare'
+import Sensitivity from './components/Sensitivity'
 import { calculate, normalizeInputs } from './utils/calculations'
 import { applyInputChange, applyPreset } from './utils/inputUpdates'
 import {
@@ -165,6 +166,7 @@ export default function App() {
               <SplitResults results={result} years={normalizedInputs.years} />
               <Charts yearlyData={result.yearlyData} breakevenYear={result.breakevenYear} />
               <Recommendation results={result} years={normalizedInputs.years} />
+              <Sensitivity inputs={normalizedInputs} mode={deferredMode} />
               <ScenarioCompare
                 current={displayedScenario}
                 currentResult={result}
