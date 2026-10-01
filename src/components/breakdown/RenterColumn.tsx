@@ -1,16 +1,18 @@
 import { SECURITY_DEPOSIT_MONTHS, BSU_TAX_DEDUCTION_RATE } from '../../constants/finance'
 import type { Inputs, FormatKrFn, TranslateFn } from '../../types'
 import type { BreakdownModel, TaxRuleParams } from '../../utils/breakdownModel'
+import { formatDecimal, formatPct, formatPercent } from '../../utils/formatting'
 
 export interface RenterColumnProps {
   t: TranslateFn
   formatKr: FormatKrFn
+  locale: string
   inputs: Inputs
   model: BreakdownModel
   rules: TaxRuleParams
 }
 
-export default function RenterColumn({ t, formatKr, inputs, model, rules }: RenterColumnProps) {
+export default function RenterColumn({ t, formatKr, locale, inputs, model, rules }: RenterColumnProps) {
   const { isAdvanced, inflationFactor } = model
 
   return (
@@ -52,16 +54,16 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
         {isAdvanced ? (
           <>
             <div className="bd-formula-line bd-formula-note">
-              {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @ {inputs.savingsAccountRate}% ({t('breakdown.savingsTaxAuto', { pct: rules.savingsTax })})
+              {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @ {formatPercent(inputs.savingsAccountRate, locale)} ({t('breakdown.savingsTaxAuto', { pct: rules.savingsTax })})
             </div>
             <div className="bd-formula-line bd-formula-note">
-              {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {inputs.askRate}% ({t('breakdown.askTaxOnWithdrawal', { pct: rules.askTax })})
+              {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {formatPercent(inputs.askRate, locale)} ({t('breakdown.askTaxOnWithdrawal', { pct: rules.askTax })})
             </div>
           </>
         ) : (
           <>
             <div className="bd-formula-line">
-              {t('breakdown.investReturn')}: {t('breakdown.investReturnValue', { rate: inputs.investmentReturn })}
+              {t('breakdown.investReturn')}: {t('breakdown.investReturnValue', { rate: formatPct(inputs.investmentReturn, locale) })}
             </div>
             <div className="bd-formula-line">{t('breakdown.quickTaxNote', { pct: rules.savingsTax })}</div>
           </>
@@ -81,7 +83,7 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
         ))}
         {isAdvanced && inputs.askShieldingRate > 0 && (
           <div className="bd-formula-note">
-            {t('breakdown.shieldingNote', { rate: inputs.askShieldingRate })}
+            {t('breakdown.shieldingNote', { rate: formatPct(inputs.askShieldingRate, locale) })}
           </div>
         )}
         {isAdvanced && inputs.bsuActive && (
@@ -90,7 +92,7 @@ export default function RenterColumn({ t, formatKr, inputs, model, rules }: Rent
           </div>
         )}
         <div className="bd-formula-line">
-          ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
+          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}): {formatDecimal(inflationFactor, locale)}
         </div>
         <div className="bd-formula-result bd-result-rent">
           = {formatKr(model.renterNetWorth)}

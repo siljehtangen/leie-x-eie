@@ -1,17 +1,20 @@
 import type { Inputs, FormatKrFn, TranslateFn } from '../../types'
 import type { BreakdownModel, TaxRuleParams } from '../../utils/breakdownModel'
+import { formatDecimal, formatPct, formatPercent } from '../../utils/formatting'
 
 export interface BuyerColumnProps {
   t: TranslateFn
   formatKr: FormatKrFn
+  locale: string
   inputs: Inputs
   model: BreakdownModel
   rules: TaxRuleParams
 }
 
-export default function BuyerColumn({ t, formatKr, inputs, model, rules }: BuyerColumnProps) {
+export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules }: BuyerColumnProps) {
   const { mortgage, inflationFactor } = model
   const perMonth = `/ ${t('breakdown.month')}`
+  const monthlyRatePct = formatPercent(mortgage.monthlyRate * 100, locale, 4)
 
   return (
     <div className="bd-col bd-col-buy">
@@ -27,7 +30,7 @@ export default function BuyerColumn({ t, formatKr, inputs, model, rules }: Buyer
       <div className="bd-formula-block">
         <div className="bd-formula-title">{t('breakdown.monthlyMortgageCalc')}</div>
         <div className="bd-formula-line">
-          r = {mortgage.ratePct}% ÷ 12 = {(mortgage.monthlyRate * 100).toFixed(4)}% {perMonth}
+          r = {formatPercent(mortgage.ratePct, locale)} ÷ 12 = {monthlyRatePct} {perMonth}
         </div>
         <div className="bd-formula-line">
           n = {mortgage.loanTermYears} × 12 = {mortgage.numPayments} {t('breakdown.payments')}
@@ -54,7 +57,7 @@ export default function BuyerColumn({ t, formatKr, inputs, model, rules }: Buyer
             <dt>L</dt>
             <dd>{t('breakdown.formulaL', { amount: formatKr(mortgage.loanAmount) })}</dd>
             <dt>r</dt>
-            <dd>{t('breakdown.formulaR', { rate: `${(mortgage.monthlyRate * 100).toFixed(4)}%` })}</dd>
+            <dd>{t('breakdown.formulaR', { rate: monthlyRatePct })}</dd>
             <dt>n</dt>
             <dd>
               {mortgage.ioYears > 0
@@ -67,6 +70,15 @@ export default function BuyerColumn({ t, formatKr, inputs, model, rules }: Buyer
         <div className="bd-formula-result bd-result-buy">
           → {formatKr(mortgage.amortizingPayment)} {perMonth}
         </div>
+        {mortgage.rateChange && (
+          <div className="bd-formula-line bd-formula-note bd-formula-note-spaced">
+            {t('breakdown.rateChangeNote', {
+              year: mortgage.rateChange.year,
+              rate: formatPct(mortgage.rateChange.ratePct, locale),
+              payment: formatKr(mortgage.rateChange.monthlyPayment),
+            })}
+          </div>
+        )}
       </div>
 
       <div className="bd-formula-block">
@@ -96,7 +108,7 @@ export default function BuyerColumn({ t, formatKr, inputs, model, rules }: Buyer
           </div>
         ))}
         <div className="bd-formula-line">
-          ÷ {t('breakdown.inflationFactor')} ({inputs.inflation}%): {inflationFactor.toFixed(3)}
+          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}): {formatDecimal(inflationFactor, locale)}
         </div>
         <div className="bd-formula-note bd-formula-note-spaced">
           {t('breakdown.taxFreeHomeSale')}
