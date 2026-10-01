@@ -39,7 +39,12 @@ export interface Inputs {
   propertyTax: number
   hoaFeeIncrease: number
   sharedDebtRate: number
+  sharedDebtTermYears: number
+  isBorettslag: boolean
   interestOnlyYears: number
+  mortgageRateChangeYear: number
+  mortgageRateAfterChange: number
+  isCouple: boolean
   savingsAccountBalance: number
   savingsAccountRate: number
   askBalance: number
@@ -57,7 +62,20 @@ export interface YearlyDataPoint {
   renterNetWorth: number
   homeValue: number
   remainingMortgage: number
+  remainingSharedDebt: number
   buyerPortfolio: number
+}
+
+export interface RateChange {
+  year: number
+  ratePct: number
+  monthlyPayment: number
+}
+
+export interface StressTest {
+  ratePct: number
+  monthlyPayment: number
+  extraPerMonth: number
 }
 
 export interface BuyerCostBreakdown {
@@ -106,6 +124,9 @@ export interface Summary {
   ioYears: number
   remainingTermMonths: number
   finalInflationFactor: number
+  finalSharedDebt: number
+  rateChange: RateChange | null
+  stressTest: StressTest
 }
 
 export interface CalculationResult {
