@@ -40,4 +40,7 @@ export const DEFAULT_INPUTS: Inputs = {
   askShieldingRate: 3.0,
   bsuActive: false,
   bsuYearlyContribution: BSU_MAX_CONTRIBUTION,
+  householdIncome: 0,
+  otherDebt: 0,
+  rentalIncome: 0,
 }

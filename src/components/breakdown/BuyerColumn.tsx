@@ -87,7 +87,7 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
           {model.buyerCostLines.map((l, i) => (
             <div
               key={l.id}
-              className={`bd-cost-row${l.id === 'interestDeduction' ? ' deduction' : i % 2 === 1 ? ' alt' : ''}`}
+              className={`bd-cost-row${l.sign === '−' ? ' deduction' : i % 2 === 1 ? ' alt' : ''}`}
             >
               <span>{t(l.labelKey, l.labelOpts)}</span>
               <span>{l.sign} {formatKr(l.amount)}</span>

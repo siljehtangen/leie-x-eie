@@ -9,10 +9,13 @@ import {
   Info,
   type LucideIcon,
 } from 'lucide-react'
-import { formatInputDraft, formatInputNum, parseInputNum } from '../utils/formatting'
+import { formatInputDraft, formatInputNum, formatPct, parseInputNum } from '../utils/formatting'
+import { computeAffordability } from '../utils/affordability'
 import { useLocale } from '../hooks/useLocale'
 import { DEFAULT_INPUTS } from '../constants/defaults'
-import { BSU_MAX_CONTRIBUTION, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS, MIN_DOWN_PAYMENT_RATE } from '../constants/finance'
+import {
+  BSU_MAX_CONTRIBUTION, MAX_DEBT_TO_INCOME, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS, MIN_DOWN_PAYMENT_RATE,
+} from '../constants/finance'
 import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -234,6 +237,7 @@ interface InputPanelProps {
 
 export default function InputPanel({ inputs, onInputChange, mode }: InputPanelProps) {
   const { t } = useTranslation()
+  const locale = useLocale()
   const isAdvanced = mode === 'advanced'
   const kr = t('units.kr')
   const krMonth = t('units.krPerMonth')
@@ -250,6 +254,11 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
             pct: MIN_DOWN_PAYMENT_RATE * 100,
           })
         : undefined
+
+  const affordability = computeAffordability(inputs, mode)
+  const incomeWarning = affordability?.exceedsLimit
+    ? t('warnings.debtToIncome', { value: formatPct(affordability.debtToIncome, locale, 1), max: MAX_DEBT_TO_INCOME })
+    : undefined
 
   const changedCount = (keys: (keyof Inputs)[]) => keys.filter(k => inputs[k] !== DEFAULT_INPUTS[k]).length
 
@@ -279,11 +288,12 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
   const rentExtras: NumericInputKey[] = ['contentsInsurance', 'electricity', 'internet', 'parking']
   const loanExtras: NumericInputKey[] = [
     ...(showSharedDebt ? ['sharedDebtRate', 'sharedDebtTermYears'] as const : []),
-    'interestOnlyYears', 'mortgageRateChangeYear',
+    'otherDebt', 'interestOnlyYears', 'mortgageRateChangeYear',
     ...(inputs.mortgageRateChangeYear > 0 ? ['mortgageRateAfterChange'] as const : []),
   ]
   const ownerExtras: NumericInputKey[] = [
     'otherClosingCosts', 'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax', 'hoaFeeIncrease',
+    'rentalIncome',
   ]
 
   return (
@@ -309,6 +319,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
           {field('downPayment',     { unit: kr,      min: 0,   step: 50000, warning: downPaymentWarning })}
           {showSharedDebt && field('sharedDebt', { unit: kr, min: 0, step: 10000 })}
+          {field('householdIncome', { unit: krYear, min: 0, step: 50000, warning: incomeWarning })}
           {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1, slider: [1, 10] })}
           {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
           {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}
@@ -321,6 +332,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
               {field('sharedDebtRate',      { unit: '%',   min: 0, max: 15, step: 0.1 })}
               {field('sharedDebtTermYears', { unit: years, min: 0, max: 50, step: 1 })}
             </>}
+            {field('otherDebt',          { unit: kr,     min: 0, step: 10000 })}
             {field('interestOnlyYears',  { unit: years,  min: 0, max: 10, step: 1 })}
             {field('mortgageRateChangeYear', { unit: years, min: 0, max: MAX_HORIZON_YEARS, step: 1 })}
             {inputs.mortgageRateChangeYear > 0 &&
@@ -333,6 +345,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
             {field('homeInsurance',      { unit: krYear, min: 0, step: 500   })}
             {field('propertyTax',        { unit: krYear, min: 0, step: 500   })}
             {field('hoaFeeIncrease',     { unit: '%',    min: 0, max: 10, step: 0.1 })}
+            {field('rentalIncome',       { unit: krMonth, min: 0, step: 500 })}
           </MoreGroup>
         </>}
       </Section>

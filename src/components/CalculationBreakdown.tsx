@@ -28,6 +28,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
   const rules = useMemo(() => buildTaxRuleParams(locale, formatKr), [locale, formatKr])
   const { isAdvanced } = model
   const perMonth = `/${t('breakdown.month')}`
+  const perYear = ` ${t('units.perYear')}`
   const years = (n: number) => `${n} ${t('units.years')}`
   const pct = (v: number) => formatPercent(v, locale)
 
@@ -70,6 +71,12 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
                 [t('inputs.brokerSellingFee'), formatKr(inputs.brokerSellingFee)],
                 ...(model.mortgage.ioYears > 0
                   ? [[t('inputs.interestOnlyYears'), years(model.mortgage.ioYears)]]
+                  : []),
+                ...(inputs.householdIncome > 0
+                  ? [[t('inputs.householdIncome'), `${formatKr(inputs.householdIncome)}${perYear}`]]
+                  : []),
+                ...(isAdvanced && inputs.rentalIncome > 0
+                  ? [[t('inputs.rentalIncome'), `${formatKr(inputs.rentalIncome)}${perMonth}`]]
                   : []),
               ].map(([label, val]) => (
                 <div key={label} className="bd-input-row">

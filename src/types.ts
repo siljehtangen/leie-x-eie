@@ -52,6 +52,9 @@ export interface Inputs {
   askShieldingRate: number
   bsuActive: boolean
   bsuYearlyContribution: number
+  householdIncome: number
+  otherDebt: number
+  rentalIncome: number
 }
 
 export interface YearlyDataPoint {
@@ -87,6 +90,7 @@ export interface BuyerCostBreakdown {
   insurance: number
   propertyTax: number
   interestDeduction: number
+  rentalIncome: number
   total: number
 }
 
@@ -116,6 +120,7 @@ export interface Summary {
   finalBuyerPortfolioGross: number
   finalBuyerAskTax: number
   finalRemainingMortgage: number
+  finalBrokerFee: number
   initialMonthlyRent: number
   initialBuyerMonthly: number
   loanAmount: number

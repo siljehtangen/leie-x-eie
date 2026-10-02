@@ -69,7 +69,7 @@ export function normalizeInputs(inputs: Inputs): Inputs {
     'contentsInsurance', 'electricity', 'internet', 'parking', 'otherClosingCosts', 'sharedDebt',
     'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax', 'mortgageRate', 'sharedDebtRate',
     'savingsAccountBalance', 'askBalance', 'askShieldingRate', 'bsuYearlyContribution',
-    'mortgageRateAfterChange',
+    'mortgageRateAfterChange', 'householdIncome', 'otherDebt', 'rentalIncome',
   ] as const
   for (const key of nonNegative) next[key] = Math.max(0, next[key])
 
@@ -278,7 +278,7 @@ export function findBreakevenYear(yearlyData: YearlyDataPoint[]): number | null 
 function emptyBuyerCosts(): BuyerCostBreakdown {
   return {
     mortgage: 0, hoaFee: 0, utilities: 0, maintenance: 0, municipalFees: 0,
-    insurance: 0, propertyTax: 0, interestDeduction: 0, total: 0,
+    insurance: 0, propertyTax: 0, interestDeduction: 0, rentalIncome: 0, total: 0,
   }
 }
 
@@ -297,6 +297,7 @@ interface SummaryExtras {
   finalAskTax: number
   finalBuyerPortfolioGross: number
   finalBuyerAskTax: number
+  finalBrokerFee: number
   year1BuyerCosts: BuyerCostBreakdown
   year1RenterCosts: RenterCostBreakdown
   rateChange: RateChange | null
@@ -331,6 +332,7 @@ function buildSummary(
     finalBuyerPortfolioGross: extras.finalBuyerPortfolioGross,
     finalBuyerAskTax: extras.finalBuyerAskTax,
     finalRemainingMortgage: finalYear.remainingMortgage,
+    finalBrokerFee: extras.finalBrokerFee,
     initialMonthlyRent: inputs.monthlyRent,
     initialBuyerMonthly: yearlyData[0].buyerMonthlyCost,
     loanAmount: p.loanAmount,
@@ -360,6 +362,8 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
   let depositBalance = p.securityDeposit
   let currentMonthlyRent = inputs.monthlyRent
   let currentHoaFee = inputs.monthlyHoaFee
+  let currentRentalIncome = isAdvanced ? inputs.rentalIncome : 0
+  let lastBrokerFee = inputs.brokerSellingFee
   let totalBuyerPaid = 0
   let totalRenterPaid = 0
   let lastRenterNominalGross = 0
@@ -415,7 +419,8 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         : 0
 
       const buyerMonthlyCost =
-        effectiveMortgage + currentHoaFee + p.livingCostsMonthly + advancedBuyerMonthly - taxDeductionMonthly
+        effectiveMortgage + currentHoaFee + p.livingCostsMonthly + advancedBuyerMonthly
+        - taxDeductionMonthly - currentRentalIncome
       const renterMonthlyCost = currentMonthlyRent + p.livingCostsMonthly - p.bsuMonthlySaving
       const monthlyDiff = buyerMonthlyCost - renterMonthlyCost
 
@@ -430,6 +435,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
           year1Buyer.propertyTax += p.propertyTaxMonthly
         }
         year1Buyer.interestDeduction += taxDeductionMonthly
+        year1Buyer.rentalIncome += currentRentalIncome
         year1Buyer.total += buyerMonthlyCost
         year1Renter.rent += currentMonthlyRent
         year1Renter.extras += p.livingCostsMonthly
@@ -452,7 +458,10 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       yearlyRenterCashflow += renterMonthlyCost
     }
 
-    const homeValue = p.effectivePrice * Math.pow(1 + inputs.appreciationRate / 100, year)
+    const priceGrowth = Math.pow(1 + inputs.appreciationRate / 100, year)
+    const homeValue = p.effectivePrice * priceGrowth
+    // Broker fees are priced off the sale price, so they track the home's value rather than staying fixed.
+    lastBrokerFee = inputs.brokerSellingFee * priceGrowth
 
     if (isAdvanced) {
       const { buyerWealthTax, renterWealthTax } = computeAnnualWealthTax(
@@ -475,7 +484,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     lastBuyerPortfolioGross = buyer.savings + buyer.ask
     lastBuyerAskTax = askTaxOnExit(buyer)
     const buyerPortfolio = lastBuyerPortfolioGross - lastBuyerAskTax
-    const buyerEquity = homeValue - remainingMortgage - remainingSharedDebt - inputs.brokerSellingFee + buyerPortfolio
+    const buyerEquity = homeValue - remainingMortgage - remainingSharedDebt - lastBrokerFee + buyerPortfolio
 
     lastRenterNominalGross = renter.savings + renter.ask + depositBalance
     lastAskTax = askTaxOnExit(renter)
@@ -493,6 +502,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     })
 
     currentMonthlyRent *= 1 + inputs.rentIncrease / 100
+    currentRentalIncome *= 1 + inputs.rentIncrease / 100
     currentHoaFee *= 1 + (isAdvanced ? inputs.hoaFeeIncrease : DEFAULT_HOA_INCREASE_PCT) / 100
   }
 
@@ -512,6 +522,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       finalAskTax: lastAskTax,
       finalBuyerPortfolioGross: lastBuyerPortfolioGross,
       finalBuyerAskTax: lastBuyerAskTax,
+      finalBrokerFee: lastBrokerFee,
       year1BuyerCosts: averageOverYear(year1Buyer),
       year1RenterCosts: averageOverYear(year1Renter),
       rateChange,

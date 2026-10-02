@@ -74,7 +74,10 @@
     "askShieldingRate": "Skjermingsrente (ASK)",
     "isCouple": "Vi er et par som skattlegges samlet for formue",
     "bsuActive": "Jeg sparer i BSU (under 34 år og har ikke eid bolig)",
-    "bsuYearlyContribution": "BSU-sparing per år"
+    "bsuYearlyContribution": "BSU-sparing per år",
+    "householdIncome": "Brutto årsinntekt (husstanden)",
+    "otherDebt": "Annen gjeld",
+    "rentalIncome": "Leieinntekt fra utleiedel"
   },
   "tooltips": {
     "monthlyRent": "Husleien per måned for boligen du ville leid. Dette er den største kostnaden når du leier.",
@@ -86,7 +89,7 @@
     "monthlyHoaFee": "Felleskostnader per måned i borettslag eller sameie. Dekker blant annet vedlikehold, forsikring av bygget og forretningsførsel.",
     "stampDuty": "Settes automatisk til 2,5 % av kjøpesummen for selveier og til 0 for borettslag. Ved kjøp av nybygg betales avgiften ofte bare av tomteverdien – juster da beløpet selv.",
     "otherClosingCosts": "Andre engangskostnader ved kjøp: tinglysing av skjøte og pantedokument, etableringsgebyr i banken, eierskiftegebyr og lignende. Typisk 5 000–15 000 kr.",
-    "brokerSellingFee": "Det du betaler megleren når du selger. Typisk rundt 100 000 kr, eller 1–3 % av salgsprisen.",
+    "brokerSellingFee": "Det du betaler megleren når du selger. Typisk rundt 100 000 kr, eller 1–3 % av salgsprisen. Oppgi beløpet i dagens priser – det øker i takt med boligprisene frem til salget.",
     "sharedDebt": "Din andel av borettslagets fellesgjeld. Den følger boligen ved salg og påvirker både totalkostnaden og rentefradraget.",
     "municipalFees": "Årlige kommunale avgifter for vann, avløp og renovasjon. Typisk 10 000–20 000 kr i året.",
     "renovationPct": "Årlig budsjett for vedlikehold, oppgitt som andel av boligverdien. En tommelfingerregel er 0,5–1 % i året.",
@@ -114,7 +117,10 @@
     "sharedDebtTermYears": "Gjenstående nedbetalingstid for borettslagets fellesgjeld. Din andel betales ned gjennom felleskostnadene, slik at fellesgjelden din synker over tid. Sett 0 hvis lånet er avdragsfritt.",
     "mortgageRateChangeYear": "Året en ny boliglånsrente gjelder fra, for eksempel når en fastrenteperiode går ut eller du venter at renten faller. Terminbeløpet regnes om ut fra restgjelden. Sett 0 for ingen endring.",
     "mortgageRateAfterChange": "Boliglånsrenten som gjelder fra det valgte året og ut perioden.",
-    "isCouple": "Ektefeller, og samboere som skattlegges som ektefeller, får dobbelt bunnfradrag i formuesskatten (3 800 000 kr i stedet for 1 900 000 kr). Gjelder både kjøper og leietaker."
+    "isCouple": "Ektefeller, og samboere som skattlegges som ektefeller, får dobbelt bunnfradrag i formuesskatten (3 800 000 kr i stedet for 1 900 000 kr). Gjelder både kjøper og leietaker.",
+    "householdIncome": "Samlet inntekt før skatt for alle som skal stå på lånet. Brukes til å sjekke kravet om at samlet gjeld ikke kan være mer enn 5 ganger inntekten. La stå på 0 for å hoppe over sjekken.",
+    "otherDebt": "Gjeld du har fra før, som studielån, billån og kredittkort. Banken regner den med i gjeldsgraden.",
+    "rentalIncome": "Månedlig leie hvis du leier ut en del av boligen, for eksempel en hybel eller sokkelleilighet. Inntekten er skattefri når du leier ut mindre enn halvparten av boligen (målt i utleieverdi). Den øker hvert år like mye som husleien."
   },
   "footer": {
     "disclaimer": "Kun veiledende. Ikke finansiell rådgivning.",
@@ -132,7 +138,8 @@
   "warnings": {
     "downPaymentTooLow": "Under kravet om minst {{pct}} % egenkapital.",
     "downPaymentTooHigh": "Egenkapitalen er høyere enn kjøpesummen.",
-    "downPaymentTooLowShared": "Under kravet om minst {{pct}} % egenkapital. I borettslag regnes fellesgjelden med i totalprisen."
+    "downPaymentTooLowShared": "Under kravet om minst {{pct}} % egenkapital. I borettslag regnes fellesgjelden med i totalprisen.",
+    "debtToIncome": "Samlet gjeld blir {{value}} ganger inntekten. Banken kan normalt ikke låne ut mer enn {{max}} ganger brutto årsinntekt."
   },
   "share": {
     "copy": "Kopier delingslenke",
@@ -166,15 +173,21 @@
   },
   "sensitivity": {
     "title": "Hvor robust er svaret?",
-    "subtitle": "Fordelen etter {{years}} år i dagens kroner hvis boligprisveksten og renten blir en annen enn du har lagt inn. Ruten med ramme rundt viser resultatet med tallene du har lagt inn.",
-    "caption": "Fordelen ved å eie eller leie ved ulik boligprisvekst og boliglånsrente",
-    "rowAxis": "Boligprisvekst per år",
-    "colAxis": "Boliglånsrente",
-    "cellTitle": {
-      "buy": "Eie lønner seg med {{amount}} ved {{appreciation}} prisvekst og {{rate}} rente",
-      "rent": "Leie lønner seg med {{amount}} ved {{appreciation}} prisvekst og {{rate}} rente"
+    "subtitle": "Fordelen etter {{years}} år i dagens kroner hvis {{row}} og {{col}} blir annerledes enn du har lagt inn. Ruten med ramme rundt viser resultatet med tallene du har lagt inn.",
+    "caption": "Fordelen ved å eie eller leie ved ulik {{row}} og {{col}}",
+    "rowAxisLabel": "Rader",
+    "colAxisLabel": "Kolonner",
+    "axes": {
+      "appreciationRate": "Boligprisvekst per år",
+      "mortgageRate": "Boliglånsrente",
+      "returnRate": "Avkastning på sparepengene",
+      "rentIncrease": "Økning i husleie per år"
     },
-    "note": "Alle andre tall er slik du har lagt dem inn. Har du lagt inn en senere renteendring, endres den nye renten like mye."
+    "cellTitle": {
+      "buy": "Eie lønner seg med {{amount}} når {{row}} er {{rowValue}} og {{col}} er {{colValue}}",
+      "rent": "Leie lønner seg med {{amount}} når {{row}} er {{rowValue}} og {{col}} er {{colValue}}"
+    },
+    "note": "Alle andre tall er slik du har lagt dem inn. Har du lagt inn en senere renteendring, endres den nye renten like mye. I avansert modus gjelder avkastningen ASK-kontoen."
   },
   "results": {
     "title": "Din analyse: leie eller eie",
@@ -228,7 +241,22 @@
     "notApplicable": "–",
     "year": "År",
     "disclaimer": "Dette er et estimat basert på tallene du har lagt inn og antakelser om fremtidige markedsforhold. Snakk alltid med en kvalifisert finansrådgiver før du tar store økonomiske beslutninger.",
-    "keyFactors": "Nøkkeltall"
+    "keyFactors": "Nøkkeltall",
+    "thresholdsLabel": "Når svaret snur",
+    "thresholdRent": "Eie lønner seg når husleien er over {{amount}} per måned. Du har lagt inn {{current}}.",
+    "thresholdAppreciation": "Eie lønner seg når boligprisene stiger mer enn {{rate}} i året. Du har lagt inn {{current}}."
+  },
+  "affordability": {
+    "titleOk": "Innenfor gjeldsgradskravet",
+    "titleOver": "Over gjeldsgradskravet",
+    "totalDebt": "Samlet gjeld",
+    "debtToIncome": "Gjeldsgrad",
+    "times": "{{value}} × inntekten",
+    "limit": "Grense: {{amount}} ({{max}} × inntekten)",
+    "stressed": "Terminbeløp ved {{rate}} % rente",
+    "shareOfIncome": "{{pct}} av brutto månedsinntekt",
+    "noteOk": "Samlet gjeld er innenfor kravet om maks {{max}} ganger brutto årsinntekt (utlånsforskriften). Banken vurderer også om du tåler stresstestrenten etter vanlige levekostnader.",
+    "noteOver": "Samlet gjeld er {{over}} over grensen på {{max}} ganger brutto årsinntekt (utlånsforskriften). Bankene har bare en liten kvote for å gjøre unntak, så du må trolig ha mer egenkapital, mindre annen gjeld eller en billigere bolig."
   },
   "breakdown": {
     "title": "Beregningsdetaljer",
@@ -355,8 +383,8 @@
   },
   "groups": {
     "livingCosts": "Bokostnader (strøm, internett, forsikring, parkering)",
-    "loan": "Lånedetaljer (avdragsfrihet, renteendring)",
-    "ownerCosts": "Løpende eierkostnader og kjøpsomkostninger"
+    "loan": "Lånedetaljer (annen gjeld, avdragsfrihet, renteendring)",
+    "ownerCosts": "Løpende eierkostnader, kjøpsomkostninger og utleie"
   },
   "charts": {
     "title": "Utvikling over tid",

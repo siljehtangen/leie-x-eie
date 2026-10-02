@@ -156,7 +156,8 @@ describe('calculate — net worth, recommendation and breakeven', () => {
     const { yearlyData } = calculate(inputs, 'advanced')
     for (const y of yearlyData) {
       const infl = Math.pow(1 + inputs.inflation / 100, y.year)
-      const expected = (y.homeValue - y.remainingMortgage - y.remainingSharedDebt - inputs.brokerSellingFee
+      const brokerFee = inputs.brokerSellingFee * Math.pow(1 + inputs.appreciationRate / 100, y.year)
+      const expected = (y.homeValue - y.remainingMortgage - y.remainingSharedDebt - brokerFee
         + y.buyerPortfolio) / infl
       expect(y.buyerNetWorth).toBeCloseTo(expected, 4)
     }
@@ -224,7 +225,34 @@ describe('calculate — net worth, recommendation and breakeven', () => {
     const { summary, yearlyData } = calculate(with_({ inflation: 0 }), 'quick')
     expect(summary.finalInflationFactor).toBe(1)
     const last = yearlyData[yearlyData.length - 1]
-    expect(last.buyerNetWorth).toBeCloseTo(last.homeValue - last.remainingMortgage - DEFAULT_INPUTS.brokerSellingFee, 4)
+    expect(last.buyerNetWorth).toBeCloseTo(last.homeValue - last.remainingMortgage - summary.finalBrokerFee, 4)
+  })
+
+  it('grows the broker fee with house prices and keeps it flat when prices are flat', () => {
+    const growing = calculate(with_({ appreciationRate: 3, years: 10 }), 'quick').summary
+    expect(growing.finalBrokerFee).toBeCloseTo(DEFAULT_INPUTS.brokerSellingFee * Math.pow(1.03, 10), 6)
+    const flatPrices = calculate(with_({ appreciationRate: 0 }), 'quick').summary
+    expect(flatPrices.finalBrokerFee).toBe(DEFAULT_INPUTS.brokerSellingFee)
+  })
+})
+
+describe('calculate — rental income from part of the home', () => {
+  it('lowers the buyer cost by the rental income in advanced mode only', () => {
+    const off = calculate(with_({ rentalIncome: 0 }), 'advanced')
+    const on = calculate(with_({ rentalIncome: 6_000 }), 'advanced')
+    expect(off.yearlyData[0].buyerMonthlyCost - on.yearlyData[0].buyerMonthlyCost).toBeCloseTo(6_000, 6)
+    expect(on.summary.year1BuyerCosts.rentalIncome).toBeCloseTo(6_000, 6)
+    const gap = (r: CalculationResult) => r.summary.finalEquity - r.summary.finalRenterPortfolio
+    expect(gap(on)).toBeGreaterThan(gap(off))
+
+    const quick = calculate(with_({ rentalIncome: 6_000 }), 'quick')
+    expect(quick.yearlyData[0].buyerMonthlyCost).toBeCloseTo(calculate(DEFAULT_INPUTS, 'quick').yearlyData[0].buyerMonthlyCost, 6)
+  })
+
+  it('raises the rental income each year in line with rent', () => {
+    const { yearlyData } = calculate(with_({ rentalIncome: 6_000, rentIncrease: 4, years: 3 }), 'advanced')
+    const baseline = calculate(with_({ rentalIncome: 0, rentIncrease: 4, years: 3 }), 'advanced').yearlyData
+    expect(baseline[2].buyerMonthlyCost - yearlyData[2].buyerMonthlyCost).toBeCloseTo(6_000 * 1.04 ** 2, 6)
   })
 })
 

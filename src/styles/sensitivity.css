@@ -8,7 +8,40 @@
   box-shadow: var(--shadow-sm);
 }
 
-.sensitivity .scenarios-subtitle { margin-bottom: 1.25rem; }
+.sensitivity .scenarios-subtitle { margin-bottom: 1rem; }
+
+.sensitivity-axes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.sensitivity-axis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.sensitivity-axis select {
+  min-width: 13rem;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--hairline);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sensitivity-axis select:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
 
 .sensitivity-table {
   width: 100%;

@@ -1,18 +1,28 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import { useFormatNOK } from '../hooks/useFormatNOK'
-import type { CalculationResult } from '../types'
+import { useLocale } from '../hooks/useLocale'
+import { computeBreakevenThresholds } from '../utils/breakeven'
+import { formatPercent } from '../utils/formatting'
+import type { CalculationResult, Inputs, Mode } from '../types'
 
 interface RecommendationProps {
   results: CalculationResult
-  years: number
+  inputs: Inputs
+  mode: Mode
 }
 
-export default function Recommendation({ results, years }: RecommendationProps) {
+const RENT_ROUNDING = 100
+
+export default function Recommendation({ results, inputs, mode }: RecommendationProps) {
   const { t } = useTranslation()
   const formatKr = useFormatNOK()
+  const locale = useLocale()
+  const years = inputs.years
   const { recommendation, difference, summary, breakevenYear } = results
   const isBuy = recommendation === 'buy'
+  const thresholds = useMemo(() => computeBreakevenThresholds(inputs, mode), [inputs, mode])
 
   const diffFormatted = formatKr(difference)
   const equityFormatted = formatKr(summary.finalEquity)
@@ -54,6 +64,27 @@ export default function Recommendation({ results, years }: RecommendationProps) 
         </p>
 
         <p className="rec-breakeven-note">{breakevenText}</p>
+
+        {(thresholds.monthlyRent !== null || thresholds.appreciationRate !== null) && (
+          <ul className="rec-thresholds" aria-label={t('recommendation.thresholdsLabel')}>
+            {thresholds.monthlyRent !== null && (
+              <li>
+                {t('recommendation.thresholdRent', {
+                  amount: formatKr(Math.ceil(thresholds.monthlyRent / RENT_ROUNDING) * RENT_ROUNDING),
+                  current: formatKr(inputs.monthlyRent),
+                })}
+              </li>
+            )}
+            {thresholds.appreciationRate !== null && (
+              <li>
+                {t('recommendation.thresholdAppreciation', {
+                  rate: formatPercent(thresholds.appreciationRate, locale, 1),
+                  current: formatPercent(inputs.appreciationRate, locale, 1),
+                })}
+              </li>
+            )}
+          </ul>
+        )}
 
         <div className="rec-metrics">
           <div className="rec-metric">

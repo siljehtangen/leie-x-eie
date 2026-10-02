@@ -117,6 +117,7 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
     line('hoaFee', 'inputs.monthlyHoaFee', costs.hoaFee, '+'),
     line('interestDeduction', 'breakdown.interestDeductionPct', costs.interestDeduction, '−', { pct: INTEREST_DEDUCTION_PCT }),
     ...optionalCosts,
+    ...(costs.rentalIncome > 0 ? [line('rentalIncome', 'inputs.rentalIncome', costs.rentalIncome, '−')] : []),
   ]
 
   const buyerNetWorthLines: BreakdownLine[] = [
@@ -125,7 +126,7 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
     ...(summary.finalSharedDebt > 0
       ? [line('sharedDebt', 'breakdown.remainingSharedDebt', summary.finalSharedDebt, '−')]
       : []),
-    line('brokerSellingFee', 'inputs.brokerSellingFee', inputs.brokerSellingFee, '−'),
+    line('brokerSellingFee', 'inputs.brokerSellingFee', summary.finalBrokerFee, '−'),
     ...(summary.finalBuyerPortfolioGross !== 0
       ? [line('portfolioGross', 'breakdown.portfolioGross', Math.abs(summary.finalBuyerPortfolioGross),
           summary.finalBuyerPortfolioGross > 0 ? '+' : '−')]

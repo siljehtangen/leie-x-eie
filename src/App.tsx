@@ -9,6 +9,7 @@ import ShareButton from './components/ShareButton'
 import SplitResults from './components/SplitResults'
 import Charts from './components/Charts'
 import Recommendation from './components/Recommendation'
+import Affordability from './components/Affordability'
 import ScenarioCompare from './components/ScenarioCompare'
 import Sensitivity from './components/Sensitivity'
 import StickySummary from './components/StickySummary'
@@ -165,7 +166,8 @@ export default function App() {
           {result && (
             <div className="results-section" ref={resultsRef}>
               <h2 className="results-title">{t('results.title')}</h2>
-              <Recommendation results={result} years={normalizedInputs.years} />
+              <Recommendation results={result} inputs={normalizedInputs} mode={deferredMode} />
+              <Affordability inputs={normalizedInputs} mode={deferredMode} />
               <SplitResults results={result} years={normalizedInputs.years} />
               <Charts
                 yearlyData={result.yearlyData}
