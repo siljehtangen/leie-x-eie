@@ -149,11 +149,11 @@ exports[`calculate — golden scenarios > advanced defaults 1`] = `
 exports[`calculate — golden scenarios > advanced with interest-only, shared debt and BSU 1`] = `
 {
   "breakevenYear": null,
-  "difference": 549225,
-  "finalAskTax": 877045,
+  "difference": 517349,
+  "finalAskTax": 846723,
   "finalEquity": 3650770,
   "finalRemainingMortgage": 2048432,
-  "finalRenterPortfolio": 4199995,
+  "finalRenterPortfolio": 4168119,
   "initialBuyerMonthly": 20818,
   "monthlyMortgagePayment": 15583,
   "netWorthByYear": [
@@ -190,52 +190,52 @@ exports[`calculate — golden scenarios > advanced with interest-only, shared de
     [
       7,
       2190531,
-      2480891,
+      2480823,
     ],
     [
       8,
       2373920,
-      2686802,
+      2686077,
     ],
     [
       9,
       2556772,
-      2894675,
+      2892503,
     ],
     [
       10,
       2739233,
-      3104802,
+      3100319,
     ],
     [
       11,
       2921446,
-      3317481,
+      3309746,
     ],
     [
       12,
       3103558,
-      3533020,
+      3521008,
     ],
     [
       13,
       3285716,
-      3751735,
+      3734335,
     ],
     [
       14,
       3468070,
-      3973948,
+      3949959,
     ],
     [
       15,
       3650770,
-      4199995,
+      4168119,
     ],
   ],
   "recommendation": "rent",
   "totalBuyerPaid": 5076813,
-  "totalRenterPaid": 2948795,
+  "totalRenterPaid": 2950590,
 }
 `;
 
@@ -360,11 +360,11 @@ exports[`calculate — golden scenarios > expensive home triggering wealth tax 1
 exports[`calculate — golden scenarios > quick defaults 1`] = `
 {
   "breakevenYear": 6,
-  "difference": 188355,
+  "difference": 172075,
   "finalAskTax": 0,
   "finalEquity": 1903800,
   "finalRemainingMortgage": 2555305,
-  "finalRenterPortfolio": 1715445,
+  "finalRenterPortfolio": 1731725,
   "initialBuyerMonthly": 20480,
   "monthlyMortgagePayment": 20879,
   "netWorthByYear": [
@@ -376,51 +376,51 @@ exports[`calculate — golden scenarios > quick defaults 1`] = `
     [
       2,
       791398,
-      918946,
+      919295,
     ],
     [
       3,
       934759,
-      1025120,
+      1026171,
     ],
     [
       4,
       1076692,
-      1129221,
+      1131332,
     ],
     [
       5,
       1217297,
-      1231342,
+      1234877,
     ],
     [
       6,
       1356671,
-      1331575,
+      1336902,
     ],
     [
       7,
       1494911,
-      1430011,
+      1437504,
     ],
     [
       8,
       1632115,
-      1526742,
+      1536779,
     ],
     [
       9,
       1768379,
-      1621857,
+      1634821,
     ],
     [
       10,
       1903800,
-      1715445,
+      1731725,
     ],
   ],
   "recommendation": "buy",
-  "totalBuyerPaid": 2534295,
+  "totalBuyerPaid": 2552805,
   "totalRenterPaid": 1576760,
 }
 `;

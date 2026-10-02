@@ -27,8 +27,8 @@
     "groupLabel": "Calculation mode",
     "quick": "Quick",
     "advanced": "Advanced",
-    "quickDesc": "Essential inputs — 90% of the answer",
-    "advancedDesc": "Full Norwegian financial model"
+    "quickDesc": "Rent, price, loan and time — the core comparison",
+    "advancedDesc": "Co-op debt, taxes, savings and ownership costs"
   },
   "sections": {
     "rent": "Rent",
@@ -87,7 +87,7 @@
     "mortgageRate": "The annual interest rate on your mortgage. Check with your bank for a current offer.",
     "loanTermYears": "How many years until your mortgage is fully paid off. 25–30 years is most common in Norway.",
     "monthlyHoaFee": "Monthly joint costs in a shared housing cooperative — includes maintenance, insurance, and management fees.",
-    "stampDuty": "Auto-set to 2.5% of the purchase price for selveier. Set to 0 automatically for borettslag, and for new builds.",
+    "stampDuty": "Auto-set to 2.5% of the purchase price. In advanced mode, a housing cooperative sets this to 0. For a new build the fee is often only on the plot value — adjust the amount yourself.",
     "otherClosingCosts": "Other one-time costs at purchase: tinglysning (deed + mortgage registration), bank setup fees, etc. Typically 5,000–15,000 kr.",
     "brokerSellingFee": "A typical broker fee in Norway is around 100,000 kr or 1–3% of the sale price. Enter it in today's prices – it grows with house prices until you sell.",
     "sharedDebt": "Shared debt in a borettslag that transfers with the unit. Affects total cost and tax deductions.",
@@ -97,7 +97,7 @@
     "propertyTax": "Property tax charged by some Norwegian municipalities. Many municipalities charge 0%. Check your local rate.",
     "hoaFeeIncrease": "How much the HOA / shared costs rise each year. Boards typically adjust annually in line with costs.",
     "years": "How long you plan to stay. The longer you own, the more the upfront buying costs are spread out.",
-    "appreciationRate": "Norwegian average home price growth is approximately 2–4% per year.",
+    "appreciationRate": "Norwegian average home price growth is approximately 2–4% per year. Enter a negative number to see what happens if prices fall.",
     "investmentReturn": "Expected annual interest on a regular savings account, before tax. Quick mode assumes the money is kept in a savings account, so 22% tax on the interest is deducted every year (automatically applied). Norwegian savings accounts typically pay 3–5% per year.",
     "contentsInsurance": "Insurance for your belongings (innbo). Needed both when renting and owning. Typically 1,500–3,000 kr/year.",
     "electricity": "Annual electricity and heating costs. Varies widely — roughly 15,000–30,000 kr/year for an apartment.",
@@ -111,15 +111,15 @@
     "askBalance": "Funds you have in an Aksjesparekonto (ASK) in addition to the down payment. Both buyer and renter keep it. Grows tax-free until withdrawal — 37.84% capital gains tax is modelled automatically.",
     "askRate": "Expected annual return on shares/funds in an Aksjesparekonto (ASK). Historical average ~7% per year. Capital gains tax of 37.84% (Norwegian shareholder model) is applied only on withdrawal — modelled automatically.",
     "askShieldingRate": "The shielding deduction (skjermingsfradrag) reduces taxable ASK gains. Skatteetaten sets the rate annually (typically 3–5%). Only gains above accumulated shielding are taxed at 37.84%.",
-    "bsuActive": "BSU (Boligsparing for ungdom): save up to 27,500 kr/year and get a 10% tax deduction (max 2,750 kr/year). Available until age 34 if you haven't used BSU for a purchase. The deduction reduces the renter's effective cost.",
-    "bsuYearlyContribution": "Amount you save in BSU this year. Max 27,500 kr per person (2026), so 55,000 kr for a couple. You get 10% back as a tax deduction.",
+    "bsuActive": "BSU (Boligsparing for ungdom): save up to 27,500 kr/year and get a 10% tax deduction (max 2,750 kr/year). Available until age 34 if you haven't used BSU for a purchase. The deduction reduces the cost of renting, and the contribution earns your savings-account rate instead of the ASK return.",
+    "bsuYearlyContribution": "Amount you save in BSU this year. Max 27,500 kr per person (2026), so 55,000 kr for a couple. You get 10% back as a tax deduction. The contribution itself stays in BSU at your savings-account rate.",
     "isBorettslag": "Tick if the home is in a borettslag. No stamp duty (dokumentavgift) is paid, and you can enter the shared debt (fellesgjeld). Leave unticked for selveier/sameie, where 2.5% stamp duty applies.",
     "sharedDebtTermYears": "Remaining repayment term on the cooperative's shared debt. Your share is paid down through the monthly HOA fee, so your remaining shared debt falls over time. Set 0 if the loan is interest-only.",
     "mortgageRateChangeYear": "The year a new mortgage rate takes effect, e.g. when a fixed-rate period ends or you expect rates to fall. The payment is recalculated on the remaining loan. Set 0 for no change.",
     "mortgageRateAfterChange": "The mortgage rate that applies from the chosen year until the end of the period.",
     "isCouple": "Married, registered partners or cohabitants taxed jointly get double the wealth-tax allowance (3,800,000 kr instead of 1,900,000 kr). Applies to both buyer and renter.",
     "householdIncome": "Combined income before tax for everyone on the mortgage. Used to check the rule that total debt cannot exceed 5 times income. Leave at 0 to skip the check.",
-    "otherDebt": "Debt you already have, such as student loans, car loans and credit cards. Banks include it in the debt-to-income ratio.",
+    "otherDebt": "Debt you already have, such as student loans, car loans and credit cards. Banks include it in the debt-to-income ratio, and the stress test prices it as interest-only at the stress rate.",
     "rentalIncome": "Monthly rent if you let out part of the home, such as a bedsit (hybel) or basement flat. It is tax-free when you let out less than half of the home, measured by rental value. It rises each year in line with rent."
   },
   "footer": {
@@ -220,7 +220,7 @@
     "buy": "OWN",
     "winner": "WINNER",
     "stressTest": "Stress test at {{rate}}% rate",
-    "stressTestHint": "Banks must check that you can afford a rate 3 percentage points higher than today, and at least 7% (utlånsforskriften). Includes higher interest on any shared debt.",
+    "stressTestHint": "Banks must check that you can afford a rate 3 percentage points higher than today, and at least 7% (utlånsforskriften). Includes higher interest on shared debt, and other debt priced at the stress rate.",
     "splitTitle": "Renting and buying side by side",
     "unitsNote": "Equity and portfolio are in today's NOK. Mortgage payment, total paid and home value are nominal amounts."
   },
@@ -321,7 +321,7 @@
     "wealthTaxHighTier": "Net wealth above {{threshold}}: {{rate}}%",
     "taxFreeHomeSale": "Capital gain on home sale is tax-free (primary residence, owned & lived in 12 of last 24 months)",
     "shieldingNote": "Shielding deduction ({{rate}}%/yr) has been applied to ASK gains",
-    "bsuBenefit": "BSU deduction: {{amount}} per year reduces renter's effective cost",
+    "bsuBenefit": "BSU deduction: {{amount}} per year. The contribution earns the savings-account rate, not the ASK return",
     "askCapitalGainsTax": "ASK capital gains tax after shielding ({{pct}}%)",
     "rateChangeNote": "From year {{year}} the rate is {{rate}}%: payment is recalculated to {{payment}} / month on the remaining loan",
     "remainingSharedDebt": "Remaining shared debt"

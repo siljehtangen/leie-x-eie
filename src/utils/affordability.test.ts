@@ -29,8 +29,16 @@ describe('computeAffordability', () => {
   it('relates the stress-test payment to gross monthly income', () => {
     const inputs = { ...DEFAULT_INPUTS, householdIncome: 900_000 }
     const result = computeAffordability(inputs, 'quick')!
-    const stressed = computeStressTest(inputs, 'quick').monthlyPayment
+    const stressed = computeStressTest(inputs, 'quick').debtPayment
     expect(result.stressedMonthlyPayment).toBe(stressed)
     expect(result.stressedShareOfIncome).toBeCloseTo(stressed / 75_000, 10)
+  })
+
+  it('includes stressed other debt in the payment in advanced mode only', () => {
+    const inputs = { ...DEFAULT_INPUTS, householdIncome: 900_000, otherDebt: 120_000 }
+    const quick = computeAffordability(inputs, 'quick')!
+    const advanced = computeAffordability(inputs, 'advanced')!
+    const rate = computeStressTest(inputs, 'advanced').ratePct
+    expect(advanced.stressedMonthlyPayment - quick.stressedMonthlyPayment).toBeCloseTo(120_000 * (rate / 100) / 12, 6)
   })
 })

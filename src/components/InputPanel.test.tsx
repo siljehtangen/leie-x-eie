@@ -15,6 +15,14 @@ describe('InputPanel', () => {
     expect(onInputChange).toHaveBeenLastCalledWith('mortgageRate', 4.9)
   })
 
+  it('keeps the housing-cooperative choice in advanced mode', async () => {
+    const props = { inputs: DEFAULT_INPUTS, onInputChange: () => {} }
+    const { rerender } = await renderWithProviders(<InputPanel {...props} mode="quick" />)
+    expect(screen.queryByRole('checkbox', { name: /Housing cooperative/ })).toBeNull()
+    rerender(<InputPanel {...props} mode="advanced" />)
+    expect(screen.getByRole('checkbox', { name: /Housing cooperative/ })).toBeTruthy()
+  })
+
   it('only offers rental income and other debt in advanced mode', async () => {
     const props = { inputs: DEFAULT_INPUTS, onInputChange: () => {} }
     const { rerender } = await renderWithProviders(<InputPanel {...props} mode="quick" />)

@@ -79,6 +79,7 @@ export interface StressTest {
   ratePct: number
   monthlyPayment: number
   extraPerMonth: number
+  debtPayment: number
 }
 
 export interface BuyerCostBreakdown {

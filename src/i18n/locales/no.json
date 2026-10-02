@@ -27,8 +27,8 @@
     "groupLabel": "Beregningsmodus",
     "quick": "Enkel",
     "advanced": "Avansert",
-    "quickDesc": "De viktigste feltene – 90 % av svaret",
-    "advancedDesc": "Full modell med norske skatteregler"
+    "quickDesc": "Husleie, pris, lån og tid – kjernesammenligningen",
+    "advancedDesc": "Fellesgjeld, skatt, sparing og eierkostnader"
   },
   "sections": {
     "rent": "Leie",
@@ -87,7 +87,7 @@
     "mortgageRate": "Den nominelle årsrenten på boliglånet. Sjekk hva banken din tilbyr.",
     "loanTermYears": "Antall år til boliglånet er nedbetalt. 25–30 år er vanligst i Norge.",
     "monthlyHoaFee": "Felleskostnader per måned i borettslag eller sameie. Dekker blant annet vedlikehold, forsikring av bygget og forretningsførsel.",
-    "stampDuty": "Settes automatisk til 2,5 % av kjøpesummen for selveier og til 0 for borettslag. Ved kjøp av nybygg betales avgiften ofte bare av tomteverdien – juster da beløpet selv.",
+    "stampDuty": "Settes automatisk til 2,5 % av kjøpesummen. I avansert modus settes den til 0 for borettslag. Ved kjøp av nybygg betales avgiften ofte bare av tomteverdien – juster da beløpet selv.",
     "otherClosingCosts": "Andre engangskostnader ved kjøp: tinglysing av skjøte og pantedokument, etableringsgebyr i banken, eierskiftegebyr og lignende. Typisk 5 000–15 000 kr.",
     "brokerSellingFee": "Det du betaler megleren når du selger. Typisk rundt 100 000 kr, eller 1–3 % av salgsprisen. Oppgi beløpet i dagens priser – det øker i takt med boligprisene frem til salget.",
     "sharedDebt": "Din andel av borettslagets fellesgjeld. Den følger boligen ved salg og påvirker både totalkostnaden og rentefradraget.",
@@ -97,7 +97,7 @@
     "propertyTax": "Eiendomsskatt som kommunen fastsetter. Mange kommuner har ikke eiendomsskatt på bolig. Sjekk satsen i din kommune.",
     "hoaFeeIncrease": "Hvor mye felleskostnadene øker hvert år. Styret justerer dem vanligvis årlig i takt med kostnadene.",
     "years": "Hvor lenge du planlegger å bo der. Jo lenger du eier, desto flere år fordeles kjøpskostnadene over.",
-    "appreciationRate": "Boligprisene i Norge har i snitt steget 2–4 % i året.",
+    "appreciationRate": "Boligprisene i Norge har i snitt steget 2–4 % i året. Legg inn et negativt tall for å se hva som skjer hvis prisene faller.",
     "investmentReturn": "Forventet årlig rente på en vanlig sparekonto, før skatt. I enkel modus antar vi at pengene står på sparekonto, så det trekkes automatisk 22 % skatt av renteinntektene hvert år. Norske sparekontoer gir typisk 3–5 % i året.",
     "contentsInsurance": "Forsikring av innbo og løsøre. Trengs både når du leier og når du eier. Typisk 1 500–3 000 kr i året.",
     "electricity": "Årlige kostnader til strøm og oppvarming. Varierer mye, men ligger ofte på 15 000–30 000 kr i året for en leilighet.",
@@ -111,15 +111,15 @@
     "askBalance": "Fond du har i aksjesparekonto (ASK) i tillegg til egenkapitalen. Både kjøper og leietaker beholder dem. Du betaler ingen skatt før du tar ut pengene – da beregnes 37,84 % skatt på gevinsten automatisk.",
     "askRate": "Forventet årlig avkastning på aksjer og fond i aksjesparekontoen. Historisk har snittet vært ca. 7 % i året. Gevinsten skattes med 37,84 % (aksjonærmodellen) først ved uttak – dette beregnes automatisk.",
     "askShieldingRate": "Skjermingsfradraget reduserer skatten på gevinst i ASK. Skjermingsrenten fastsettes av Skatteetaten hvert år (normalt 3–5 %). Bare gevinst utover samlet skjerming skattes med 37,84 %.",
-    "bsuActive": "Boligsparing for ungdom (BSU): sparer du inntil 27 500 kr i året, får du 10 % i skattefradrag (inntil 2 750 kr i året). Du kan spare til og med året du fyller 33, så lenge du ikke har eid bolig. Fradraget reduserer leietakerens reelle kostnad.",
-    "bsuYearlyContribution": "Beløpet du sparer i BSU i år. Inntil 27 500 kr per person (2026), altså 55 000 kr for et par. Du får 10 % av beløpet tilbake som skattefradrag.",
+    "bsuActive": "Boligsparing for ungdom (BSU): sparer du inntil 27 500 kr i året, får du 10 % i skattefradrag (inntil 2 750 kr i året). Du kan spare til og med året du fyller 33, så lenge du ikke har eid bolig. Fradraget reduserer kostnaden ved å leie, og innskuddet får sparerenten din i stedet for ASK-avkastning.",
+    "bsuYearlyContribution": "Beløpet du sparer i BSU i år. Inntil 27 500 kr per person (2026), altså 55 000 kr for et par. Du får 10 % av beløpet tilbake som skattefradrag. Selve innskuddet står på BSU til sparerenten din.",
     "isBorettslag": "Kryss av hvis boligen er i et borettslag. Da betaler du ikke dokumentavgift, og du kan legge inn fellesgjeld. La boksen stå tom for selveier og eierseksjon, der det betales 2,5 % dokumentavgift.",
     "sharedDebtTermYears": "Gjenstående nedbetalingstid for borettslagets fellesgjeld. Din andel betales ned gjennom felleskostnadene, slik at fellesgjelden din synker over tid. Sett 0 hvis lånet er avdragsfritt.",
     "mortgageRateChangeYear": "Året en ny boliglånsrente gjelder fra, for eksempel når en fastrenteperiode går ut eller du venter at renten faller. Terminbeløpet regnes om ut fra restgjelden. Sett 0 for ingen endring.",
     "mortgageRateAfterChange": "Boliglånsrenten som gjelder fra det valgte året og ut perioden.",
     "isCouple": "Ektefeller, og samboere som skattlegges som ektefeller, får dobbelt bunnfradrag i formuesskatten (3 800 000 kr i stedet for 1 900 000 kr). Gjelder både kjøper og leietaker.",
     "householdIncome": "Samlet inntekt før skatt for alle som skal stå på lånet. Brukes til å sjekke kravet om at samlet gjeld ikke kan være mer enn 5 ganger inntekten. La stå på 0 for å hoppe over sjekken.",
-    "otherDebt": "Gjeld du har fra før, som studielån, billån og kredittkort. Banken regner den med i gjeldsgraden.",
+    "otherDebt": "Gjeld du har fra før, som studielån, billån og kredittkort. Banken regner den med i gjeldsgraden, og stresstesten legger den inn som renter til stresstrenten.",
     "rentalIncome": "Månedlig leie hvis du leier ut en del av boligen, for eksempel en hybel eller sokkelleilighet. Inntekten er skattefri når du leier ut mindre enn halvparten av boligen (målt i utleieverdi). Den øker hvert år like mye som husleien."
   },
   "footer": {
@@ -220,7 +220,7 @@
     "buy": "EIE",
     "winner": "VINNER",
     "stressTest": "Stresstest ved {{rate}} % rente",
-    "stressTestHint": "Banken skal sjekke at du tåler en renteøkning på 3 prosentpoeng, og minst 7 % rente (utlånsforskriften). Høyere rente på eventuell fellesgjeld er tatt med.",
+    "stressTestHint": "Banken skal sjekke at du tåler en renteøkning på 3 prosentpoeng, og minst 7 % rente (utlånsforskriften). Høyere rente på fellesgjeld er tatt med, og annen gjeld er lagt inn til stresstrenten.",
     "splitTitle": "Leie og eie side om side",
     "unitsNote": "Egenkapital og sparepenger er i dagens kroner. Terminbeløp, totalt betalt og boligverdi er vist uten justering for inflasjon."
   },
@@ -321,7 +321,7 @@
     "wealthTaxHighTier": "Nettoformue over {{threshold}}: {{rate}} %",
     "taxFreeHomeSale": "Gevinst ved salg av egen bolig er skattefri når du har eid den i over ett år og bodd der minst 12 av de siste 24 månedene",
     "shieldingNote": "Skjermingsfradraget ({{rate}} % i året) er trukket fra gevinsten",
-    "bsuBenefit": "BSU-fradrag: {{amount}} i året reduserer leietakerens reelle kostnad",
+    "bsuBenefit": "BSU-fradrag: {{amount}} i året. Innskuddet får sparerente, ikke ASK-avkastning",
     "askCapitalGainsTax": "Skatt på ASK-gevinst etter skjerming ({{pct}} %)",
     "rateChangeNote": "Fra år {{year}} er renten {{rate}} %, og terminbeløpet regnes om til {{payment}} / mnd ut fra restgjelden",
     "remainingSharedDebt": "Gjenstående fellesgjeld"

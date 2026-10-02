@@ -28,8 +28,8 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
   const equityFormatted = formatKr(summary.finalEquity)
   const portfolioFormatted = formatKr(summary.finalRenterPortfolio)
 
-  const mortgageDiff = summary.initialBuyerMonthly - summary.initialMonthlyRent
-  const buyingCostsMore = mortgageDiff > 0
+  const monthlyGap = summary.initialBuyerMonthly - summary.year1RenterCosts.total
+  const buyingCostsMore = monthlyGap > 0
 
   const breakevenText = breakevenYear !== null
     ? t('recommendation.breakevenAt', { year: breakevenYear })
@@ -94,7 +94,7 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
                 : t('recommendation.rentingCostsMore')}
             </div>
             <div className="rec-metric-value">
-              {formatKr(Math.abs(mortgageDiff))} {t('units.perMonth')}
+              {formatKr(Math.abs(monthlyGap))} {t('units.perMonth')}
             </div>
           </div>
           <div className="rec-metric">

@@ -21,7 +21,7 @@ export function computeAffordability(rawInputs: Inputs, mode: Mode): Affordabili
   const otherDebt = isAdvanced ? inputs.otherDebt : 0
   const totalDebt = mortgage + sharedDebt + otherDebt
   const debtToIncome = totalDebt / inputs.householdIncome
-  const stressedMonthlyPayment = computeStressTest(inputs, mode).monthlyPayment
+  const stressedMonthlyPayment = computeStressTest(inputs, mode).debtPayment
 
   return {
     totalDebt,

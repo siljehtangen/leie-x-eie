@@ -17,7 +17,8 @@ import {
   ASK_TAX_RATE,
   SECURITY_DEPOSIT_MONTHS,
   BSU_TAX_DEDUCTION_RATE,
-  DEFAULT_HOA_INCREASE_PCT,
+  BSU_MAX_CONTRIBUTION,
+  STAMP_DUTY_RATE,
   MAX_HORIZON_YEARS,
   STRESS_TEST_RATE_ADD_PCT,
   STRESS_TEST_MIN_RATE_PCT,
@@ -42,6 +43,7 @@ interface SimParams {
   cashMonthlyReturn: number
   askMonthlyReturn: number
   bsuMonthlySaving: number
+  bsuMonthlyContribution: number
   livingCostsMonthly: number
   municipalFeesBase: number
   insuranceMonthly: number
@@ -100,9 +102,16 @@ function effectiveSharedDebt(inputs: Inputs, isAdvanced: boolean): number {
   return isAdvanced && inputs.isBorettslag ? inputs.sharedDebt : 0
 }
 
+// Quick mode is a freehold comparison. A cooperative exemption stored on the
+// inputs (stamp duty set to 0) must not follow the user into quick mode.
+export function stampDutyForMode(inputs: Inputs, mode: Mode): number {
+  if (mode === 'advanced' || !inputs.isBorettslag || inputs.stampDuty !== 0) return inputs.stampDuty
+  return Math.round(Math.max(0, inputs.purchasePrice) * STAMP_DUTY_RATE)
+}
+
 function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
   const {
-    purchasePrice, downPayment, mortgageRate, loanTermYears, stampDuty,
+    purchasePrice, downPayment, mortgageRate, loanTermYears,
     otherClosingCosts, interestOnlyYears, monthlyRent, investmentReturn,
     savingsAccountBalance, askBalance, savingsAccountRate, askRate,
     bsuActive, bsuYearlyContribution, contentsInsurance, electricity,
@@ -111,7 +120,9 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
   } = inputs
 
   const loanAmount = Math.max(0, purchasePrice - downPayment)
-  const closingCosts = stampDuty + (isAdvanced ? otherClosingCosts : 0)
+  const closingCosts = stampDutyForMode(inputs, isAdvanced ? 'advanced' : 'quick') + (isAdvanced ? otherClosingCosts : 0)
+  const bsuCap = BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1)
+  const bsuYearly = isAdvanced && bsuActive ? Math.min(bsuYearlyContribution, bsuCap) : 0
   const monthlyRate = mortgageRate / 100 / 12
   const ioYears = isAdvanced ? Math.min(interestOnlyYears, loanTermYears - 1) : 0
   const numPayments = loanTermYears * 12
@@ -138,7 +149,8 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     askInitial: isAdvanced ? askBalance : 0,
     cashMonthlyReturn: monthlyFromAnnual((isAdvanced ? savingsAccountRate : investmentReturn) * (1 - SAVINGS_TAX_RATE)),
     askMonthlyReturn: monthlyFromAnnual(askRate),
-    bsuMonthlySaving: isAdvanced && bsuActive ? bsuYearlyContribution * BSU_TAX_DEDUCTION_RATE / 12 : 0,
+    bsuMonthlySaving: bsuYearly * BSU_TAX_DEDUCTION_RATE / 12,
+    bsuMonthlyContribution: bsuYearly / 12,
     livingCostsMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
     municipalFeesBase: isAdvanced ? municipalFees / 12 : 0,
     insuranceMonthly: isAdvanced ? homeInsurance / 12 : 0,
@@ -182,11 +194,15 @@ export function computeStressTest(rawInputs: Inputs, mode: Mode): StressTest {
   const sharedDebt = effectiveSharedDebt(inputs, mode === 'advanced')
   const sharedDebtExtra =
     sharedDebt * (stressTestRate(inputs.sharedDebtRate) - inputs.sharedDebtRate) / 100 / 12
+  // Other debt has no rate of its own, so it is priced as interest-only at the stress rate.
+  const otherDebtMonthly = (mode === 'advanced' ? inputs.otherDebt : 0) * (ratePct / 100) / 12
+  const debtPayment = stressedPayment + sharedDebtExtra + otherDebtMonthly
 
   return {
     ratePct,
     monthlyPayment: stressedPayment,
-    extraPerMonth: stressedPayment - normalPayment + sharedDebtExtra,
+    extraPerMonth: debtPayment - normalPayment,
+    debtPayment,
   }
 }
 
@@ -360,6 +376,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
   let remainingMortgage = p.loanAmount
   let remainingSharedDebt = p.sharedDebt
   let depositBalance = p.securityDeposit
+  let bsuBalance = 0
   let currentMonthlyRent = inputs.monthlyRent
   let currentHoaFee = inputs.monthlyHoaFee
   let currentRentalIncome = isAdvanced ? inputs.rentalIncome : 0
@@ -448,8 +465,13 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         h.ask *= 1 + p.askMonthlyReturn
       }
       depositBalance *= 1 + p.cashMonthlyReturn
+      bsuBalance *= 1 + p.cashMonthlyReturn
       if (monthlyDiff >= 0) invest(renter, monthlyDiff, isAdvanced)
       else invest(buyer, -monthlyDiff, isAdvanced)
+      if (p.bsuMonthlyContribution > 0) {
+        withdraw(renter, p.bsuMonthlyContribution)
+        bsuBalance += p.bsuMonthlyContribution
+      }
 
       remainingMortgage = settle(remainingMortgage - principalPayment)
       remainingSharedDebt = settle(remainingSharedDebt - sharedDebtPrincipal)
@@ -467,7 +489,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
       const { buyerWealthTax, renterWealthTax } = computeAnnualWealthTax(
         homeValue, remainingMortgage, remainingSharedDebt,
         buyer,
-        { savings: renter.savings + depositBalance, ask: renter.ask },
+        { savings: renter.savings + depositBalance + bsuBalance, ask: renter.ask },
         p.isCouple,
       )
       withdraw(buyer, buyerWealthTax)
@@ -486,7 +508,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
     const buyerPortfolio = lastBuyerPortfolioGross - lastBuyerAskTax
     const buyerEquity = homeValue - remainingMortgage - remainingSharedDebt - lastBrokerFee + buyerPortfolio
 
-    lastRenterNominalGross = renter.savings + renter.ask + depositBalance
+    lastRenterNominalGross = renter.savings + renter.ask + depositBalance + bsuBalance
     lastAskTax = askTaxOnExit(renter)
 
     yearlyData.push({
@@ -503,7 +525,7 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     currentMonthlyRent *= 1 + inputs.rentIncrease / 100
     currentRentalIncome *= 1 + inputs.rentIncrease / 100
-    currentHoaFee *= 1 + (isAdvanced ? inputs.hoaFeeIncrease : DEFAULT_HOA_INCREASE_PCT) / 100
+    currentHoaFee *= 1 + inputs.hoaFeeIncrease / 100
   }
 
   const finalYear = yearlyData[yearlyData.length - 1]

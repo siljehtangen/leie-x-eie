@@ -29,7 +29,7 @@
 
 ### Features
 
-**Quick mode** — six core inputs: rent, purchase price, down payment, mortgage rate, HOA fee, and time horizon. Fast estimate, no fuss.
+**Quick mode** — the core comparison: rent and how it grows, purchase price, down payment, mortgage rate and term, monthly shared costs, stamp duty, broker fee, and how long you stay, plus price growth (which can be negative), inflation and a savings rate. Cooperative debt, wealth tax, BSU, ASK and detailed ownership costs are left out.
 
 **Advanced mode** — full Norwegian financial model:
 
@@ -38,7 +38,8 @@
 - Mortgage rate change from a chosen year, with the payment recalculated on the remaining loan
 - Maintenance costs inflation-adjusted year over year
 - Municipal fees, home insurance, property tax
-- Contents insurance, electricity, internet, and parking applied to both sides
+- Contents insurance, electricity, internet, and parking applied to both sides, so they do not change who comes out ahead
+- BSU for the renter: the 10% tax deduction lowers the cost of renting, and the contribution earns the savings-account rate rather than the ASK return
 - Security deposit (3 months rent) earning savings-account interest
 - **Wealth tax**: primary residence valued at 25% of market value vs. financial assets at 80% — one of the largest structural advantages of homeownership in Norway. Couples taxed jointly get double thresholds
 - **After-tax investment returns**: quick mode assumes a savings account (interest taxed at 22% yearly); in advanced mode ASK fund gains are taxed at 37.84% on sale after shielding; home appreciation remains tax-free
@@ -47,7 +48,7 @@
 
 - Inflation-deflated net worth comparison (real kroner)
 - Breakeven year detection
-- Stress test of the monthly payment (rate + 3 percentage points, at least 7%, as in the lending regulations)
+- Stress test of the monthly payment (rate + 3 percentage points, at least 7%, as in the lending regulations), including higher interest on shared debt and other debt priced at the stress rate
 - Sensitivity grid: how the answer changes with house-price growth and mortgage rate
 - Year-by-year breakdown table (costs, equity, portfolio growth)
 - PDF export of the full breakdown
@@ -106,7 +107,7 @@ For educational purposes only. Not financial advice.
 
 ### Funksjoner
 
-**Enkel modus** – seks nøkkeltall: husleie, kjøpesum, egenkapital, boliglånsrente, felleskostnader og tidshorisont. Et raskt overslag uten kompliserte innstillinger.
+**Enkel modus** – kjernesammenligningen: husleie og husleievekst, kjøpesum, egenkapital, rente og nedbetalingstid, felleskostnader, dokumentavgift, meglerhonorar og tidshorisont, pluss prisvekst (som kan være negativ), inflasjon og sparerente. Fellesgjeld, formuesskatt, BSU, ASK og detaljerte eierkostnader er ikke med.
 
 **Avansert modus** – full modell med norske skatteregler:
 
@@ -115,7 +116,8 @@ For educational purposes only. Not financial advice.
 - Renteendring fra et valgt år, med nytt terminbeløp beregnet ut fra restgjelden
 - Vedlikeholdskostnader justert for inflasjon hvert år
 - Kommunale avgifter, boligforsikring og eiendomsskatt
-- Innboforsikring, strøm, internett og parkering regnes med på begge sider
+- Innboforsikring, strøm, internett og parkering regnes med på begge sider, så de endrer ikke hvem som kommer best ut
+- BSU for leietakeren: skattefradraget på 10 % senker kostnaden ved å leie, og innskuddet får sparerente i stedet for ASK-avkastning
 - Depositum (3 måneders husleie) som gir sparerente
 - **Formuesskatt**: primærbolig verdsettes til 25 % av markedsverdien, mot 80 % for aksjer og fond – en av de største strukturelle fordelene ved å eie bolig i Norge. Par som skattlegges samlet, får dobbelt bunnfradrag
 - **Avkastning etter skatt**: enkel modus forutsetter sparekonto (renter skattes med 22 % hvert år). I avansert modus skattes ASK-gevinst med 37,84 % ved uttak, etter skjerming. Gevinst ved salg av egen bolig er skattefri
@@ -124,7 +126,7 @@ For educational purposes only. Not financial advice.
 
 - Sammenligning av formue i dagens kroner (justert for inflasjon)
 - Break-even-år: når det ene alternativet går forbi det andre
-- Stresstest av terminbeløpet (rente + 3 prosentpoeng, minst 7 %, som i utlånsforskriften)
+- Stresstest av terminbeløpet (rente + 3 prosentpoeng, minst 7 %, som i utlånsforskriften), med høyere rente på fellesgjeld og annen gjeld priset til stresstrenten
 - Følsomhetstabell: hvordan svaret endres med boligprisvekst og rente
 - Detaljert tabell år for år (kostnader, egenkapital og porteføljevekst)
 - PDF-eksport av hele beregningen

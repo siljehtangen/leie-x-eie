@@ -148,6 +148,34 @@ describe('calculate — year-1 cost breakdown', () => {
     const expected = 27_500 * BSU_TAX_DEDUCTION_RATE / 12
     expect(off.yearlyData[0].renterMonthlyCost - on.yearlyData[0].renterMonthlyCost).toBeCloseTo(expected, 6)
   })
+
+  it('keeps the BSU contribution as savings, so only the tax deduction is a gain', () => {
+    const flat = with_({
+      appreciationRate: 0, investmentReturn: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0,
+      savingsAccountRate: 0, askRate: 0, askShieldingRate: 0,
+      savingsAccountBalance: 0, askBalance: 0, years: 1,
+    })
+    const off = calculate(flat, 'advanced')
+    const on = calculate({ ...flat, bsuActive: true, bsuYearlyContribution: 27_500 }, 'advanced')
+    const deduction = 27_500 * BSU_TAX_DEDUCTION_RATE
+    expect(on.summary.finalRenterPortfolio - off.summary.finalRenterPortfolio).toBeCloseTo(deduction, 0)
+  })
+
+  it('uses the HOA increase field in quick mode', () => {
+    const slow = calculate(with_({ hoaFeeIncrease: 0, years: 5 }), 'quick')
+    const fast = calculate(with_({ hoaFeeIncrease: 10, years: 5 }), 'quick')
+    expect(fast.yearlyData[4].buyerMonthlyCost).toBeGreaterThan(slow.yearlyData[4].buyerMonthlyCost)
+  })
+
+  it('ignores a borettslag exemption in quick mode', () => {
+    const coop = with_({ isBorettslag: true, stampDuty: 0, sharedDebt: 800_000 })
+    const quick = calculate(coop, 'quick')
+    const freehold = calculate(DEFAULT_INPUTS, 'quick')
+    expect(quick.summary.closingCosts).toBe(freehold.summary.closingCosts)
+    expect(quick.summary.finalSharedDebt).toBe(0)
+    expect(quick.summary.finalEquity).toBeCloseTo(freehold.summary.finalEquity, 4)
+    expect(calculate(coop, 'advanced').summary.closingCosts).toBe(DEFAULT_INPUTS.otherClosingCosts)
+  })
 })
 
 describe('calculate — net worth, recommendation and breakeven', () => {
@@ -425,6 +453,14 @@ describe('computeStressTest', () => {
     const plain = computeStressTest(DEFAULT_INPUTS, 'advanced')
     const coop = computeStressTest(with_({ isBorettslag: true, sharedDebt: 600_000, sharedDebtRate: 5 }), 'advanced')
     expect(coop.extraPerMonth - plain.extraPerMonth).toBeCloseTo(600_000 * 0.03 / 12, 6)
+    expect(coop.debtPayment - plain.debtPayment).toBeCloseTo(600_000 * 0.03 / 12, 6)
+  })
+
+  it('prices other debt as interest-only at the stress rate, and only in advanced mode', () => {
+    const plain = computeStressTest(DEFAULT_INPUTS, 'advanced')
+    const withDebt = computeStressTest(with_({ otherDebt: 240_000 }), 'advanced')
+    expect(withDebt.extraPerMonth - plain.extraPerMonth).toBeCloseTo(240_000 * (withDebt.ratePct / 100) / 12, 6)
+    expect(computeStressTest(with_({ otherDebt: 240_000 }), 'quick').extraPerMonth).toBeCloseTo(plain.extraPerMonth, 6)
   })
 })
 

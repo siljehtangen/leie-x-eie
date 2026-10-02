@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { formatInputDraft, formatInputNum, formatPct, parseInputNum } from '../utils/formatting'
 import { computeAffordability } from '../utils/affordability'
+import { stampDutyForMode } from '../utils/calculations'
 import { useLocale } from '../hooks/useLocale'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import {
@@ -273,17 +274,23 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     />
   )
 
-  const field = (name: NumericInputKey, extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> = {}) => (
-    <InputField
-      key={name}
-      label={t(`inputs.${name}`)}
-      name={name}
-      value={inputs[name]}
-      onChange={onInputChange}
-      tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
-      {...extra}
-    />
-  )
+  const field = (
+    name: NumericInputKey,
+    extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> & { value?: number } = {},
+  ) => {
+    const { value, ...rest } = extra
+    return (
+      <InputField
+        key={name}
+        label={t(`inputs.${name}`)}
+        name={name}
+        value={value ?? inputs[name]}
+        onChange={onInputChange}
+        tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
+        {...rest}
+      />
+    )
+  }
 
   const rentExtras: NumericInputKey[] = ['contentsInsurance', 'electricity', 'internet', 'parking']
   const loanExtras: NumericInputKey[] = [
@@ -315,7 +322,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
       <Section id="buy" title={t('sections.buy')} icon={House}>
         <div className="input-grid">
-          {checkbox('isBorettslag')}
+          {isAdvanced && checkbox('isBorettslag')}
           {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
           {field('downPayment',     { unit: kr,      min: 0,   step: 50000, warning: downPaymentWarning })}
           {showSharedDebt && field('sharedDebt', { unit: kr, min: 0, step: 10000 })}
@@ -323,7 +330,10 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1, slider: [1, 10] })}
           {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
           {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}
-          {field('stampDuty',       { unit: kr,      min: 0,   step: 10000 })}
+          {field('stampDuty', {
+            unit: kr, min: 0, step: 10000,
+            value: stampDutyForMode(inputs, mode),
+          })}
           {field('brokerSellingFee',{ unit: kr,      min: 0,   step: 10000 })}
         </div>
         {isAdvanced && <>
@@ -353,7 +363,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp}>
         <div className="input-grid">
           {field('years',            { unit: years, min: 1, max: MAX_HORIZON_YEARS, step: 1, slider: [1, MAX_HORIZON_YEARS] })}
-          {field('appreciationRate', { unit: '%', min: 0, max: 15, step: 0.1, slider: [0, 8] })}
+          {field('appreciationRate', { unit: '%', min: -10, max: 15, step: 0.1, slider: [-5, 10] })}
           {field('inflation',        { unit: '%', min: 0, max: 10, step: 0.1, slider: [0, 6] })}
           {!isAdvanced && field('investmentReturn', { unit: '%', min: 0, max: 20, step: 0.1, slider: [0, 10] })}
         </div>
