@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildBreakdownModel, buildTaxRuleParams, sumLines } from './breakdownModel'
 import { calculate } from './calculations'
 import { formatNOK } from './formatting'
+import { STAMP_DUTY_RATE } from '../constants/finance'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import type { Inputs, Mode } from '../types'
 
@@ -28,6 +29,14 @@ describe('buildBreakdownModel', () => {
   it.each(cases)('renter net-worth lines reconcile to the reported net worth (%s)', (_n, inputs, mode) => {
     const model = buildBreakdownModel(calculate(inputs, mode), inputs, mode)
     expect(sumLines(model.renterNetWorthLines) / model.inflationFactor).toBeCloseTo(model.renterNetWorth, 4)
+  })
+
+  it('reports the stamp duty quick mode charges when a cooperative exemption is stored', () => {
+    const coop = { ...DEFAULT_INPUTS, isBorettslag: true, stampDuty: 0 }
+    const quick = buildBreakdownModel(calculate(coop, 'quick'), coop, 'quick')
+    const advanced = buildBreakdownModel(calculate(coop, 'advanced'), coop, 'advanced')
+    expect(quick.stampDuty).toBe(Math.round(DEFAULT_INPUTS.purchasePrice * STAMP_DUTY_RATE))
+    expect(advanced.stampDuty).toBe(0)
   })
 
   it('omits zero-valued optional cost lines', () => {

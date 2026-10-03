@@ -128,7 +128,8 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                 [t('pdf.rate'), pct(mortgage.ratePct)],
                 [t('inputs.loanTermYears'), `${mortgage.loanTermYears} ${t('units.years')}`],
                 [t('pdf.hoaFee'), `${fmt(inputs.monthlyHoaFee)}${perMonth}`],
-                [t('inputs.stampDuty'), fmt(inputs.stampDuty)],
+                [t('inputs.hoaFeeIncrease'), pct(inputs.hoaFeeIncrease)],
+                [t('inputs.stampDuty'), fmt(model.stampDuty)],
               ].map(([label, val], i) => (
                 <View key={label} style={[s.row, i % 2 === 0 ? s.rowAlt : {}]}>
                   <Text style={s.rowLabel}>{label}</Text>
@@ -171,7 +172,7 @@ export default function CalculationPDF({ results, inputs, model, rules, locale, 
                 </Text>
               )}
               <Text style={s.stepMuted}>
-                {t('results.stressTest', { rate: num(summary.stressTest.ratePct) })}: {fmt(summary.stressTest.monthlyPayment, false)}{perMonth}
+                {t('results.stressTest', { rate: num(summary.stressTest.ratePct) })}: {fmt(summary.stressTest.debtPayment, false)}{perMonth}
               </Text>
             </View>
 

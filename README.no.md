@@ -22,7 +22,7 @@ En kalkulator for leie eller eie, tilpasset det norske boligmarkedet. Legg inn t
 ## Funksjoner
 
 - **Enkel modus** – de viktigste tallene:
-  husleie, kjøpesum, egenkapital, rente, felleskostnader og tidshorisont
+  husleie, kjøpesum, egenkapital, rente, felleskostnader og hvor mye de øker hvert år, og tidshorisont
 
 - **Avansert modus** – full modell med norske skatteregler:
   - Borettslag eller selveier: i borettslag betales ingen dokumentavgift (2,5 %), og fellesgjelden nedbetales over sin egen løpetid, med rentefradrag
@@ -37,7 +37,7 @@ En kalkulator for leie eller eie, tilpasset det norske boligmarkedet. Legg inn t
 
 - Formue i dagens kroner (justert for inflasjon)
 - Break-even-år: når det ene alternativet går forbi det andre
-- Stresstest av terminbeløpet (rente + 3 prosentpoeng, minst 7 %, som i utlånsforskriften)
+- Stresstest av terminbeløpet (rente + 3 prosentpoeng, minst 7 %, som i utlånsforskriften), med høyere rente på fellesgjeld og annen gjeld priset til stresstrenten
 - Følsomhetstabell: hvordan svaret endres med boligprisvekst og rente
 - Detaljert beregning år for år (kostnader, egenkapital og porteføljevekst)
 - PDF-eksport av hele beregningen (`@react-pdf/renderer`)

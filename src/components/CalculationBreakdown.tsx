@@ -62,6 +62,8 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
                 [t('inputs.mortgageRate'), pct(inputs.mortgageRate)],
                 [t('inputs.loanTermYears'), years(inputs.loanTermYears)],
                 [t('inputs.monthlyHoaFee'), `${formatKr(inputs.monthlyHoaFee)}${perMonth}`],
+                [t('inputs.hoaFeeIncrease'), pct(inputs.hoaFeeIncrease)],
+                [t('inputs.stampDuty'), formatKr(model.stampDuty)],
                 [t('inputs.monthlyRent'), `${formatKr(inputs.monthlyRent)}${perMonth}`],
                 [t('inputs.rentIncrease'), pct(inputs.rentIncrease)],
                 [t('inputs.appreciationRate'), pct(inputs.appreciationRate)],

@@ -299,7 +299,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     ...(inputs.mortgageRateChangeYear > 0 ? ['mortgageRateAfterChange'] as const : []),
   ]
   const ownerExtras: NumericInputKey[] = [
-    'otherClosingCosts', 'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax', 'hoaFeeIncrease',
+    'otherClosingCosts', 'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax',
     'rentalIncome',
   ]
 
@@ -330,6 +330,7 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
           {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1, slider: [1, 10] })}
           {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
           {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}
+          {field('hoaFeeIncrease',  { unit: '%',     min: 0,   max: 10, step: 0.1 })}
           {field('stampDuty', {
             unit: kr, min: 0, step: 10000,
             value: stampDutyForMode(inputs, mode),
@@ -354,7 +355,6 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
             {field('renovationPct',      { unit: '%',    min: 0, max: 5, step: 0.1 })}
             {field('homeInsurance',      { unit: krYear, min: 0, step: 500   })}
             {field('propertyTax',        { unit: krYear, min: 0, step: 500   })}
-            {field('hoaFeeIncrease',     { unit: '%',    min: 0, max: 10, step: 0.1 })}
             {field('rentalIncome',       { unit: krMonth, min: 0, step: 500 })}
           </MoreGroup>
         </>}

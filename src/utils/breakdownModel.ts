@@ -12,6 +12,7 @@ import {
   WEALTH_TAX_HIGH_RATE,
   WEALTH_TAX_HIGH_THRESHOLD,
 } from '../constants/finance'
+import { stampDutyForMode } from './calculations'
 import { formatPct } from './formatting'
 import type { CalculationResult, FormatKrFn, Inputs, Mode, RateChange, YearlyDataPoint } from '../types'
 
@@ -49,6 +50,7 @@ export interface BreakdownModel {
   buyerNetWorthLines: BreakdownLine[]
   buyerNetWorth: number
   closingCosts: number
+  stampDuty: number
   initialInvestment: number
   securityDeposit: number
   renterNetWorthLines: BreakdownLine[]
@@ -161,6 +163,7 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
     buyerNetWorthLines,
     buyerNetWorth: summary.finalEquity,
     closingCosts: summary.closingCosts,
+    stampDuty: stampDutyForMode(inputs, mode),
     initialInvestment: summary.initialInvestment,
     securityDeposit: summary.securityDeposit,
     renterNetWorthLines,

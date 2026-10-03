@@ -15,6 +15,14 @@ describe('InputPanel', () => {
     expect(onInputChange).toHaveBeenLastCalledWith('mortgageRate', 4.9)
   })
 
+  it('offers the shared-cost increase in both modes, once', async () => {
+    const props = { inputs: DEFAULT_INPUTS, onInputChange: () => {} }
+    const { rerender } = await renderWithProviders(<InputPanel {...props} mode="quick" />)
+    expect(screen.getAllByRole('textbox', { name: 'Annual HOA Fee Increase' })).toHaveLength(1)
+    rerender(<InputPanel {...props} mode="advanced" />)
+    expect(screen.getAllByRole('textbox', { name: 'Annual HOA Fee Increase' })).toHaveLength(1)
+  })
+
   it('keeps the housing-cooperative choice in advanced mode', async () => {
     const props = { inputs: DEFAULT_INPUTS, onInputChange: () => {} }
     const { rerender } = await renderWithProviders(<InputPanel {...props} mode="quick" />)

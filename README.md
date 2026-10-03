@@ -29,7 +29,7 @@
 
 ### Features
 
-**Quick mode** — the core comparison: rent and how it grows, purchase price, down payment, mortgage rate and term, monthly shared costs, stamp duty, broker fee, and how long you stay, plus price growth (which can be negative), inflation and a savings rate. Cooperative debt, wealth tax, BSU, ASK and detailed ownership costs are left out.
+**Quick mode** — the core comparison: rent and how it grows, purchase price, down payment, mortgage rate and term, monthly shared costs and how they rise each year, stamp duty, broker fee, and how long you stay, plus price growth (which can be negative), inflation and a savings rate. Cooperative debt, wealth tax, BSU, ASK and detailed ownership costs are left out.
 
 **Advanced mode** — full Norwegian financial model:
 
@@ -107,7 +107,7 @@ For educational purposes only. Not financial advice.
 
 ### Funksjoner
 
-**Enkel modus** – kjernesammenligningen: husleie og husleievekst, kjøpesum, egenkapital, rente og nedbetalingstid, felleskostnader, dokumentavgift, meglerhonorar og tidshorisont, pluss prisvekst (som kan være negativ), inflasjon og sparerente. Fellesgjeld, formuesskatt, BSU, ASK og detaljerte eierkostnader er ikke med.
+**Enkel modus** – kjernesammenligningen: husleie og husleievekst, kjøpesum, egenkapital, rente og nedbetalingstid, felleskostnader og hvor mye de øker hvert år, dokumentavgift, meglerhonorar og tidshorisont, pluss prisvekst (som kan være negativ), inflasjon og sparerente. Fellesgjeld, formuesskatt, BSU, ASK og detaljerte eierkostnader er ikke med.
 
 **Avansert modus** – full modell med norske skatteregler:
 

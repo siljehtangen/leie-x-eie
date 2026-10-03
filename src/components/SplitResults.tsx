@@ -83,7 +83,7 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
                 {t('results.stressTest', { rate: formatPct(summary.stressTest.ratePct, locale) })}
               </span>
               <span className="stat-stack">
-                <AnimatedNOK value={summary.stressTest.monthlyPayment} trigger={results} locale={locale} />
+                <AnimatedNOK value={summary.stressTest.debtPayment} trigger={results} locale={locale} />
                 <span className="stat-sub">
                   +{formatKr(summary.stressTest.extraPerMonth)} {t('units.perMonth')}
                 </span>
