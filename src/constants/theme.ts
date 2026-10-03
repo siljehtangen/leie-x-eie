@@ -17,7 +17,7 @@ export const COLORS = {
   onText: '#FFFFFF',
   ink: '#15151C',
   textSecondary: '#4D4D59',
-  textMuted: '#8C8A94',
+  textMuted: '#6B6870',
   bg: '#F6F4EF',
   bgHover: '#EFECE5',
   surface: '#FFFFFF',

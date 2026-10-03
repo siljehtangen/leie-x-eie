@@ -2,6 +2,8 @@
 .results-section {
   animation: fadeInUp 0.7s var(--ease) both;
   scroll-margin-top: 1.5rem;
+  container-type: inline-size;
+  container-name: results;
 }
 
 .results-title {

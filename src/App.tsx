@@ -141,53 +141,57 @@ export default function App() {
 
       <main className="main" id="main-content">
         <div className="container">
-          <ModeToggle mode={mode} onModeChange={setMode} />
+          <div className={`workspace${result ? ' has-results' : ''}`}>
+            <div className="inputs-column">
+              <ModeToggle mode={mode} onModeChange={setMode} />
 
-          <CityPresets inputs={inputs} onApply={handlePreset} />
+              <CityPresets inputs={inputs} onApply={handlePreset} />
 
-          <InputPanel inputs={inputs} onInputChange={handleInputChange} mode={mode} />
+              <InputPanel inputs={inputs} onInputChange={handleInputChange} mode={mode} />
 
-          <div className="calculate-section">
-            <button type="button" className="calculate-btn" onClick={handleCalculate}>
-              <span>{showResults ? t('showResults') : t('calculate')}</span>
-              <span className="calculate-btn-arrow" aria-hidden>
-                {showResults ? <ArrowDown size={16} strokeWidth={2.25} /> : <ArrowRight size={16} strokeWidth={2.25} />}
-              </span>
-            </button>
-            {showResults && <p className="live-hint">{t('liveHint')}</p>}
-            <div className="calculate-actions">
-              <ShareButton scenario={currentScenario} />
-              <button type="button" className="reset-btn" onClick={handleReset}>
-                {t('resetInputs')}
-              </button>
+              <div className="calculate-section">
+                <button type="button" className="calculate-btn" onClick={handleCalculate}>
+                  <span>{showResults ? t('showResults') : t('calculate')}</span>
+                  <span className="calculate-btn-arrow" aria-hidden>
+                    {showResults ? <ArrowDown size={16} strokeWidth={2.25} /> : <ArrowRight size={16} strokeWidth={2.25} />}
+                  </span>
+                </button>
+                {showResults && <p className="live-hint">{t('liveHint')}</p>}
+                <div className="calculate-actions">
+                  <ShareButton scenario={currentScenario} />
+                  <button type="button" className="reset-btn" onClick={handleReset}>
+                    {t('resetInputs')}
+                  </button>
+                </div>
+              </div>
             </div>
+
+            {result && (
+              <div className="results-section" ref={resultsRef}>
+                <h2 className="results-title">{t('results.title')}</h2>
+                <Recommendation results={result} inputs={normalizedInputs} mode={deferredMode} />
+                <Affordability inputs={normalizedInputs} mode={deferredMode} />
+                <SplitResults results={result} years={normalizedInputs.years} />
+                <Charts
+                  yearlyData={result.yearlyData}
+                  breakevenYear={result.breakevenYear}
+                  inflation={normalizedInputs.inflation}
+                />
+                <Sensitivity inputs={normalizedInputs} mode={deferredMode} />
+                <ScenarioCompare
+                  current={displayedScenario}
+                  currentResult={result}
+                  saved={savedScenarios}
+                  onSave={handleSaveScenario}
+                  onLoad={handleLoadScenario}
+                  onDelete={handleDeleteScenario}
+                />
+                <Suspense fallback={null}>
+                  <CalculationBreakdown results={result} inputs={normalizedInputs} mode={deferredMode} />
+                </Suspense>
+              </div>
+            )}
           </div>
-
-          {result && (
-            <div className="results-section" ref={resultsRef}>
-              <h2 className="results-title">{t('results.title')}</h2>
-              <Recommendation results={result} inputs={normalizedInputs} mode={deferredMode} />
-              <Affordability inputs={normalizedInputs} mode={deferredMode} />
-              <SplitResults results={result} years={normalizedInputs.years} />
-              <Charts
-                yearlyData={result.yearlyData}
-                breakevenYear={result.breakevenYear}
-                inflation={normalizedInputs.inflation}
-              />
-              <Sensitivity inputs={normalizedInputs} mode={deferredMode} />
-              <ScenarioCompare
-                current={displayedScenario}
-                currentResult={result}
-                saved={savedScenarios}
-                onSave={handleSaveScenario}
-                onLoad={handleLoadScenario}
-                onDelete={handleDeleteScenario}
-              />
-              <Suspense fallback={null}>
-                <CalculationBreakdown results={result} inputs={normalizedInputs} mode={deferredMode} />
-              </Suspense>
-            </div>
-          )}
         </div>
         {result && (
           <StickySummary

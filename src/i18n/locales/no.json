@@ -10,10 +10,7 @@
     "pageTitle": "LeieXEie – Leie eller eie?",
     "tagline": "Din guide til valget mellom å leie og å eie bolig i Norge.",
     "darkMode": "Bytt til mørkt tema",
-    "lightMode": "Bytt til lyst tema",
-    "step1": "Velg en by eller fyll inn egne tall",
-    "step2": "Juster det som passer deg",
-    "step3": "Se hva som lønner seg"
+    "lightMode": "Bytt til lyst tema"
   },
   "a11y": {
     "decreaseField": "Reduser {{label}}",

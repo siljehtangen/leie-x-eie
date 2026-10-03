@@ -9,8 +9,6 @@ interface HeaderProps {
   onLangChange: (lang: Lang) => void
 }
 
-const STEPS = ['step1', 'step2', 'step3'] as const
-
 export default function Header({ lang, onLangChange }: HeaderProps) {
   const { t } = useTranslation()
   const { theme, toggleTheme } = useTheme()
@@ -79,14 +77,6 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
           {t('header.heroLine1')} <span className="highlight">{t('header.heroHighlight')}</span>
         </h1>
         <p className="header-tagline">{t('header.tagline')}</p>
-        <ol className="header-steps">
-          {STEPS.map((step, i) => (
-            <li key={step} className="header-step">
-              <span className="header-step-num" aria-hidden>{i + 1}</span>
-              {t(`header.${step}`)}
-            </li>
-          ))}
-        </ol>
       </div>
     </header>
   )

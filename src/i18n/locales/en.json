@@ -10,10 +10,7 @@
     "pageTitle": "LeieXEie – Rent or own?",
     "tagline": "Your smart guide to choosing whether to rent or own a home in Norway.",
     "darkMode": "Switch to dark theme",
-    "lightMode": "Switch to light theme",
-    "step1": "Pick a city or enter your own numbers",
-    "step2": "Adjust what fits you",
-    "step3": "See what pays off"
+    "lightMode": "Switch to light theme"
   },
   "a11y": {
     "decreaseField": "Decrease {{label}}",

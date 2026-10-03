@@ -100,3 +100,18 @@
   .sensitivity { padding: 1.1rem; }
   .sensitivity-table { font-size: 0.72rem; border-spacing: 2px; }
 }
+
+/* Results sit in a side column on wide screens, so stack when that column is narrow. */
+@container results (max-width: 720px) {
+  .charts-section { grid-template-columns: 1fr; }
+  .rec-metrics { grid-template-columns: repeat(2, 1fr); }
+  .rec-metric + .rec-metric { border-left: none; }
+  .rec-metric:nth-child(even) { border-left: 1px solid rgba(255,255,255,0.08); }
+  .rec-metric:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,0.08); }
+  .split-screen { grid-template-columns: 1fr; gap: 0.75rem; }
+  .vs-badge-center { display: none; }
+  .affordability-stats { grid-template-columns: 1fr; }
+  .recommendation-card { padding: 1.75rem; }
+  .bd-two-col { grid-template-columns: 1fr; }
+  .sensitivity { padding: 1.1rem; }
+}

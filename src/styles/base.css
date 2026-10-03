@@ -82,7 +82,7 @@ body {
 }
 
 /* ── Main ──────────────────────────────────────────────────────────────────── */
-.main { padding: 3rem 0 5rem; }
+.main { padding: 1.75rem 0 5rem; }
 
 .skip-link {
   position: absolute;
@@ -129,7 +129,89 @@ body {
   background: var(--color-border-strong);
 }
 
+@media (min-width: 1100px) {
+  .app:has(.workspace.has-results) .container,
+  .app:has(.workspace.has-results) .header-inner,
+  .app:has(.workspace.has-results) .footer {
+    max-width: 1320px;
+  }
+
+  .workspace.has-results {
+    display: grid;
+    grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+    column-gap: 1.75rem;
+    align-items: start;
+  }
+
+  .workspace.has-results .inputs-column {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100dvh - 2rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    min-width: 0;
+    padding: 4px 0.85rem 1.25rem 4px;
+    margin: -4px -0.45rem 0 -4px;
+  }
+
+  .workspace.has-results .results-section {
+    min-width: 0;
+  }
+
+  .workspace.has-results .input-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace.has-results .mode-toggle-wrap {
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .workspace.has-results .mode-desc,
+  .workspace.has-results .presets-note,
+  .workspace.has-results .results-title,
+  .workspace.has-results .rec-disclaimer {
+    text-align: left;
+  }
+
+  .workspace.has-results .presets {
+    align-items: flex-start;
+    margin-top: 0;
+  }
+
+  .workspace.has-results .presets-row,
+  .workspace.has-results .calculate-actions {
+    justify-content: flex-start;
+  }
+
+  .workspace.has-results .calculate-section {
+    align-items: flex-start;
+    margin: 1.5rem 0 0.25rem;
+  }
+
+  .workspace.has-results .results-title {
+    margin-bottom: 1.25rem;
+  }
+
+  .workspace.has-results .rec-disclaimer {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .app:has(.workspace.has-results) .sticky-summary {
+    left: auto;
+    right: max(1rem, env(safe-area-inset-right));
+    transform: translateY(140%);
+  }
+
+  .app:has(.workspace.has-results) .sticky-summary.visible {
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: 720px) {
   .container { padding: 0 1rem; }
-  .main { padding-top: 2rem; }
+  .main { padding-top: 1.25rem; }
 }
