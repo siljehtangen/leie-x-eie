@@ -4,7 +4,7 @@ import type { Inputs, Mode } from '../types'
 export const SENSITIVITY_OFFSETS = [-2, -1, 0, 1, 2] as const
 
 export const SENSITIVITY_AXES = ['appreciationRate', 'mortgageRate', 'returnRate', 'rentIncrease'] as const
-export type SensitivityAxis = typeof SENSITIVITY_AXES[number]
+export type SensitivityAxis = (typeof SENSITIVITY_AXES)[number]
 
 export interface SensitivityCell {
   value: number

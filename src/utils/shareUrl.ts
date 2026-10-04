@@ -14,8 +14,12 @@ export function encodeScenario(scenario: Scenario): string {
   return params.toString()
 }
 
-export function decodeScenario(search: string): Scenario | null {
-  const params = new URLSearchParams(search)
+function scenarioParams(value: string): URLSearchParams {
+  return new URLSearchParams(value.replace(/^[?#]/, ''))
+}
+
+export function decodeScenario(value: string): Scenario | null {
+  const params = scenarioParams(value)
   if (!params.has(MODE_PARAM)) return null
 
   const inputs: Record<string, number | boolean> = {}
@@ -32,5 +36,5 @@ export function decodeScenario(search: string): Scenario | null {
 }
 
 export function buildShareUrl(scenario: Scenario, location: Pick<Location, 'origin' | 'pathname'>): string {
-  return `${location.origin}${location.pathname}?${encodeScenario(scenario)}`
+  return `${location.origin}${location.pathname}#${encodeScenario(scenario)}`
 }

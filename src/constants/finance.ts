@@ -4,7 +4,7 @@ export const STAMP_DUTY_RATE = 0.025
 export const STRESS_TEST_RATE_ADD_PCT = 3
 export const STRESS_TEST_MIN_RATE_PCT = 7
 export const DEFAULT_DOWN_PAYMENT_RATE = 0.15
-export const MIN_DOWN_PAYMENT_RATE = 0.10
+export const MIN_DOWN_PAYMENT_RATE = 0.1
 
 export const MAX_DEBT_TO_INCOME = 5
 
@@ -19,11 +19,11 @@ export const WEALTH_TAX_HIGH_RATE = 1.1
 
 export const PRIMARY_RESIDENCE_VALUATION = 0.25
 export const PRIMARY_RESIDENCE_HIGH_THRESHOLD = 14_000_000
-export const PRIMARY_RESIDENCE_HIGH_VALUATION = 0.70
+export const PRIMARY_RESIDENCE_HIGH_VALUATION = 0.7
 
 export const SAVINGS_VALUATION = 1.0
 
-export const FINANCIAL_ASSET_VALUATION = 0.80
+export const FINANCIAL_ASSET_VALUATION = 0.8
 
 export const INTEREST_DEDUCTION = 0.22
 
@@ -33,5 +33,5 @@ export const ASK_TAX_RATE = 0.3784
 
 export const SECURITY_DEPOSIT_MONTHS = 3
 
-export const BSU_TAX_DEDUCTION_RATE = 0.10
+export const BSU_TAX_DEDUCTION_RATE = 0.1
 export const BSU_MAX_CONTRIBUTION = 27_500

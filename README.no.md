@@ -73,11 +73,11 @@ npm run dev
 
 ## Skript
 
-| Kommando          | Beskrivelse                       |
-| ----------------- | --------------------------------- |
-| `npm run dev`     | Starter utviklingsserveren        |
-| `npm run build`   | Bygger for produksjon             |
-| `npm run preview` | Forhåndsviser produksjonsbygget   |
+| Kommando          | Beskrivelse                     |
+| ----------------- | ------------------------------- |
+| `npm run dev`     | Starter utviklingsserveren      |
+| `npm run build`   | Bygger for produksjon           |
+| `npm run preview` | Forhåndsviser produksjonsbygget |
 
 ## Ansvarsfraskrivelse
 

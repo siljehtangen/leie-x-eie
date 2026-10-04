@@ -14,7 +14,7 @@
   background: color-mix(in srgb, var(--color-text) 5%, transparent);
   border-radius: 999px;
   padding: 4px;
-  box-shadow: inset 0 1px 2px rgba(21,21,28,0.06);
+  box-shadow: inset 0 1px 2px rgba(21, 21, 28, 0.06);
 }
 
 .mode-btn {
@@ -25,7 +25,10 @@
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  transition: color 0.2s var(--ease), background 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  transition:
+    color 0.2s var(--ease),
+    background 0.25s var(--ease),
+    box-shadow 0.25s var(--ease);
   background: transparent;
   color: var(--color-text-secondary);
   display: flex;
@@ -36,10 +39,14 @@
 .mode-btn.active {
   background: var(--color-surface);
   color: var(--color-text);
-  box-shadow: 0 1px 2px rgba(21,21,28,0.08), 0 4px 12px -2px rgba(21,21,28,0.1);
+  box-shadow:
+    0 1px 2px rgba(21, 21, 28, 0.08),
+    0 4px 12px -2px rgba(21, 21, 28, 0.1);
 }
 
-.mode-btn:hover:not(.active) { color: var(--color-text); }
+.mode-btn:hover:not(.active) {
+  color: var(--color-text);
+}
 
 .mode-desc {
   font-size: 0.8rem;
@@ -60,7 +67,9 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   border: var(--hairline);
-  transition: box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition:
+    box-shadow 0.3s var(--ease),
+    border-color 0.3s var(--ease);
 }
 
 .input-section:hover {
@@ -91,13 +100,25 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: inset 0 0 0 1px rgba(21,21,28,0.04);
+  box-shadow: inset 0 0 0 1px rgba(21, 21, 28, 0.04);
 }
 
-.section-icon.rent  { background: var(--color-rent-light); color: var(--color-rent); }
-.section-icon.buy   { background: var(--color-buy-light); color: var(--color-buy); }
-.section-icon.time  { background: var(--color-time-light); color: var(--color-time); }
-.section-icon.fin   { background: var(--color-financial-light); color: var(--color-financial); }
+.section-icon.rent {
+  background: var(--color-rent-light);
+  color: var(--color-rent);
+}
+.section-icon.buy {
+  background: var(--color-buy-light);
+  color: var(--color-buy);
+}
+.section-icon.time {
+  background: var(--color-time-light);
+  color: var(--color-time);
+}
+.section-icon.fin {
+  background: var(--color-financial-light);
+  color: var(--color-financial);
+}
 
 .section-title {
   font-size: 0.98rem;
@@ -114,13 +135,21 @@
   border-radius: 50%;
   color: var(--color-text-muted);
   background: var(--color-bg);
-  transition: transform 0.35s var(--ease), color 0.2s, background 0.2s;
+  transition:
+    transform 0.35s var(--ease),
+    color 0.2s,
+    background 0.2s;
   flex-shrink: 0;
 }
 
-.section-header:hover .section-chevron { color: var(--color-text); background: var(--color-bg-hover); }
+.section-header:hover .section-chevron {
+  color: var(--color-text);
+  background: var(--color-bg-hover);
+}
 
-.section-chevron.open { transform: rotate(180deg); }
+.section-chevron.open {
+  transform: rotate(180deg);
+}
 
 .section-chevron.small {
   width: 22px;
@@ -136,7 +165,7 @@
   user-select: none;
 }
 
-.checkbox-label input[type="checkbox"] {
+.checkbox-label input[type='checkbox'] {
   width: 1rem;
   height: 1rem;
   cursor: pointer;
@@ -164,7 +193,10 @@
   border-radius: 14px;
   padding: 0.8rem 0.85rem 0.7rem 1rem;
   border: 1px solid transparent;
-  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
+  transition:
+    background 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    box-shadow 0.25s var(--ease);
 }
 
 .input-field:hover {
@@ -210,10 +242,15 @@
 }
 
 .tooltip-trigger:hover,
-.tooltip-icon.open .tooltip-trigger { color: var(--color-text); }
+.tooltip-icon.open .tooltip-trigger {
+  color: var(--color-text);
+}
 
 @media (pointer: coarse) {
-  .tooltip-trigger { padding: 8px; margin: -8px; }
+  .tooltip-trigger {
+    padding: 8px;
+    margin: -8px;
+  }
 }
 
 .tooltip-popup {
@@ -225,7 +262,7 @@
   left: 50%;
   transform: translate(-50%, 4px);
   background: var(--color-dark);
-  color: rgba(255,255,255,0.92);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.76rem;
   font-weight: 400;
   line-height: 1.5;
@@ -235,11 +272,14 @@
   border-radius: 10px;
   width: 240px;
   z-index: 9999;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow-lg);
   pointer-events: none;
   white-space: normal;
-  transition: opacity 0.18s var(--ease), transform 0.18s var(--ease), visibility 0.18s;
+  transition:
+    opacity 0.18s var(--ease),
+    transform 0.18s var(--ease),
+    visibility 0.18s;
 }
 
 .tooltip-icon:hover .tooltip-popup,
@@ -289,8 +329,12 @@
   text-align: left;
 }
 
-.more-group-toggle:hover { color: var(--color-text); }
-.more-group-toggle .section-chevron { margin-left: auto; }
+.more-group-toggle:hover {
+  color: var(--color-text);
+}
+.more-group-toggle .section-chevron {
+  margin-left: auto;
+}
 
 .more-group-badge {
   font-size: 0.68rem;
@@ -328,7 +372,11 @@
   font-weight: 400;
   line-height: 1;
   flex-shrink: 0;
-  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s var(--ease);
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    transform 0.15s var(--ease);
   padding: 0;
 }
 
@@ -338,7 +386,9 @@
   color: var(--color-on-text);
 }
 
-.input-stepper-btn:active { transform: scale(0.92); }
+.input-stepper-btn:active {
+  transform: scale(0.92);
+}
 
 @media (pointer: coarse) {
   .input-stepper-btn {
@@ -348,7 +398,7 @@
   }
 }
 
-.input-field input[type="text"] {
+.input-field input[type='text'] {
   flex: 1;
   border: none;
   background: transparent;
@@ -398,7 +448,10 @@
   transition: color 0.2s;
 }
 
-.reset-btn:hover { color: var(--color-text); text-decoration-color: currentColor; }
+.reset-btn:hover {
+  color: var(--color-text);
+  text-decoration-color: currentColor;
+}
 
 .calculate-btn {
   font-family: var(--font);
@@ -418,10 +471,12 @@
   overflow: hidden;
   isolation: isolate;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.12),
-    0 1px 2px rgba(21,21,28,0.2),
-    0 12px 28px -8px rgba(21,21,28,0.45);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(21, 21, 28, 0.2),
+    0 12px 28px -8px rgba(21, 21, 28, 0.45);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
 }
 
 .calculate-btn::before {
@@ -453,20 +508,33 @@
 .calculate-btn:hover {
   transform: translateY(-2px);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.14),
-    0 2px 4px rgba(21,21,28,0.2),
-    0 20px 40px -10px rgba(21,21,28,0.5);
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 4px rgba(21, 21, 28, 0.2),
+    0 20px 40px -10px rgba(21, 21, 28, 0.5);
 }
 
-.calculate-btn:hover::before { opacity: 1; }
-.calculate-btn:hover { color: white; }
-.calculate-btn:hover .calculate-btn-arrow { transform: translateX(3px) rotate(-45deg); }
-.calculate-btn:active { transform: translateY(0); }
+.calculate-btn:hover::before {
+  opacity: 1;
+}
+.calculate-btn:hover {
+  color: white;
+}
+.calculate-btn:hover .calculate-btn-arrow {
+  transform: translateX(3px) rotate(-45deg);
+}
+.calculate-btn:active {
+  transform: translateY(0);
+}
 
 @media (max-width: 720px) {
-  .input-grid { grid-template-columns: 1fr; }
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 500px) {
-  .mode-btn { padding: 0.5rem 1.1rem; font-size: 0.84rem; }
+  .mode-btn {
+    padding: 0.5rem 1.1rem;
+    font-size: 0.84rem;
+  }
 }

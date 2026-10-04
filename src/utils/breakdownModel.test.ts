@@ -9,10 +9,22 @@ import type { Inputs, Mode } from '../types'
 const cases: [string, Inputs, Mode][] = [
   ['quick defaults', DEFAULT_INPUTS, 'quick'],
   ['advanced defaults', DEFAULT_INPUTS, 'advanced'],
-  ['advanced + shared debt + IO', { ...DEFAULT_INPUTS, isBorettslag: true, sharedDebt: 500_000, interestOnlyYears: 3 }, 'advanced'],
-  ['advanced + wealth tax', {
-    ...DEFAULT_INPUTS, purchasePrice: 25_000_000, downPayment: 15_000_000, askBalance: 5_000_000, years: 20,
-  }, 'advanced'],
+  [
+    'advanced + shared debt + IO',
+    { ...DEFAULT_INPUTS, isBorettslag: true, sharedDebt: 500_000, interestOnlyYears: 3 },
+    'advanced',
+  ],
+  [
+    'advanced + wealth tax',
+    {
+      ...DEFAULT_INPUTS,
+      purchasePrice: 25_000_000,
+      downPayment: 15_000_000,
+      askBalance: 5_000_000,
+      years: 20,
+    },
+    'advanced',
+  ],
 ]
 
 describe('buildBreakdownModel', () => {

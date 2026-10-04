@@ -1,22 +1,13 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Home,
-  House,
-  TrendingUp,
-  Wallet,
-  ChevronDown,
-  Info,
-  type LucideIcon,
-} from 'lucide-react'
+import { Home, House, TrendingUp, Wallet, ChevronDown, Info, type LucideIcon } from 'lucide-react'
 import { formatInputDraft, formatInputNum, formatPct, parseInputNum } from '../utils/formatting'
 import { computeAffordability } from '../utils/affordability'
 import { stampDutyForMode } from '../utils/calculations'
 import { useLocale } from '../hooks/useLocale'
 import { DEFAULT_INPUTS } from '../constants/defaults'
-import {
-  BSU_MAX_CONTRIBUTION, MAX_DEBT_TO_INCOME, MAX_HORIZON_YEARS, MAX_LOAN_TERM_YEARS, MIN_DOWN_PAYMENT_RATE,
-} from '../constants/finance'
+import { BSU_MAX_CONTRIBUTION, MAX_DEBT_TO_INCOME, MIN_DOWN_PAYMENT_RATE } from '../constants/finance'
+import { INPUT_BOUNDS } from '../constants/inputBounds'
 import type { Inputs, Mode, NumericInputKey, BooleanInputKey } from '../types'
 
 function clamp(value: number, min?: number, max?: number): number {
@@ -60,7 +51,9 @@ function InfoTip({ text }: { text: string }) {
       >
         <Info size={13} aria-hidden />
       </button>
-      <span id={id} role="tooltip" className="tooltip-popup">{text}</span>
+      <span id={id} role="tooltip" className="tooltip-popup">
+        {text}
+      </span>
     </span>
   )
 }
@@ -100,7 +93,15 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
         {changed && <span className="changed-dot" title={tA11y('fieldState.changed')} aria-hidden />}
       </div>
       <div className="input-value-row">
-        <button className="input-stepper-btn" onClick={() => stepBy(-s)} tabIndex={-1} type="button" aria-label={tA11y('a11y.decreaseField', { label })}>−</button>
+        <button
+          className="input-stepper-btn"
+          onClick={() => stepBy(-s)}
+          tabIndex={-1}
+          type="button"
+          aria-label={tA11y('a11y.decreaseField', { label })}
+        >
+          −
+        </button>
         <input
           type="text"
           inputMode="decimal"
@@ -126,7 +127,15 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           }}
         />
         {unit && <span className="input-unit">{unit}</span>}
-        <button className="input-stepper-btn" onClick={() => stepBy(s)} tabIndex={-1} type="button" aria-label={tA11y('a11y.increaseField', { label })}>+</button>
+        <button
+          className="input-stepper-btn"
+          onClick={() => stepBy(s)}
+          tabIndex={-1}
+          type="button"
+          aria-label={tA11y('a11y.increaseField', { label })}
+        >
+          +
+        </button>
       </div>
       {slider && (
         <input
@@ -141,12 +150,22 @@ function InputField({ label, name, value, onChange, unit, tooltip, min, max, ste
           aria-hidden
         />
       )}
-      {warning && <p className="input-warning" role="status">{warning}</p>}
+      {warning && (
+        <p className="input-warning" role="status">
+          {warning}
+        </p>
+      )}
     </div>
   )
 }
 
-function CheckboxField({ label, name, value, onChange, tooltip }: {
+function CheckboxField({
+  label,
+  name,
+  value,
+  onChange,
+  tooltip,
+}: {
   label: string
   name: BooleanInputKey
   value: boolean
@@ -157,11 +176,7 @@ function CheckboxField({ label, name, value, onChange, tooltip }: {
     <div className="input-field">
       <div className="input-label checkbox-label">
         <label className="checkbox-control">
-          <input
-            type="checkbox"
-            checked={value}
-            onChange={e => onChange(name, e.target.checked)}
-          />
+          <input type="checkbox" checked={value} onChange={e => onChange(name, e.target.checked)} />
           <span>{label}</span>
         </label>
         {tooltip && <InfoTip text={tooltip} />}
@@ -196,12 +211,21 @@ function Section({ id, title, icon: Icon, defaultOpen = true, children }: Sectio
         <span className="section-title">{title}</span>
         <ChevronDown size={16} strokeWidth={2} className={`section-chevron${open ? ' open' : ''}`} aria-hidden />
       </button>
-      {open && <div id={bodyId} className="section-body" role="region" aria-label={title}>{children}</div>}
+      {open && (
+        <div id={bodyId} className="section-body" role="region" aria-label={title}>
+          {children}
+        </div>
+      )}
     </div>
   )
 }
 
-function MoreGroup({ id, title, changedCount, children }: {
+function MoreGroup({
+  id,
+  title,
+  changedCount,
+  children,
+}: {
   id: string
   title: string
   changedCount: number
@@ -225,7 +249,11 @@ function MoreGroup({ id, title, changedCount, children }: {
         )}
         <ChevronDown size={14} strokeWidth={2} className={`section-chevron small${open ? ' open' : ''}`} aria-hidden />
       </button>
-      {open && <div id={bodyId} className="input-grid more-group-body">{children}</div>}
+      {open && (
+        <div id={bodyId} className="input-grid more-group-body">
+          {children}
+        </div>
+      )}
     </div>
   )
 }
@@ -251,9 +279,12 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     inputs.downPayment > inputs.purchasePrice
       ? t('warnings.downPaymentTooHigh')
       : inputs.purchasePrice > 0 && inputs.downPayment < totalPriceForEquity * MIN_DOWN_PAYMENT_RATE
-        ? t(showSharedDebt && inputs.sharedDebt > 0 ? 'warnings.downPaymentTooLowShared' : 'warnings.downPaymentTooLow', {
-            pct: MIN_DOWN_PAYMENT_RATE * 100,
-          })
+        ? t(
+            showSharedDebt && inputs.sharedDebt > 0 ? 'warnings.downPaymentTooLowShared' : 'warnings.downPaymentTooLow',
+            {
+              pct: MIN_DOWN_PAYMENT_RATE * 100,
+            },
+          )
         : undefined
 
   const affordability = computeAffordability(inputs, mode)
@@ -278,7 +309,8 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     name: NumericInputKey,
     extra: Omit<InputFieldProps, 'label' | 'name' | 'value' | 'onChange'> & { value?: number } = {},
   ) => {
-    const { value, ...rest } = extra
+    const { value, min, max, ...rest } = extra
+    const bounds = INPUT_BOUNDS[name]
     return (
       <InputField
         key={name}
@@ -286,6 +318,8 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
         name={name}
         value={value ?? inputs[name]}
         onChange={onInputChange}
+        min={min ?? bounds.min}
+        max={max ?? bounds.max}
         tooltip={t(`tooltips.${name}`, { defaultValue: '' }) || undefined}
         {...rest}
       />
@@ -294,12 +328,18 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
 
   const rentExtras: NumericInputKey[] = ['contentsInsurance', 'electricity', 'internet', 'parking']
   const loanExtras: NumericInputKey[] = [
-    ...(showSharedDebt ? ['sharedDebtRate', 'sharedDebtTermYears'] as const : []),
-    'otherDebt', 'interestOnlyYears', 'mortgageRateChangeYear',
-    ...(inputs.mortgageRateChangeYear > 0 ? ['mortgageRateAfterChange'] as const : []),
+    ...(showSharedDebt ? (['sharedDebtRate', 'sharedDebtTermYears'] as const) : []),
+    'otherDebt',
+    'interestOnlyYears',
+    'mortgageRateChangeYear',
+    ...(inputs.mortgageRateChangeYear > 0 ? (['mortgageRateAfterChange'] as const) : []),
   ]
   const ownerExtras: NumericInputKey[] = [
-    'otherClosingCosts', 'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax',
+    'otherClosingCosts',
+    'municipalFees',
+    'renovationPct',
+    'homeInsurance',
+    'propertyTax',
     'rentalIncome',
   ]
 
@@ -307,15 +347,15 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
     <div className="input-panel">
       <Section id="rent" title={t('sections.rent')} icon={Home}>
         <div className="input-grid">
-          {field('monthlyRent',  { unit: krMonth, min: 0, step: 500 })}
-          {field('rentIncrease', { unit: '%', min: 0, max: 20, step: 0.1, slider: [0, 8] })}
+          {field('monthlyRent', { unit: krMonth, step: 500 })}
+          {field('rentIncrease', { unit: '%', step: 0.1, slider: [0, 8] })}
         </div>
         {isAdvanced && (
           <MoreGroup id="rent" title={t('groups.livingCosts')} changedCount={changedCount(rentExtras)}>
-            {field('contentsInsurance', { unit: krYear,  min: 0, step: 100 })}
-            {field('electricity',       { unit: krYear,  min: 0, step: 500 })}
-            {field('internet',          { unit: krYear,  min: 0, step: 100 })}
-            {field('parking',           { unit: krMonth, min: 0, step: 100 })}
+            {field('contentsInsurance', { unit: krYear, step: 100 })}
+            {field('electricity', { unit: krYear, step: 500 })}
+            {field('internet', { unit: krYear, step: 100 })}
+            {field('parking', { unit: krMonth, step: 100 })}
           </MoreGroup>
         )}
       </Section>
@@ -323,65 +363,72 @@ export default function InputPanel({ inputs, onInputChange, mode }: InputPanelPr
       <Section id="buy" title={t('sections.buy')} icon={House}>
         <div className="input-grid">
           {isAdvanced && checkbox('isBorettslag')}
-          {field('purchasePrice',   { unit: kr,      min: 0,   step: 100000 })}
-          {field('downPayment',     { unit: kr,      min: 0,   step: 50000, warning: downPaymentWarning })}
-          {showSharedDebt && field('sharedDebt', { unit: kr, min: 0, step: 10000 })}
-          {field('householdIncome', { unit: krYear, min: 0, step: 50000, warning: incomeWarning })}
-          {field('mortgageRate',    { unit: '%',     min: 0.1, max: 15, step: 0.1, slider: [1, 10] })}
-          {field('loanTermYears',   { unit: years,   min: 1,   max: MAX_LOAN_TERM_YEARS, step: 1 })}
-          {field('monthlyHoaFee',   { unit: krMonth, min: 0,   step: 100   })}
-          {field('hoaFeeIncrease',  { unit: '%',     min: 0,   max: 10, step: 0.1 })}
+          {field('purchasePrice', { unit: kr, step: 100000 })}
+          {field('downPayment', { unit: kr, step: 50000, warning: downPaymentWarning })}
+          {showSharedDebt && field('sharedDebt', { unit: kr, step: 10000 })}
+          {field('householdIncome', { unit: krYear, step: 50000, warning: incomeWarning })}
+          {field('mortgageRate', { unit: '%', step: 0.1, slider: [1, 10] })}
+          {field('loanTermYears', { unit: years, step: 1 })}
+          {field('monthlyHoaFee', { unit: krMonth, step: 100 })}
+          {field('hoaFeeIncrease', { unit: '%', step: 0.1 })}
           {field('stampDuty', {
-            unit: kr, min: 0, step: 10000,
+            unit: kr,
+            step: 10000,
             value: stampDutyForMode(inputs, mode),
           })}
-          {field('brokerSellingFee',{ unit: kr,      min: 0,   step: 10000 })}
+          {field('brokerSellingFee', { unit: kr, step: 10000 })}
         </div>
-        {isAdvanced && <>
-          <MoreGroup id="loan" title={t('groups.loan')} changedCount={changedCount(loanExtras)}>
-            {showSharedDebt && <>
-              {field('sharedDebtRate',      { unit: '%',   min: 0, max: 15, step: 0.1 })}
-              {field('sharedDebtTermYears', { unit: years, min: 0, max: 50, step: 1 })}
-            </>}
-            {field('otherDebt',          { unit: kr,     min: 0, step: 10000 })}
-            {field('interestOnlyYears',  { unit: years,  min: 0, max: 10, step: 1 })}
-            {field('mortgageRateChangeYear', { unit: years, min: 0, max: MAX_HORIZON_YEARS, step: 1 })}
-            {inputs.mortgageRateChangeYear > 0 &&
-              field('mortgageRateAfterChange', { unit: '%', min: 0, max: 15, step: 0.1 })}
-          </MoreGroup>
-          <MoreGroup id="owner" title={t('groups.ownerCosts')} changedCount={changedCount(ownerExtras)}>
-            {field('otherClosingCosts',  { unit: kr,     min: 0, step: 1000  })}
-            {field('municipalFees',      { unit: krYear, min: 0, step: 500   })}
-            {field('renovationPct',      { unit: '%',    min: 0, max: 5, step: 0.1 })}
-            {field('homeInsurance',      { unit: krYear, min: 0, step: 500   })}
-            {field('propertyTax',        { unit: krYear, min: 0, step: 500   })}
-            {field('rentalIncome',       { unit: krMonth, min: 0, step: 500 })}
-          </MoreGroup>
-        </>}
+        {isAdvanced && (
+          <>
+            <MoreGroup id="loan" title={t('groups.loan')} changedCount={changedCount(loanExtras)}>
+              {showSharedDebt && (
+                <>
+                  {field('sharedDebtRate', { unit: '%', step: 0.1 })}
+                  {field('sharedDebtTermYears', { unit: years, step: 1 })}
+                </>
+              )}
+              {field('otherDebt', { unit: kr, step: 10000 })}
+              {field('interestOnlyYears', { unit: years, step: 1 })}
+              {field('mortgageRateChangeYear', { unit: years, step: 1 })}
+              {inputs.mortgageRateChangeYear > 0 && field('mortgageRateAfterChange', { unit: '%', step: 0.1 })}
+            </MoreGroup>
+            <MoreGroup id="owner" title={t('groups.ownerCosts')} changedCount={changedCount(ownerExtras)}>
+              {field('otherClosingCosts', { unit: kr, step: 1000 })}
+              {field('municipalFees', { unit: krYear, step: 500 })}
+              {field('renovationPct', { unit: '%', step: 0.1 })}
+              {field('homeInsurance', { unit: krYear, step: 500 })}
+              {field('propertyTax', { unit: krYear, step: 500 })}
+              {field('rentalIncome', { unit: krMonth, step: 500 })}
+            </MoreGroup>
+          </>
+        )}
       </Section>
 
       <Section id="time" title={t('sections.timeMarket')} icon={TrendingUp}>
         <div className="input-grid">
-          {field('years',            { unit: years, min: 1, max: MAX_HORIZON_YEARS, step: 1, slider: [1, MAX_HORIZON_YEARS] })}
-          {field('appreciationRate', { unit: '%', min: -10, max: 15, step: 0.1, slider: [-5, 10] })}
-          {field('inflation',        { unit: '%', min: 0, max: 10, step: 0.1, slider: [0, 6] })}
-          {!isAdvanced && field('investmentReturn', { unit: '%', min: 0, max: 20, step: 0.1, slider: [0, 10] })}
+          {field('years', { unit: years, step: 1, slider: [1, INPUT_BOUNDS.years.max] })}
+          {field('appreciationRate', { unit: '%', step: 0.1, slider: [-5, 10] })}
+          {field('inflation', { unit: '%', step: 0.1, slider: [0, 6] })}
+          {!isAdvanced && field('investmentReturn', { unit: '%', step: 0.1, slider: [0, 10] })}
         </div>
       </Section>
 
       {isAdvanced && (
         <Section id="fin" title={t('sections.financial')} icon={Wallet}>
           <div className="input-grid">
-            {field('savingsAccountBalance', { unit: kr, min: 0, step: 10000 })}
-            {field('savingsAccountRate',    { unit: '%', min: 0, max: 20, step: 0.1 })}
-            {field('askBalance',            { unit: kr, min: 0, step: 10000 })}
-            {field('askRate',               { unit: '%', min: 0, max: 30, step: 0.1, slider: [0, 12] })}
-            {field('askShieldingRate',      { unit: '%', min: 0, max: 10, step: 0.1 })}
+            {field('savingsAccountBalance', { unit: kr, step: 10000 })}
+            {field('savingsAccountRate', { unit: '%', step: 0.1 })}
+            {field('askBalance', { unit: kr, step: 10000 })}
+            {field('askRate', { unit: '%', step: 0.1, slider: [0, 12] })}
+            {field('askShieldingRate', { unit: '%', step: 0.1 })}
             {checkbox('isCouple')}
             {checkbox('bsuActive')}
-            {inputs.bsuActive && field('bsuYearlyContribution', {
-              unit: krYear, min: 0, max: BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1), step: 500,
-            })}
+            {inputs.bsuActive &&
+              field('bsuYearlyContribution', {
+                unit: krYear,
+                max: BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1),
+                step: 500,
+              })}
           </div>
         </Section>
       )}

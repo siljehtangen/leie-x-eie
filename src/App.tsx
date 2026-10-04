@@ -13,11 +13,16 @@ import Affordability from './components/Affordability'
 import ScenarioCompare from './components/ScenarioCompare'
 import Sensitivity from './components/Sensitivity'
 import StickySummary from './components/StickySummary'
-import { calculate, normalizeInputs } from './utils/calculations'
+import { calculate, clampInputs } from './utils/calculations'
 import { applyInputChange, applyPreset } from './utils/inputUpdates'
 import {
-  clearScenario, loadSavedScenarios, loadScenario, saveScenario, storeSavedScenarios,
-  type SavedScenario, type Scenario,
+  clearScenario,
+  loadSavedScenarios,
+  loadScenario,
+  saveScenario,
+  storeSavedScenarios,
+  type SavedScenario,
+  type Scenario,
 } from './utils/scenarioStorage'
 import { decodeScenario } from './utils/shareUrl'
 import { DEFAULT_INPUTS } from './constants/defaults'
@@ -33,7 +38,8 @@ function resolveLang(language: string): Lang {
 }
 
 function readInitialScenario(): { scenario: Scenario | null; fromLink: boolean } {
-  const shared = typeof window !== 'undefined' ? decodeScenario(window.location.search) : null
+  if (typeof window === 'undefined') return { scenario: null, fromLink: false }
+  const shared = decodeScenario(window.location.hash) ?? decodeScenario(window.location.search)
   if (shared) return { scenario: shared, fromLink: true }
   return { scenario: loadScenario(), fromLink: false }
 }
@@ -54,12 +60,12 @@ export default function App() {
 
   const deferredInputs = useDeferredValue(inputs)
   const deferredMode = useDeferredValue(mode)
-  const normalizedInputs = useMemo(() => normalizeInputs(deferredInputs), [deferredInputs])
+  const normalizedInputs = useMemo(() => clampInputs(deferredInputs), [deferredInputs])
   const result = useMemo(
     () => (showResults ? calculate(normalizedInputs, deferredMode) : null),
     [showResults, normalizedInputs, deferredMode],
   )
-  const currentScenario = useMemo<Scenario>(() => ({ mode, inputs: normalizeInputs(inputs) }), [mode, inputs])
+  const currentScenario = useMemo<Scenario>(() => ({ mode, inputs: clampInputs(inputs) }), [mode, inputs])
   const displayedScenario = useMemo<Scenario>(
     () => ({ mode: deferredMode, inputs: normalizedInputs }),
     [deferredMode, normalizedInputs],
@@ -77,13 +83,13 @@ export default function App() {
 
   useEffect(() => {
     if (initial.fromLink) {
-      window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+      window.history.replaceState(null, '', window.location.pathname)
     }
   }, [initial.fromLink])
 
   useEffect(() => {
-    saveScenario({ mode, inputs })
-  }, [mode, inputs])
+    saveScenario(currentScenario)
+  }, [currentScenario])
 
   useEffect(() => {
     storeSavedScenarios(savedScenarios)
@@ -153,7 +159,11 @@ export default function App() {
                 <button type="button" className="calculate-btn" onClick={handleCalculate}>
                   <span>{showResults ? t('showResults') : t('calculate')}</span>
                   <span className="calculate-btn-arrow" aria-hidden>
-                    {showResults ? <ArrowDown size={16} strokeWidth={2.25} /> : <ArrowRight size={16} strokeWidth={2.25} />}
+                    {showResults ? (
+                      <ArrowDown size={16} strokeWidth={2.25} />
+                    ) : (
+                      <ArrowRight size={16} strokeWidth={2.25} />
+                    )}
                   </span>
                 </button>
                 {showResults && <p className="live-hint">{t('liveHint')}</p>}

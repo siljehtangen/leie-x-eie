@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { formatChartNOK, formatDecimal, formatInputDraft, formatInputNum, formatNOK, formatPct, formatPercent, getLocale, parseInputNum } from './formatting'
+import {
+  formatChartNOK,
+  formatDecimal,
+  formatInputDraft,
+  formatInputNum,
+  formatNOK,
+  formatPct,
+  formatPercent,
+  getLocale,
+  parseInputNum,
+} from './formatting'
 
 describe('formatting', () => {
   it('maps UI languages to number locales', () => {
@@ -12,6 +22,10 @@ describe('formatting', () => {
     expect(formatNOK(2_450_000, true, 'nb-NO')).toBe('2,5 mill. kr')
     expect(formatNOK(2_450_000, true, 'en-GB')).toBe('2.5m NOK')
     expect(formatNOK(12_400, true, 'en-GB')).toBe('12k NOK')
+    expect(formatNOK(2_500_000_000, true, 'nb-NO')).toBe('2,5 mrd. kr')
+    expect(formatNOK(2_500_000_000, true, 'en-GB')).toBe('2.5bn NOK')
+    expect(formatNOK(2_500_000_000_000, true, 'nb-NO')).toBe('2,5 bill. kr')
+    expect(formatNOK(-2_500_000_000_000, true, 'en-GB')).toBe('-2.5tn NOK')
   })
 
   it('formats full amounts without decimals', () => {
@@ -55,5 +69,6 @@ describe('formatting', () => {
   it('abbreviates chart ticks', () => {
     expect(formatChartNOK(1_500_000, 'nb-NO')).toBe('1,5M')
     expect(formatChartNOK(250_000, 'en-GB')).toBe('250k')
+    expect(formatChartNOK(2_500_000_000_000, 'nb-NO')).toBe('2,5T')
   })
 })

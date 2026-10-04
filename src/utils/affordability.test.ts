@@ -20,7 +20,13 @@ describe('computeAffordability', () => {
   })
 
   it('counts shared debt and other debt only in advanced mode', () => {
-    const inputs = { ...DEFAULT_INPUTS, householdIncome: 800_000, isBorettslag: true, sharedDebt: 500_000, otherDebt: 200_000 }
+    const inputs = {
+      ...DEFAULT_INPUTS,
+      householdIncome: 800_000,
+      isBorettslag: true,
+      sharedDebt: 500_000,
+      otherDebt: 200_000,
+    }
     const loan = DEFAULT_INPUTS.purchasePrice - DEFAULT_INPUTS.downPayment
     expect(computeAffordability(inputs, 'quick')!.totalDebt).toBe(loan)
     expect(computeAffordability(inputs, 'advanced')!.totalDebt).toBe(loan + 700_000)
@@ -39,6 +45,6 @@ describe('computeAffordability', () => {
     const quick = computeAffordability(inputs, 'quick')!
     const advanced = computeAffordability(inputs, 'advanced')!
     const rate = computeStressTest(inputs, 'advanced').ratePct
-    expect(advanced.stressedMonthlyPayment - quick.stressedMonthlyPayment).toBeCloseTo(120_000 * (rate / 100) / 12, 6)
+    expect(advanced.stressedMonthlyPayment - quick.stressedMonthlyPayment).toBeCloseTo((120_000 * (rate / 100)) / 12, 6)
   })
 })

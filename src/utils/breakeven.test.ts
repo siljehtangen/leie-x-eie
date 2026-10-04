@@ -20,7 +20,11 @@ describe('solveBreakeven', () => {
   it('returns null when buying wins across the whole search range', () => {
     const cheap = {
       ...DEFAULT_INPUTS,
-      purchasePrice: 100_000, downPayment: 100_000, stampDuty: 0, monthlyHoaFee: 0, brokerSellingFee: 0,
+      purchasePrice: 100_000,
+      downPayment: 100_000,
+      stampDuty: 0,
+      monthlyHoaFee: 0,
+      brokerSellingFee: 0,
       appreciationRate: 10,
     }
     expect(solveBreakeven(cheap, 'quick', 'monthlyRent')).toBeNull()

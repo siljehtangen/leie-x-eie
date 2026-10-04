@@ -1,3 +1,4 @@
+import { BREAKEVEN_APPRECIATION_MAX, INPUT_BOUNDS } from '../constants/inputBounds'
 import { calculate } from './calculations'
 import type { Inputs, Mode } from '../types'
 
@@ -5,7 +6,7 @@ export type BreakevenKey = 'monthlyRent' | 'appreciationRate'
 
 const SEARCH_RANGE: Record<BreakevenKey, [number, number]> = {
   monthlyRent: [0, 200_000],
-  appreciationRate: [-10, 20],
+  appreciationRate: [INPUT_BOUNDS.appreciationRate.min, BREAKEVEN_APPRECIATION_MAX],
 }
 const ITERATIONS = 40
 

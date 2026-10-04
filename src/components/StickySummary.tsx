@@ -37,11 +37,11 @@ export default function StickySummary({ result, years, targetRef, onJump }: Stic
           {winner} <strong>{formatKr(difference, true)}</strong>
         </span>
         <span className="sticky-summary-meta">
-          {breakevenYear !== null
-            ? t('sticky.breakeven', { year: breakevenYear })
-            : t('sticky.afterYears', { years })}
+          {breakevenYear !== null ? t('sticky.breakeven', { year: breakevenYear }) : t('sticky.afterYears', { years })}
         </span>
-        <span className="sticky-summary-arrow" aria-hidden><ArrowDown size={14} strokeWidth={2.25} /></span>
+        <span className="sticky-summary-arrow" aria-hidden>
+          <ArrowDown size={14} strokeWidth={2.25} />
+        </span>
       </button>
     </div>
   )

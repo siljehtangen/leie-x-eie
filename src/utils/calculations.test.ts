@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
-  annuityPayment, calculate, computeAnnualWealthTax, computeStressTest, findBreakevenYear, normalizeInputs, wealthTaxOn,
+  annuityPayment,
+  calculate,
+  clampInputs,
+  computeAnnualWealthTax,
+  computeStressTest,
+  findBreakevenYear,
+  normalizeInputs,
+  wealthTaxOn,
 } from './calculations'
+import { INPUT_BOUNDS, MAX_AMOUNT_KR, MODEL_BOUNDS } from '../constants/inputBounds'
+import { SENSITIVITY_OFFSETS, buildSensitivityGrid } from './sensitivity'
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import {
   BSU_TAX_DEDUCTION_RATE,
@@ -36,16 +45,39 @@ describe('calculate — golden scenarios', () => {
   const scenarios: [string, Inputs, Mode][] = [
     ['quick defaults', DEFAULT_INPUTS, 'quick'],
     ['advanced defaults', DEFAULT_INPUTS, 'advanced'],
-    ['advanced with interest-only, shared debt and BSU', with_({
-      interestOnlyYears: 3, isBorettslag: true, sharedDebt: 500_000, bsuActive: true, years: 15,
-    }), 'advanced'],
-    ['advanced couple with a rate change', with_({
-      isCouple: true, mortgageRateChangeYear: 4, mortgageRateAfterChange: 4, years: 12,
-    }), 'advanced'],
-    ['expensive home triggering wealth tax', with_({
-      purchasePrice: 25_000_000, downPayment: 15_000_000, stampDuty: 625_000,
-      savingsAccountBalance: 3_000_000, askBalance: 5_000_000, years: 20,
-    }), 'advanced'],
+    [
+      'advanced with interest-only, shared debt and BSU',
+      with_({
+        interestOnlyYears: 3,
+        isBorettslag: true,
+        sharedDebt: 500_000,
+        bsuActive: true,
+        years: 15,
+      }),
+      'advanced',
+    ],
+    [
+      'advanced couple with a rate change',
+      with_({
+        isCouple: true,
+        mortgageRateChangeYear: 4,
+        mortgageRateAfterChange: 4,
+        years: 12,
+      }),
+      'advanced',
+    ],
+    [
+      'expensive home triggering wealth tax',
+      with_({
+        purchasePrice: 25_000_000,
+        downPayment: 15_000_000,
+        stampDuty: 625_000,
+        savingsAccountBalance: 3_000_000,
+        askBalance: 5_000_000,
+        years: 20,
+      }),
+      'advanced',
+    ],
   ]
 
   it.each(scenarios)('%s', (_name, inputs, mode) => {
@@ -92,7 +124,9 @@ describe('calculate — mortgage', () => {
     expect(summary.monthlyMortgagePayment).toBeCloseTo(summary.loanAmount * summary.monthlyRate, 6)
     for (const y of yearlyData.slice(0, 3)) expect(y.remainingMortgage).toBeCloseTo(summary.loanAmount, 6)
     expect(yearlyData[3].remainingMortgage).toBeLessThan(summary.loanAmount)
-    expect(summary.monthlyAmortizingPayment).toBeGreaterThan(calculate(with_({ loanTermYears: 25 }), 'advanced').summary.monthlyAmortizingPayment)
+    expect(summary.monthlyAmortizingPayment).toBeGreaterThan(
+      calculate(with_({ loanTermYears: 25 }), 'advanced').summary.monthlyAmortizingPayment,
+    )
   })
 
   it('caps interest-only years at loan term − 1 and ignores them in quick mode', () => {
@@ -111,14 +145,25 @@ describe('calculate — year-1 cost breakdown', () => {
   const cases: [string, Inputs, Mode][] = [
     ['quick', DEFAULT_INPUTS, 'quick'],
     ['advanced', DEFAULT_INPUTS, 'advanced'],
-    ['advanced + shared debt + IO + BSU', with_({ sharedDebt: 400_000, interestOnlyYears: 2, bsuActive: true, propertyTax: 3000 }), 'advanced'],
+    [
+      'advanced + shared debt + IO + BSU',
+      with_({ sharedDebt: 400_000, interestOnlyYears: 2, bsuActive: true, propertyTax: 3000 }),
+      'advanced',
+    ],
   ]
 
   it.each(cases)('components sum to the year-1 average monthly cost (%s)', (_n, inputs, mode) => {
     const { summary, yearlyData } = calculate(inputs, mode)
     const b = summary.year1BuyerCosts
-    const buyerSum = b.mortgage + b.hoaFee + b.utilities + b.maintenance + b.municipalFees
-      + b.insurance + b.propertyTax - b.interestDeduction
+    const buyerSum =
+      b.mortgage +
+      b.hoaFee +
+      b.utilities +
+      b.maintenance +
+      b.municipalFees +
+      b.insurance +
+      b.propertyTax -
+      b.interestDeduction
     expect(buyerSum).toBeCloseTo(yearlyData[0].buyerMonthlyCost, 6)
     expect(b.total).toBeCloseTo(yearlyData[0].buyerMonthlyCost, 6)
 
@@ -128,10 +173,14 @@ describe('calculate — year-1 cost breakdown', () => {
 
   it('deducts 22% of mortgage and shared-debt interest', () => {
     const inputs = with_({
-      interestOnlyYears: 2, isBorettslag: true, sharedDebt: 600_000, sharedDebtRate: 5, sharedDebtTermYears: 0,
+      interestOnlyYears: 2,
+      isBorettslag: true,
+      sharedDebt: 600_000,
+      sharedDebtRate: 5,
+      sharedDebtTermYears: 0,
     })
     const { summary } = calculate(inputs, 'advanced')
-    const expected = (summary.loanAmount * summary.monthlyRate + 600_000 * 0.05 / 12) * INTEREST_DEDUCTION
+    const expected = (summary.loanAmount * summary.monthlyRate + (600_000 * 0.05) / 12) * INTEREST_DEDUCTION
     expect(summary.year1BuyerCosts.interestDeduction).toBeCloseTo(expected, 6)
   })
 
@@ -145,15 +194,23 @@ describe('calculate — year-1 cost breakdown', () => {
   it('reduces renter cost by the BSU tax deduction', () => {
     const off = calculate(with_({ bsuActive: false }), 'advanced')
     const on = calculate(with_({ bsuActive: true, bsuYearlyContribution: 27_500 }), 'advanced')
-    const expected = 27_500 * BSU_TAX_DEDUCTION_RATE / 12
+    const expected = (27_500 * BSU_TAX_DEDUCTION_RATE) / 12
     expect(off.yearlyData[0].renterMonthlyCost - on.yearlyData[0].renterMonthlyCost).toBeCloseTo(expected, 6)
   })
 
   it('keeps the BSU contribution as savings, so only the tax deduction is a gain', () => {
     const flat = with_({
-      appreciationRate: 0, investmentReturn: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0,
-      savingsAccountRate: 0, askRate: 0, askShieldingRate: 0,
-      savingsAccountBalance: 0, askBalance: 0, years: 1,
+      appreciationRate: 0,
+      investmentReturn: 0,
+      inflation: 0,
+      rentIncrease: 0,
+      hoaFeeIncrease: 0,
+      savingsAccountRate: 0,
+      askRate: 0,
+      askShieldingRate: 0,
+      savingsAccountBalance: 0,
+      askBalance: 0,
+      years: 1,
     })
     const off = calculate(flat, 'advanced')
     const on = calculate({ ...flat, bsuActive: true, bsuYearlyContribution: 27_500 }, 'advanced')
@@ -185,26 +242,34 @@ describe('calculate — net worth, recommendation and breakeven', () => {
     for (const y of yearlyData) {
       const infl = Math.pow(1 + inputs.inflation / 100, y.year)
       const brokerFee = inputs.brokerSellingFee * Math.pow(1 + inputs.appreciationRate / 100, y.year)
-      const expected = (y.homeValue - y.remainingMortgage - y.remainingSharedDebt - brokerFee
-        + y.buyerPortfolio) / infl
+      const expected = (y.homeValue - y.remainingMortgage - y.remainingSharedDebt - brokerFee + y.buyerPortfolio) / infl
       expect(y.buyerNetWorth).toBeCloseTo(expected, 4)
     }
   })
 
   const flat = with_({
-    appreciationRate: 0, investmentReturn: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0,
-    savingsAccountRate: 0, askRate: 0, askShieldingRate: 0,
+    appreciationRate: 0,
+    investmentReturn: 0,
+    inflation: 0,
+    rentIncrease: 0,
+    hoaFeeIncrease: 0,
+    savingsAccountRate: 0,
+    askRate: 0,
+    askShieldingRate: 0,
   })
 
-  it.each(['quick', 'advanced'] as const)('gives the renter the down payment and closing costs as starting capital (%s)', mode => {
-    const { yearlyData, summary } = calculate(with_({ ...flat, years: 1 }), mode)
-    const y = yearlyData[0]
-    const existing = mode === 'advanced' ? flat.savingsAccountBalance + flat.askBalance : 0
-    const diff = 12 * (y.buyerMonthlyCost - y.renterMonthlyCost)
-    expect(diff).toBeGreaterThan(0)
-    expect(y.renterNetWorth).toBeCloseTo(existing + summary.initialInvestment + diff, 4)
-    expect(y.buyerPortfolio).toBeCloseTo(existing, 4)
-  })
+  it.each(['quick', 'advanced'] as const)(
+    'gives the renter the down payment and closing costs as starting capital (%s)',
+    mode => {
+      const { yearlyData, summary } = calculate(with_({ ...flat, years: 1 }), mode)
+      const y = yearlyData[0]
+      const existing = mode === 'advanced' ? flat.savingsAccountBalance + flat.askBalance : 0
+      const diff = 12 * (y.buyerMonthlyCost - y.renterMonthlyCost)
+      expect(diff).toBeGreaterThan(0)
+      expect(y.renterNetWorth).toBeCloseTo(existing + summary.initialInvestment + diff, 4)
+      expect(y.buyerPortfolio).toBeCloseTo(existing, 4)
+    },
+  )
 
   it.each(['quick', 'advanced'] as const)('lets the buyer invest the difference when renting costs more (%s)', mode => {
     const inputs = with_({ ...flat, monthlyRent: 40_000, savingsAccountBalance: 0, askBalance: 0, years: 5 })
@@ -274,7 +339,10 @@ describe('calculate — rental income from part of the home', () => {
     expect(gap(on)).toBeGreaterThan(gap(off))
 
     const quick = calculate(with_({ rentalIncome: 6_000 }), 'quick')
-    expect(quick.yearlyData[0].buyerMonthlyCost).toBeCloseTo(calculate(DEFAULT_INPUTS, 'quick').yearlyData[0].buyerMonthlyCost, 6)
+    expect(quick.yearlyData[0].buyerMonthlyCost).toBeCloseTo(
+      calculate(DEFAULT_INPUTS, 'quick').yearlyData[0].buyerMonthlyCost,
+      6,
+    )
   })
 
   it('raises the rental income each year in line with rent', () => {
@@ -286,8 +354,15 @@ describe('calculate — rental income from part of the home', () => {
 
 describe('findBreakevenYear', () => {
   const point = (year: number, buyer: number, renter: number): YearlyDataPoint => ({
-    year, buyerNetWorth: buyer, renterNetWorth: renter,
-    buyerMonthlyCost: 0, renterMonthlyCost: 0, homeValue: 0, remainingMortgage: 0, remainingSharedDebt: 0, buyerPortfolio: 0,
+    year,
+    buyerNetWorth: buyer,
+    renterNetWorth: renter,
+    buyerMonthlyCost: 0,
+    renterMonthlyCost: 0,
+    homeValue: 0,
+    remainingMortgage: 0,
+    remainingSharedDebt: 0,
+    buyerPortfolio: 0,
   })
 
   it('returns null when one path leads throughout', () => {
@@ -310,7 +385,10 @@ describe('computeAnnualWealthTax', () => {
 
   it('is zero below the threshold', () => {
     const assets = { savings: 200_000, ask: 400_000 }
-    expect(computeAnnualWealthTax(4_000_000, 3_000_000, 0, assets, assets)).toEqual({ buyerWealthTax: 0, renterWealthTax: 0 })
+    expect(computeAnnualWealthTax(4_000_000, 3_000_000, 0, assets, assets)).toEqual({
+      buyerWealthTax: 0,
+      renterWealthTax: 0,
+    })
   })
 
   it('applies tiered primary-residence valuation above 14 MNOK', () => {
@@ -329,7 +407,13 @@ describe('computeAnnualWealthTax', () => {
   })
 
   it("adds the buyer's savings and ASK to home wealth, net of all debt", () => {
-    const { buyerWealthTax } = computeAnnualWealthTax(8_000_000, 1_000_000, 0, { savings: 1_000_000, ask: 2_000_000 }, none)
+    const { buyerWealthTax } = computeAnnualWealthTax(
+      8_000_000,
+      1_000_000,
+      0,
+      { savings: 1_000_000, ask: 2_000_000 },
+      none,
+    )
     expect(buyerWealthTax).toBeCloseTo((2_000_000 + 1_000_000 + 1_600_000 - 1_000_000 - 1_900_000) * 0.01, 6)
   })
 })
@@ -365,8 +449,10 @@ describe('calculate — ASK taxation', () => {
     const inputs = with_({ investmentReturn: 6, inflation: 0, years: 10, monthlyRent: 50_000 })
     const { summary } = calculate(inputs, 'quick')
     expect(summary.finalAskTax).toBe(0)
-    expect(summary.finalRenterNominalGross)
-      .toBeCloseTo(summary.initialInvestment * Math.pow(1 + 0.06 * (1 - SAVINGS_TAX_RATE), 10), 2)
+    expect(summary.finalRenterNominalGross).toBeCloseTo(
+      summary.initialInvestment * Math.pow(1 + 0.06 * (1 - SAVINGS_TAX_RATE), 10),
+      2,
+    )
   })
 })
 
@@ -391,14 +477,23 @@ describe('calculate — shared costs, shared debt and deposit', () => {
     expect(calculate(with_({ ...base, sharedDebtTermYears: 0 }), 'advanced').summary.finalSharedDebt).toBe(500_000)
     const halfway = calculate(with_({ ...base, sharedDebtTermYears: 20 }), 'advanced').summary.finalSharedDebt
     const r = 0.05 / 12
-    const expected = 500_000 * (Math.pow(1 + r, 240) - Math.pow(1 + r, 120)) / (Math.pow(1 + r, 240) - 1)
+    const expected = (500_000 * (Math.pow(1 + r, 240) - Math.pow(1 + r, 120))) / (Math.pow(1 + r, 240) - 1)
     expect(halfway).toBeCloseTo(expected, 4)
   })
 
   it('lets the security deposit earn savings interest after tax', () => {
     const inputs = with_({
-      appreciationRate: 0, inflation: 0, rentIncrease: 0, hoaFeeIncrease: 0, askRate: 0, askShieldingRate: 0,
-      savingsAccountRate: 5, savingsAccountBalance: 0, askBalance: 0, monthlyRent: 40_000, years: 5,
+      appreciationRate: 0,
+      inflation: 0,
+      rentIncrease: 0,
+      hoaFeeIncrease: 0,
+      askRate: 0,
+      askShieldingRate: 0,
+      savingsAccountRate: 5,
+      savingsAccountBalance: 0,
+      askBalance: 0,
+      monthlyRent: 40_000,
+      years: 5,
     })
     const { summary, yearlyData } = calculate(inputs, 'advanced')
     const deposit = summary.securityDeposit
@@ -415,7 +510,10 @@ describe('calculate — mortgage rate change', () => {
     expect(change.year).toBe(4)
     expect(change.ratePct).toBe(3.5)
     const monthsLeft = summary.numPayments - 36
-    expect(change.monthlyPayment).toBeCloseTo(annuityPayment(yearlyData[2].remainingMortgage, 0.035 / 12, monthsLeft), 6)
+    expect(change.monthlyPayment).toBeCloseTo(
+      annuityPayment(yearlyData[2].remainingMortgage, 0.035 / 12, monthsLeft),
+      6,
+    )
     expect(change.monthlyPayment).toBeLessThan(summary.monthlyAmortizingPayment)
   })
 
@@ -424,7 +522,10 @@ describe('calculate — mortgage rate change', () => {
     const changed = calculate(with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 8, years: 10 }), 'advanced')
     for (let i = 0; i < 3; i++) expect(changed.yearlyData[i].buyerMonthlyCost).toBeCloseTo(base[i].buyerMonthlyCost, 6)
     expect(changed.yearlyData[3].buyerMonthlyCost).toBeGreaterThan(base[3].buyerMonthlyCost)
-    const full = calculate(with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 8, loanTermYears: 10, years: 10 }), 'advanced')
+    const full = calculate(
+      with_({ mortgageRateChangeYear: 4, mortgageRateAfterChange: 8, loanTermYears: 10, years: 10 }),
+      'advanced',
+    )
     expect(full.summary.finalRemainingMortgage).toBe(0)
   })
 
@@ -452,27 +553,43 @@ describe('computeStressTest', () => {
   it('includes the higher interest on shared debt for a borettslag', () => {
     const plain = computeStressTest(DEFAULT_INPUTS, 'advanced')
     const coop = computeStressTest(with_({ isBorettslag: true, sharedDebt: 600_000, sharedDebtRate: 5 }), 'advanced')
-    expect(coop.extraPerMonth - plain.extraPerMonth).toBeCloseTo(600_000 * 0.03 / 12, 6)
-    expect(coop.debtPayment - plain.debtPayment).toBeCloseTo(600_000 * 0.03 / 12, 6)
+    expect(coop.extraPerMonth - plain.extraPerMonth).toBeCloseTo((600_000 * 0.03) / 12, 6)
+    expect(coop.debtPayment - plain.debtPayment).toBeCloseTo((600_000 * 0.03) / 12, 6)
   })
 
   it('prices other debt as interest-only at the stress rate, and only in advanced mode', () => {
     const plain = computeStressTest(DEFAULT_INPUTS, 'advanced')
     const withDebt = computeStressTest(with_({ otherDebt: 240_000 }), 'advanced')
-    expect(withDebt.extraPerMonth - plain.extraPerMonth).toBeCloseTo(240_000 * (withDebt.ratePct / 100) / 12, 6)
+    expect(withDebt.extraPerMonth - plain.extraPerMonth).toBeCloseTo((240_000 * (withDebt.ratePct / 100)) / 12, 6)
     expect(computeStressTest(with_({ otherDebt: 240_000 }), 'quick').extraPerMonth).toBeCloseTo(plain.extraPerMonth, 6)
   })
 })
 
 describe('calculate — compounding', () => {
-  const lumpSum = (overrides: Partial<Inputs>) => with_({
-    inflation: 0, askShieldingRate: 0, years: 10, monthlyRent: 0, monthlyHoaFee: 0, purchasePrice: 0,
-    downPayment: 0, stampDuty: 0, otherClosingCosts: 0, electricity: 0, internet: 0, contentsInsurance: 0, municipalFees: 0,
-    homeInsurance: 0, ...overrides,
-  })
+  const lumpSum = (overrides: Partial<Inputs>) =>
+    with_({
+      inflation: 0,
+      askShieldingRate: 0,
+      years: 10,
+      monthlyRent: 0,
+      monthlyHoaFee: 0,
+      purchasePrice: 0,
+      downPayment: 0,
+      stampDuty: 0,
+      otherClosingCosts: 0,
+      electricity: 0,
+      internet: 0,
+      contentsInsurance: 0,
+      municipalFees: 0,
+      homeInsurance: 0,
+      ...overrides,
+    })
 
   it('grows savings at the stated annual rate after 22% tax', () => {
-    const { summary } = calculate(lumpSum({ savingsAccountBalance: 1_000_000, savingsAccountRate: 5, askBalance: 0 }), 'advanced')
+    const { summary } = calculate(
+      lumpSum({ savingsAccountBalance: 1_000_000, savingsAccountRate: 5, askBalance: 0 }),
+      'advanced',
+    )
     expect(summary.finalRenterNominalGross).toBeCloseTo(1_000_000 * Math.pow(1 + 0.05 * (1 - SAVINGS_TAX_RATE), 10), 2)
   })
 
@@ -507,5 +624,56 @@ describe('normalizeInputs / robustness', () => {
       expect(Number.isFinite(y.buyerNetWorth)).toBe(true)
       expect(Number.isFinite(y.renterNetWorth)).toBe(true)
     }
+  })
+
+  it('clamps shared and stored scenarios to the form limits', () => {
+    const clamped = clampInputs(
+      with_({
+        purchasePrice: Number.MAX_VALUE,
+        monthlyRent: Number.MAX_VALUE,
+        mortgageRate: 1e6,
+        appreciationRate: 1e6,
+        loanTermYears: 1e6,
+        years: 1e6,
+        rentIncrease: -4,
+      }),
+    )
+    expect(clamped.purchasePrice).toBe(MAX_AMOUNT_KR)
+    expect(clamped.monthlyRent).toBe(MAX_AMOUNT_KR)
+    expect(clamped.mortgageRate).toBe(INPUT_BOUNDS.mortgageRate.max)
+    expect(clamped.appreciationRate).toBe(INPUT_BOUNDS.appreciationRate.max)
+    expect(clamped.loanTermYears).toBe(INPUT_BOUNDS.loanTermYears.max)
+    expect(clamped.years).toBe(INPUT_BOUNDS.years.max)
+    expect(clamped.rentIncrease).toBe(0)
+
+    const res = calculate(clamped, 'advanced')
+    expect(res.yearlyData).toHaveLength(INPUT_BOUNDS.years.max)
+    for (const y of res.yearlyData) {
+      expect(Number.isFinite(y.buyerNetWorth)).toBe(true)
+      expect(Number.isFinite(y.renterNetWorth)).toBe(true)
+      expect(Number.isFinite(y.homeValue)).toBe(true)
+    }
+  })
+
+  it('leaves room outside the form for sensitivity and the breakeven search', () => {
+    const span = Math.max(...SENSITIVITY_OFFSETS.map(offset => Math.abs(offset)))
+    expect(MODEL_BOUNDS.mortgageRate.max).toBeGreaterThanOrEqual(INPUT_BOUNDS.mortgageRate.max + span)
+    expect(MODEL_BOUNDS.appreciationRate.max).toBeGreaterThanOrEqual(INPUT_BOUNDS.appreciationRate.max + span)
+    expect(normalizeInputs(with_({ appreciationRate: MODEL_BOUNDS.appreciationRate.max })).appreciationRate).toBe(
+      MODEL_BOUNDS.appreciationRate.max,
+    )
+    expect(normalizeInputs(with_({ mortgageRate: 0 })).mortgageRate).toBe(0)
+
+    const atCap = clampInputs(
+      with_({
+        mortgageRate: INPUT_BOUNDS.mortgageRate.max,
+        appreciationRate: INPUT_BOUNDS.appreciationRate.max,
+      }),
+    )
+    const grid = buildSensitivityGrid(atCap, 'quick')
+    const advantages = grid.rows.flatMap(row => row.cells.map(cell => cell.buyAdvantage))
+    expect(advantages.length).toBeGreaterThan(1)
+    expect(new Set(advantages).size).toBe(advantages.length)
+    for (const advantage of advantages) expect(Number.isFinite(advantage)).toBe(true)
   })
 })

@@ -32,6 +32,12 @@ describe('shareUrl', () => {
       { mode: 'quick', inputs: { ...DEFAULT_INPUTS, years: 20 } },
       { origin: 'https://leiexeie.no', pathname: '/' },
     )
-    expect(url).toBe('https://leiexeie.no/?mode=quick&years=20')
+    expect(url).toBe('https://leiexeie.no/#mode=quick&years=20')
+  })
+
+  it('reads a hash fragment and a legacy query string', () => {
+    const scenario = { mode: 'quick' as const, inputs: { ...DEFAULT_INPUTS, years: 15 } }
+    expect(decodeScenario(`#${encodeScenario(scenario)}`)).toEqual(scenario)
+    expect(decodeScenario(`?${encodeScenario(scenario)}`)).toEqual(scenario)
   })
 })

@@ -24,16 +24,18 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          fontFamily: 'Inter, sans-serif',
-          background: COLORS.bg,
-          gap: 12,
-        }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+            fontFamily: "'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            background: COLORS.bg,
+            gap: 12,
+          }}
+        >
           <h1 style={{ color: COLORS.text, margin: 0 }}>{i18next.t('error.title')}</h1>
           <p style={{ color: COLORS.textSecondary, margin: 0 }}>{i18next.t('error.message')}</p>
           <button

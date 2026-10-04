@@ -47,7 +47,10 @@ describe('buildSensitivityGrid', () => {
 
   it('stops non-price axes at zero but lets house prices fall', () => {
     const grid = buildSensitivityGrid(
-      { ...DEFAULT_INPUTS, appreciationRate: 0.5, rentIncrease: 1 }, 'quick', 'appreciationRate', 'rentIncrease',
+      { ...DEFAULT_INPUTS, appreciationRate: 0.5, rentIncrease: 1 },
+      'quick',
+      'appreciationRate',
+      'rentIncrease',
     )
     expect(grid.rows.map(r => r.value)).toEqual([-1.5, -0.5, 0.5, 1.5, 2.5])
     expect(grid.colValues).toEqual([0, 1, 2, 3])

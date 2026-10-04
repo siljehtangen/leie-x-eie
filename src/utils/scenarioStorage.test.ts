@@ -1,16 +1,29 @@
 import { describe, expect, it } from 'vitest'
 import {
-  clearScenario, loadSavedScenarios, loadScenario, MAX_SAVED_SCENARIOS, parseSavedScenarios, parseScenario,
-  saveScenario, SAVED_SCENARIOS_STORAGE_KEY, SCENARIO_STORAGE_KEY, storeSavedScenarios,
+  clearScenario,
+  loadSavedScenarios,
+  loadScenario,
+  MAX_SAVED_SCENARIOS,
+  parseSavedScenarios,
+  parseScenario,
+  saveScenario,
+  SAVED_SCENARIOS_STORAGE_KEY,
+  SCENARIO_STORAGE_KEY,
+  storeSavedScenarios,
 } from './scenarioStorage'
 import { DEFAULT_INPUTS } from '../constants/defaults'
+import { INPUT_BOUNDS, MAX_AMOUNT_KR } from '../constants/inputBounds'
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const data = new Map(Object.entries(initial))
   return {
     getItem: (k: string) => data.get(k) ?? null,
-    setItem: (k: string, v: string) => { data.set(k, v) },
-    removeItem: (k: string) => { data.delete(k) },
+    setItem: (k: string, v: string) => {
+      data.set(k, v)
+    },
+    removeItem: (k: string) => {
+      data.delete(k)
+    },
   }
 }
 
@@ -38,6 +51,16 @@ describe('scenarioStorage', () => {
     expect(parsed?.inputs).toEqual({ ...DEFAULT_INPUTS, purchasePrice: 3_000_000 })
   })
 
+  it('clamps out-of-range numbers when reading storage', () => {
+    const parsed = parseScenario({
+      mode: 'quick',
+      inputs: { purchasePrice: 1e20, mortgageRate: 80, years: 100 },
+    })
+    expect(parsed?.inputs.purchasePrice).toBe(MAX_AMOUNT_KR)
+    expect(parsed?.inputs.mortgageRate).toBe(INPUT_BOUNDS.mortgageRate.max)
+    expect(parsed?.inputs.years).toBe(INPUT_BOUNDS.years.max)
+  })
+
   it('treats older scenarios with shared debt as a borettslag', () => {
     const legacy = parseScenario({ mode: 'advanced', inputs: { sharedDebt: 400_000 } })
     expect(legacy?.inputs.isBorettslag).toBe(true)
@@ -51,9 +74,15 @@ describe('scenarioStorage', () => {
 
   it('survives storage that throws', () => {
     const broken = {
-      getItem: () => { throw new Error('denied') },
-      setItem: () => { throw new Error('denied') },
-      removeItem: () => { throw new Error('denied') },
+      getItem: () => {
+        throw new Error('denied')
+      },
+      setItem: () => {
+        throw new Error('denied')
+      },
+      removeItem: () => {
+        throw new Error('denied')
+      },
     }
     expect(loadScenario(broken)).toBeNull()
     expect(() => saveScenario({ mode: 'quick', inputs: DEFAULT_INPUTS }, broken)).not.toThrow()
@@ -74,8 +103,12 @@ describe('saved scenarios', () => {
 
   it('drops invalid entries and caps the list length', () => {
     const valid = { id: 'x', name: 'X', mode: 'quick', inputs: {} }
-    const raw = [null, { name: 'no id', mode: 'quick', inputs: {} }, { id: 'y', name: 'Y', mode: 'turbo', inputs: {} },
-      ...Array.from({ length: MAX_SAVED_SCENARIOS + 2 }, () => valid)]
+    const raw = [
+      null,
+      { name: 'no id', mode: 'quick', inputs: {} },
+      { id: 'y', name: 'Y', mode: 'turbo', inputs: {} },
+      ...Array.from({ length: MAX_SAVED_SCENARIOS + 2 }, () => valid),
+    ]
     const parsed = parseSavedScenarios(raw)
     expect(parsed).toHaveLength(MAX_SAVED_SCENARIOS)
     expect(parsed[0]).toEqual({ id: 'x', name: 'X', mode: 'quick', inputs: DEFAULT_INPUTS })

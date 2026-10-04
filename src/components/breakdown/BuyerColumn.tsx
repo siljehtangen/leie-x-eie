@@ -23,7 +23,8 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
       <div className="bd-formula-block">
         <div className="bd-formula-title">{t('breakdown.loanAmount')}</div>
         <div className="bd-formula-line">
-          {formatKr(inputs.purchasePrice)} − {formatKr(inputs.downPayment)} = <strong>{formatKr(mortgage.loanAmount)}</strong>
+          {formatKr(inputs.purchasePrice)} − {formatKr(inputs.downPayment)} ={' '}
+          <strong>{formatKr(mortgage.loanAmount)}</strong>
         </div>
       </div>
 
@@ -37,9 +38,7 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
         </div>
         {mortgage.ioYears > 0 && (
           <>
-            <div className="bd-formula-line bd-formula-note">
-              {t('breakdown.ioPhase', { years: mortgage.ioYears })}
-            </div>
+            <div className="bd-formula-line bd-formula-note">{t('breakdown.ioPhase', { years: mortgage.ioYears })}</div>
             <div className="bd-formula-line bd-formula-eq">
               {t('breakdown.payment')} = L × r = {formatKr(mortgage.ioPayment)} {perMonth}
             </div>
@@ -48,9 +47,7 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
             </div>
           </>
         )}
-        <div className="bd-formula-line bd-formula-eq">
-          {t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)
-        </div>
+        <div className="bd-formula-line bd-formula-eq">{t('breakdown.payment')} = L × r(1+r)^n / ((1+r)^n − 1)</div>
         <div className="bd-formula-legend">
           <div className="bd-formula-legend-title">{t('breakdown.formulaWhere')}</div>
           <dl>
@@ -85,12 +82,11 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
         <div className="bd-formula-title">{t('breakdown.year1MonthlyCost')}</div>
         <div className="bd-cost-table">
           {model.buyerCostLines.map((l, i) => (
-            <div
-              key={l.id}
-              className={`bd-cost-row${l.sign === '−' ? ' deduction' : i % 2 === 1 ? ' alt' : ''}`}
-            >
+            <div key={l.id} className={`bd-cost-row${l.sign === '−' ? ' deduction' : i % 2 === 1 ? ' alt' : ''}`}>
               <span>{t(l.labelKey, l.labelOpts)}</span>
-              <span>{l.sign} {formatKr(l.amount)}</span>
+              <span>
+                {l.sign} {formatKr(l.amount)}
+              </span>
             </div>
           ))}
           <div className="bd-cost-row total-buy">
@@ -101,21 +97,21 @@ export default function BuyerColumn({ t, formatKr, locale, inputs, model, rules 
       </div>
 
       <div className="bd-formula-block">
-        <div className="bd-formula-title">{t('breakdown.buyerNetWorth')} ({model.years} {t('units.years')})</div>
+        <div className="bd-formula-title">
+          {t('breakdown.buyerNetWorth')} ({model.years} {t('units.years')})
+        </div>
         {model.buyerNetWorthLines.map((l, i) => (
           <div key={l.id} className="bd-formula-line">
-            {i > 0 && `${l.sign} `}{t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {formatKr(l.amount)}
+            {i > 0 && `${l.sign} `}
+            {t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {formatKr(l.amount)}
           </div>
         ))}
         <div className="bd-formula-line">
-          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}): {formatDecimal(inflationFactor, locale)}
+          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}):{' '}
+          {formatDecimal(inflationFactor, locale)}
         </div>
-        <div className="bd-formula-note bd-formula-note-spaced">
-          {t('breakdown.taxFreeHomeSale')}
-        </div>
-        <div className="bd-formula-result bd-result-buy">
-          = {formatKr(model.buyerNetWorth)}
-        </div>
+        <div className="bd-formula-note bd-formula-note-spaced">{t('breakdown.taxFreeHomeSale')}</div>
+        <div className="bd-formula-result bd-result-buy">= {formatKr(model.buyerNetWorth)}</div>
       </div>
     </div>
   )

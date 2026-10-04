@@ -15,7 +15,7 @@ const point = (year: number): YearlyDataPoint => ({
 })
 
 describe('toChartUnits', () => {
-  it('keeps year-1 costs at today\'s prices and deflates stocks to end of year', () => {
+  it("keeps year-1 costs at today's prices and deflates stocks to end of year", () => {
     const [y1, y2] = toChartUnits([point(1), point(2)], 10, 'real')
     expect(y1.buyerMonthlyCost).toBe(20_000)
     expect(y1.homeValue).toBeCloseTo(5_000_000 / 1.1)

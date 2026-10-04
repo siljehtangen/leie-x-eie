@@ -35,12 +35,23 @@ describe('App', () => {
   })
 
   it('opens a shared link straight into the results with its inputs', async () => {
-    const search = encodeScenario({ mode: 'quick', inputs: { ...DEFAULT_INPUTS, monthlyRent: 23_000 } })
-    window.history.replaceState(null, '', `/?${search}`)
+    const hash = encodeScenario({ mode: 'quick', inputs: { ...DEFAULT_INPUTS, monthlyRent: 23_000 } })
+    window.history.replaceState(null, '', `/#${hash}`)
     await renderWithProviders(<App />)
 
     expect(await screen.findByRole('heading', { name: 'Your Rent vs Buy Analysis' })).toBeTruthy()
     expect((field('Monthly Rent') as HTMLInputElement).value).toBe('23\u202f000')
+    expect(window.location.hash).toBe('')
+    expect(window.location.search).toBe('')
+  })
+
+  it('still opens a legacy query share link and then drops it from the address bar', async () => {
+    const search = encodeScenario({ mode: 'quick', inputs: { ...DEFAULT_INPUTS, monthlyRent: 18_000 } })
+    window.history.replaceState(null, '', `/?${search}`)
+    await renderWithProviders(<App />)
+
+    expect(await screen.findByRole('heading', { name: 'Your Rent vs Buy Analysis' })).toBeTruthy()
+    expect((field('Monthly Rent') as HTMLInputElement).value).toBe('18\u202f000')
     expect(window.location.search).toBe('')
   })
 

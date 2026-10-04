@@ -19,10 +19,7 @@ export default function Sensitivity({ inputs, mode }: SensitivityProps) {
     row: 'appreciationRate',
     col: 'mortgageRate',
   })
-  const grid = useMemo(
-    () => buildSensitivityGrid(inputs, mode, axes.row, axes.col),
-    [inputs, mode, axes],
-  )
+  const grid = useMemo(() => buildSensitivityGrid(inputs, mode, axes.row, axes.col), [inputs, mode, axes])
 
   const setAxis = (which: 'row' | 'col', axis: SensitivityAxis) => {
     setAxes(prev => {
@@ -42,7 +39,9 @@ export default function Sensitivity({ inputs, mode }: SensitivityProps) {
       <span>{t(which === 'row' ? 'sensitivity.rowAxisLabel' : 'sensitivity.colAxisLabel')}</span>
       <select value={axes[which]} onChange={e => setAxis(which, e.target.value as SensitivityAxis)}>
         {SENSITIVITY_AXES.map(axis => (
-          <option key={axis} value={axis}>{axisLabel(axis)}</option>
+          <option key={axis} value={axis}>
+            {axisLabel(axis)}
+          </option>
         ))}
       </select>
     </label>
@@ -50,10 +49,10 @@ export default function Sensitivity({ inputs, mode }: SensitivityProps) {
 
   return (
     <section className="sensitivity" aria-labelledby="sensitivity-title">
-      <h3 id="sensitivity-title" className="scenarios-title">{t('sensitivity.title')}</h3>
-      <p className="scenarios-subtitle">
-        {t('sensitivity.subtitle', { years: inputs.years, ...axisPhrase })}
-      </p>
+      <h3 id="sensitivity-title" className="scenarios-title">
+        {t('sensitivity.title')}
+      </h3>
+      <p className="scenarios-subtitle">{t('sensitivity.subtitle', { years: inputs.years, ...axisPhrase })}</p>
 
       <div className="sensitivity-axes">
         {axisSelect('row')}
@@ -62,9 +61,7 @@ export default function Sensitivity({ inputs, mode }: SensitivityProps) {
 
       <div className="scenarios-table-wrap">
         <table className="sensitivity-table">
-          <caption className="visually-hidden">
-            {t('sensitivity.caption', axisPhrase)}
-          </caption>
+          <caption className="visually-hidden">{t('sensitivity.caption', axisPhrase)}</caption>
           <thead>
             <tr>
               <th scope="col" className="sensitivity-corner">
@@ -86,7 +83,7 @@ export default function Sensitivity({ inputs, mode }: SensitivityProps) {
                 </th>
                 {row.cells.map(cell => {
                   const winner = cell.buyAdvantage >= 0 ? 'buy' : 'rent'
-                  const strength = Math.round(12 + 40 * Math.abs(cell.buyAdvantage) / maxAbs)
+                  const strength = Math.round(12 + (40 * Math.abs(cell.buyAdvantage)) / maxAbs)
                   const isBase = row.value === grid.baseRow && cell.value === grid.baseCol
                   return (
                     <td

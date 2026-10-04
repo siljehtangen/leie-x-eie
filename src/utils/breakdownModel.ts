@@ -96,7 +96,13 @@ export function sumLines(lines: BreakdownLine[]): number {
   return lines.reduce((acc, l) => acc + (l.sign === '+' ? l.amount : -l.amount), 0)
 }
 
-function line(id: string, labelKey: string, amount: number, sign: Sign, labelOpts?: Record<string, unknown>): BreakdownLine {
+function line(
+  id: string,
+  labelKey: string,
+  amount: number,
+  sign: Sign,
+  labelOpts?: Record<string, unknown>,
+): BreakdownLine {
   return { id, labelKey, amount, sign, labelOpts }
 }
 
@@ -117,7 +123,9 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
   const buyerCostLines: BreakdownLine[] = [
     line('mortgage', 'breakdown.mortgagePayment', costs.mortgage, '+'),
     line('hoaFee', 'inputs.monthlyHoaFee', costs.hoaFee, '+'),
-    line('interestDeduction', 'breakdown.interestDeductionPct', costs.interestDeduction, '−', { pct: INTEREST_DEDUCTION_PCT }),
+    line('interestDeduction', 'breakdown.interestDeductionPct', costs.interestDeduction, '−', {
+      pct: INTEREST_DEDUCTION_PCT,
+    }),
     ...optionalCosts,
     ...(costs.rentalIncome > 0 ? [line('rentalIncome', 'inputs.rentalIncome', costs.rentalIncome, '−')] : []),
   ]
@@ -130,10 +138,18 @@ export function buildBreakdownModel(results: CalculationResult, inputs: Inputs, 
       : []),
     line('brokerSellingFee', 'inputs.brokerSellingFee', summary.finalBrokerFee, '−'),
     ...(summary.finalBuyerPortfolioGross !== 0
-      ? [line('portfolioGross', 'breakdown.portfolioGross', Math.abs(summary.finalBuyerPortfolioGross),
-          summary.finalBuyerPortfolioGross > 0 ? '+' : '−')]
+      ? [
+          line(
+            'portfolioGross',
+            'breakdown.portfolioGross',
+            Math.abs(summary.finalBuyerPortfolioGross),
+            summary.finalBuyerPortfolioGross > 0 ? '+' : '−',
+          ),
+        ]
       : []),
-    ...(summary.finalBuyerAskTax > 0 ? [line('askTax', 'breakdown.askCapitalGainsTax', summary.finalBuyerAskTax, '−')] : []),
+    ...(summary.finalBuyerAskTax > 0
+      ? [line('askTax', 'breakdown.askCapitalGainsTax', summary.finalBuyerAskTax, '−')]
+      : []),
   ]
 
   const renterNetWorthLines: BreakdownLine[] = [

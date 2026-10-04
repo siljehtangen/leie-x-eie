@@ -30,19 +30,23 @@ export default function RenterColumn({ t, formatKr, locale, inputs, model, rules
               {t('inputs.askBalance')}: <strong>{formatKr(inputs.askBalance)}</strong>
             </div>
             <div className="bd-formula-line bd-formula-note">
-              + {t('inputs.downPayment')} + {t('inputs.stampDuty')}: <strong>{formatKr(model.initialInvestment)}</strong> → {t('breakdown.initialInvestmentAskNote')}
+              + {t('inputs.downPayment')} + {t('inputs.stampDuty')}:{' '}
+              <strong>{formatKr(model.initialInvestment)}</strong> → {t('breakdown.initialInvestmentAskNote')}
             </div>
             <div className="bd-formula-line">
-              {t('breakdown.total')}: <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance + model.initialInvestment)}</strong>
+              {t('breakdown.total')}:{' '}
+              <strong>{formatKr(inputs.savingsAccountBalance + inputs.askBalance + model.initialInvestment)}</strong>
             </div>
             <div className="bd-formula-line bd-formula-note">
-              − {t('breakdown.securityDepositMonths', { months: SECURITY_DEPOSIT_MONTHS })}: {formatKr(model.securityDeposit)} → {t('breakdown.securityDepositNote')}
+              − {t('breakdown.securityDepositMonths', { months: SECURITY_DEPOSIT_MONTHS })}:{' '}
+              {formatKr(model.securityDeposit)} → {t('breakdown.securityDepositNote')}
             </div>
           </>
         ) : (
           <>
             <div className="bd-formula-line">
-              {formatKr(inputs.downPayment)} + {formatKr(model.closingCosts)} = <strong>{formatKr(model.initialInvestment)}</strong>
+              {formatKr(inputs.downPayment)} + {formatKr(model.closingCosts)} ={' '}
+              <strong>{formatKr(model.initialInvestment)}</strong>
             </div>
             <div className="bd-formula-note">{t('breakdown.initialInvestmentNote')}</div>
           </>
@@ -54,16 +58,20 @@ export default function RenterColumn({ t, formatKr, locale, inputs, model, rules
         {isAdvanced ? (
           <>
             <div className="bd-formula-line bd-formula-note">
-              {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @ {formatPercent(inputs.savingsAccountRate, locale)} ({t('breakdown.savingsTaxAuto', { pct: rules.savingsTax })})
+              {t('inputs.savingsAccountBalance')}: {formatKr(inputs.savingsAccountBalance)} @{' '}
+              {formatPercent(inputs.savingsAccountRate, locale)} (
+              {t('breakdown.savingsTaxAuto', { pct: rules.savingsTax })})
             </div>
             <div className="bd-formula-line bd-formula-note">
-              {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {formatPercent(inputs.askRate, locale)} ({t('breakdown.askTaxOnWithdrawal', { pct: rules.askTax })})
+              {t('inputs.askBalance')}: {formatKr(inputs.askBalance)} @ {formatPercent(inputs.askRate, locale)} (
+              {t('breakdown.askTaxOnWithdrawal', { pct: rules.askTax })})
             </div>
           </>
         ) : (
           <>
             <div className="bd-formula-line">
-              {t('breakdown.investReturn')}: {t('breakdown.investReturnValue', { rate: formatPct(inputs.investmentReturn, locale) })}
+              {t('breakdown.investReturn')}:{' '}
+              {t('breakdown.investReturnValue', { rate: formatPct(inputs.investmentReturn, locale) })}
             </div>
             <div className="bd-formula-line">{t('breakdown.quickTaxNote', { pct: rules.savingsTax })}</div>
           </>
@@ -75,10 +83,13 @@ export default function RenterColumn({ t, formatKr, locale, inputs, model, rules
       </div>
 
       <div className="bd-formula-block">
-        <div className="bd-formula-title">{t('breakdown.renterNetWorth')} ({model.years} {t('units.years')})</div>
+        <div className="bd-formula-title">
+          {t('breakdown.renterNetWorth')} ({model.years} {t('units.years')})
+        </div>
         {model.renterNetWorthLines.map((l, i) => (
           <div key={l.id} className="bd-formula-line">
-            {i > 0 && `${l.sign} `}{t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {formatKr(l.amount)}
+            {i > 0 && `${l.sign} `}
+            {t(l.labelKey, { pct: rules.askTax, ...l.labelOpts })}: {formatKr(l.amount)}
           </div>
         ))}
         {isAdvanced && inputs.askShieldingRate > 0 && (
@@ -92,11 +103,10 @@ export default function RenterColumn({ t, formatKr, locale, inputs, model, rules
           </div>
         )}
         <div className="bd-formula-line">
-          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}): {formatDecimal(inflationFactor, locale)}
+          ÷ {t('breakdown.inflationFactor')} ({formatPercent(inputs.inflation, locale)}):{' '}
+          {formatDecimal(inflationFactor, locale)}
         </div>
-        <div className="bd-formula-result bd-result-rent">
-          = {formatKr(model.renterNetWorth)}
-        </div>
+        <div className="bd-formula-result bd-result-rent">= {formatKr(model.renterNetWorth)}</div>
       </div>
 
       {isAdvanced && (
@@ -114,7 +124,10 @@ export default function RenterColumn({ t, formatKr, locale, inputs, model, rules
             {t('breakdown.wealthTaxThreshold', { threshold: rules.wealthTaxThreshold, rate: rules.wealthTaxRate })}
           </div>
           <div className="bd-formula-line">
-            {t('breakdown.wealthTaxHighTier', { threshold: rules.wealthTaxHighThreshold, rate: rules.wealthTaxHighRate })}
+            {t('breakdown.wealthTaxHighTier', {
+              threshold: rules.wealthTaxHighThreshold,
+              rate: rules.wealthTaxHighRate,
+            })}
           </div>
         </div>
       )}

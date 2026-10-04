@@ -30,9 +30,7 @@ export default function ModeToggle({ mode, onModeChange }: ModeToggleProps) {
           <SlidersHorizontal size={15} aria-hidden /> {t('mode.advanced')}
         </button>
       </div>
-      <p className="mode-desc">
-        {mode === 'quick' ? t('mode.quickDesc') : t('mode.advancedDesc')}
-      </p>
+      <p className="mode-desc">{mode === 'quick' ? t('mode.quickDesc') : t('mode.advancedDesc')}</p>
     </div>
   )
 }

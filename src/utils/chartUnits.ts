@@ -16,21 +16,22 @@ export function toChartUnits(data: YearlyDataPoint[], inflationPct: number, unit
   return data.map(d => {
     const endFactor = Math.pow(g, d.year)
     const startFactor = Math.pow(g, d.year - 1)
-    const point: YearlyDataPoint = unit === 'real'
-      ? {
-          ...d,
-          buyerMonthlyCost: d.buyerMonthlyCost / startFactor,
-          renterMonthlyCost: d.renterMonthlyCost / startFactor,
-          homeValue: d.homeValue / endFactor,
-          remainingMortgage: d.remainingMortgage / endFactor,
-          remainingSharedDebt: d.remainingSharedDebt / endFactor,
-          buyerPortfolio: d.buyerPortfolio / endFactor,
-        }
-      : {
-          ...d,
-          buyerNetWorth: d.buyerNetWorth * endFactor,
-          renterNetWorth: d.renterNetWorth * endFactor,
-        }
+    const point: YearlyDataPoint =
+      unit === 'real'
+        ? {
+            ...d,
+            buyerMonthlyCost: d.buyerMonthlyCost / startFactor,
+            renterMonthlyCost: d.renterMonthlyCost / startFactor,
+            homeValue: d.homeValue / endFactor,
+            remainingMortgage: d.remainingMortgage / endFactor,
+            remainingSharedDebt: d.remainingSharedDebt / endFactor,
+            buyerPortfolio: d.buyerPortfolio / endFactor,
+          }
+        : {
+            ...d,
+            buyerNetWorth: d.buyerNetWorth * endFactor,
+            renterNetWorth: d.renterNetWorth * endFactor,
+          }
     return { ...point, netWorthGap: point.buyerNetWorth - point.renterNetWorth }
   })
 }

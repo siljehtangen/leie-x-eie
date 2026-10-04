@@ -31,15 +31,15 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
   const monthlyGap = summary.initialBuyerMonthly - summary.year1RenterCosts.total
   const buyingCostsMore = monthlyGap > 0
 
-  const breakevenText = breakevenYear !== null
-    ? t('recommendation.breakevenAt', { year: breakevenYear })
-    : isBuy
-      ? t('recommendation.noBreakevenBuy', { years })
-      : t('recommendation.noBreakevenRent', { years })
+  const breakevenText =
+    breakevenYear !== null
+      ? t('recommendation.breakevenAt', { year: breakevenYear })
+      : isBuy
+        ? t('recommendation.noBreakevenBuy', { years })
+        : t('recommendation.noBreakevenRent', { years })
 
-  const breakevenValue = breakevenYear !== null
-    ? `${t('recommendation.year')} ${breakevenYear}`
-    : t('recommendation.notApplicable')
+  const breakevenValue =
+    breakevenYear !== null ? `${t('recommendation.year')} ${breakevenYear}` : t('recommendation.notApplicable')
 
   return (
     <div className="recommendation-section">
@@ -51,16 +51,24 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
           {t('recommendation.keyFactors')} – {years} {t('results.years')}
         </div>
 
-        <h3 className="rec-title">
-          {isBuy ? t('recommendation.buy') : t('recommendation.rent')}
-        </h3>
+        <h3 className="rec-title">{isBuy ? t('recommendation.buy') : t('recommendation.rent')}</h3>
 
         <div className="rec-amount">{diffFormatted}</div>
 
         <p className="rec-desc">
           {isBuy
-            ? t('recommendation.buyDesc', { amount: diffFormatted, years, equity: equityFormatted, portfolio: portfolioFormatted })
-            : t('recommendation.rentDesc', { amount: diffFormatted, years, equity: equityFormatted, portfolio: portfolioFormatted })}
+            ? t('recommendation.buyDesc', {
+                amount: diffFormatted,
+                years,
+                equity: equityFormatted,
+                portfolio: portfolioFormatted,
+              })
+            : t('recommendation.rentDesc', {
+                amount: diffFormatted,
+                years,
+                equity: equityFormatted,
+                portfolio: portfolioFormatted,
+              })}
         </p>
 
         <p className="rec-breakeven-note">{breakevenText}</p>
@@ -89,9 +97,7 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
         <div className="rec-metrics">
           <div className="rec-metric">
             <div className="rec-metric-label">
-              {buyingCostsMore
-                ? t('recommendation.buyingCostsMore')
-                : t('recommendation.rentingCostsMore')}
+              {buyingCostsMore ? t('recommendation.buyingCostsMore') : t('recommendation.rentingCostsMore')}
             </div>
             <div className="rec-metric-value">
               {formatKr(Math.abs(monthlyGap))} {t('units.perMonth')}
@@ -115,7 +121,11 @@ export default function Recommendation({ results, inputs, mode }: Recommendation
       </div>
 
       <p className="rec-disclaimer">
-        <Info size={13} style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: 'var(--color-text-muted)' }} aria-hidden />
+        <Info
+          size={13}
+          style={{ display: 'inline', marginRight: 5, verticalAlign: 'middle', color: 'var(--color-text-muted)' }}
+          aria-hidden
+        />
         {t('recommendation.disclaimer')}
       </p>
     </div>

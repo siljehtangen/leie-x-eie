@@ -1,5 +1,6 @@
 import { DEFAULT_INPUTS } from '../constants/defaults'
 import type { Inputs, Mode } from '../types'
+import { clampInputs } from './calculations'
 
 export const SCENARIO_STORAGE_KEY = 'leiexeie:scenario:v1'
 
@@ -30,14 +31,14 @@ export function parseScenario(raw: unknown): Scenario | null {
     const value = source[key]
     const expected = typeof DEFAULT_INPUTS[key]
     if (expected === 'number' && typeof value === 'number' && Number.isFinite(value)) {
-      (merged as Record<keyof Inputs, number | boolean>)[key] = value
+      ;(merged as Record<keyof Inputs, number | boolean>)[key] = value
     } else if (expected === 'boolean' && typeof value === 'boolean') {
-      (merged as Record<keyof Inputs, number | boolean>)[key] = value
+      ;(merged as Record<keyof Inputs, number | boolean>)[key] = value
     }
   }
   // Older scenarios predate the borettslag toggle; shared debt implies one.
   if (typeof source.isBorettslag !== 'boolean' && merged.sharedDebt > 0) merged.isBorettslag = true
-  return { mode, inputs: merged }
+  return { mode, inputs: clampInputs(merged) }
 }
 
 export function loadScenario(storage: StorageLike | null = defaultStorage()): Scenario | null {

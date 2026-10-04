@@ -45,9 +45,7 @@ describe('InputPanel', () => {
 
   it('counts other debt towards the debt-to-income warning in advanced mode', async () => {
     const inputs = { ...DEFAULT_INPUTS, householdIncome: 700_000, otherDebt: 300_000 }
-    const { rerender } = await renderWithProviders(
-      <InputPanel inputs={inputs} onInputChange={() => {}} mode="quick" />,
-    )
+    const { rerender } = await renderWithProviders(<InputPanel inputs={inputs} onInputChange={() => {}} mode="quick" />)
     expect(screen.queryByText(/Total debt would be/)).toBeNull()
     rerender(<InputPanel inputs={inputs} onInputChange={() => {}} mode="advanced" />)
     expect(screen.getByText(/Total debt would be 5\.3 times income/)).toBeTruthy()

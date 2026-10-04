@@ -26,9 +26,13 @@ export default function Header({ lang, onLangChange }: HeaderProps) {
 
       <div className="header-inner">
         <div className="logo">
-          <div className="logo-icon" aria-hidden>LXE</div>
+          <div className="logo-icon" aria-hidden>
+            LXE
+          </div>
           <span className="logo-text">
-            {logoPrefix}<span>X</span>{logoSuffix}
+            {logoPrefix}
+            <span>X</span>
+            {logoSuffix}
           </span>
         </div>
 

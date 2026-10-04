@@ -25,7 +25,7 @@
 
 ## English
 
-**LeieXEie** ("rent vs. own") models two scenarios side by side — renting and buying — and tells you which leaves you wealthier after *N* years, in today's kroner.
+**LeieXEie** ("rent vs. own") models two scenarios side by side — renting and buying — and tells you which leaves you wealthier after _N_ years, in today's kroner.
 
 ### Features
 
@@ -65,13 +65,13 @@ Both final net worths are deflated to today's kroner. The higher number wins.
 
 ### Stack
 
-| Library | Purpose |
-|---|---|
-| Vite 5 + React 18 + TypeScript | App framework |
-| Recharts | Interactive charts |
-| @react-pdf/renderer | PDF export |
-| react-i18next | Norwegian / English UI |
-| lucide-react | Icons |
+| Library                        | Purpose                |
+| ------------------------------ | ---------------------- |
+| Vite 5 + React 18 + TypeScript | App framework          |
+| Recharts                       | Interactive charts     |
+| @react-pdf/renderer            | PDF export             |
+| react-i18next                  | Norwegian / English UI |
+| lucide-react                   | Icons                  |
 
 ### Getting started
 
@@ -84,16 +84,16 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ### Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run typecheck` | Type-check without emitting |
-| `npm run lint` | ESLint |
-| `npm test` | Vitest unit + golden tests (calculation engine, i18n parity, theme) |
-| `npm run format` | Prettier |
-| `npm run ci` | Typecheck, lint, test and build (same as GitHub Actions) |
+| Command             | Description                                                            |
+| ------------------- | ---------------------------------------------------------------------- |
+| `npm run dev`       | Start dev server                                                       |
+| `npm run build`     | Production build                                                       |
+| `npm run preview`   | Preview production build                                               |
+| `npm run typecheck` | Type-check without emitting                                            |
+| `npm run lint`      | ESLint                                                                 |
+| `npm test`          | Vitest unit + golden tests (calculation engine, i18n parity, theme)    |
+| `npm run format`    | Prettier                                                               |
+| `npm run ci`        | Typecheck, lint, format check, test and build (same as GitHub Actions) |
 
 ### Disclaimer
 
@@ -103,7 +103,7 @@ For educational purposes only. Not financial advice.
 
 ## Norsk
 
-**LeieXEie** regner på to alternativer side om side – å leie og å eie – og viser hvilket som gir høyest formue etter *N* år, i dagens kroner.
+**LeieXEie** regner på to alternativer side om side – å leie og å eie – og viser hvilket som gir høyest formue etter _N_ år, i dagens kroner.
 
 ### Funksjoner
 
@@ -143,13 +143,13 @@ Begge sluttformuene regnes om til dagens kroner. Den høyeste formuen vinner.
 
 ### Teknisk stack
 
-| Bibliotek | Formål |
-|---|---|
-| Vite 5 + React 18 + TypeScript | Rammeverk for appen |
-| Recharts | Interaktive grafer |
-| @react-pdf/renderer | PDF-eksport |
-| react-i18next | Norsk og engelsk språk |
-| lucide-react | Ikoner |
+| Bibliotek                      | Formål                 |
+| ------------------------------ | ---------------------- |
+| Vite 5 + React 18 + TypeScript | Rammeverk for appen    |
+| Recharts                       | Interaktive grafer     |
+| @react-pdf/renderer            | PDF-eksport            |
+| react-i18next                  | Norsk og engelsk språk |
+| lucide-react                   | Ikoner                 |
 
 ### Kom i gang
 
@@ -162,16 +162,16 @@ npm run dev
 
 ### Skript
 
-| Kommando | Beskrivelse |
-|---|---|
-| `npm run dev` | Starter utviklingsserveren |
-| `npm run build` | Bygger for produksjon |
-| `npm run preview` | Forhåndsviser produksjonsbygget |
-| `npm run typecheck` | Typesjekker uten å kompilere |
-| `npm run lint` | Kjører ESLint |
-| `npm test` | Kjører enhetstester og fasittester med Vitest (beregningsmotor, like nøkler i begge språk, tema) |
-| `npm run format` | Formaterer koden med Prettier |
-| `npm run ci` | Typesjekk, lint, tester og bygg (det samme som GitHub Actions kjører) |
+| Kommando            | Beskrivelse                                                                                      |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run dev`       | Starter utviklingsserveren                                                                       |
+| `npm run build`     | Bygger for produksjon                                                                            |
+| `npm run preview`   | Forhåndsviser produksjonsbygget                                                                  |
+| `npm run typecheck` | Typesjekker uten å kompilere                                                                     |
+| `npm run lint`      | Kjører ESLint                                                                                    |
+| `npm test`          | Kjører enhetstester og fasittester med Vitest (beregningsmotor, like nøkler i begge språk, tema) |
+| `npm run format`    | Formaterer koden med Prettier                                                                    |
+| `npm run ci`        | Typesjekk, lint, formattsjekk, tester og bygg (det samme som GitHub Actions kjører)              |
 
 ### Ansvarsfraskrivelse
 

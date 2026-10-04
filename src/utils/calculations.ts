@@ -1,6 +1,14 @@
 import type {
-  Inputs, Mode, CalculationResult, YearlyDataPoint, Summary, BuyerCostBreakdown, RenterCostBreakdown,
-  RateChange, StressTest,
+  Inputs,
+  Mode,
+  NumericInputKey,
+  CalculationResult,
+  YearlyDataPoint,
+  Summary,
+  BuyerCostBreakdown,
+  RenterCostBreakdown,
+  RateChange,
+  StressTest,
 } from '../types'
 import {
   WEALTH_TAX_THRESHOLD,
@@ -19,10 +27,10 @@ import {
   BSU_TAX_DEDUCTION_RATE,
   BSU_MAX_CONTRIBUTION,
   STAMP_DUTY_RATE,
-  MAX_HORIZON_YEARS,
   STRESS_TEST_RATE_ADD_PCT,
   STRESS_TEST_MIN_RATE_PCT,
 } from '../constants/finance'
+import { INPUT_BOUNDS, INTEGER_INPUT_KEYS, MODEL_BOUNDS, type NumericBound } from '../constants/inputBounds'
 
 interface SimParams {
   effectivePrice: number
@@ -58,29 +66,38 @@ function finiteOr(value: number, fallback: number): number {
   return Number.isFinite(value) ? value : fallback
 }
 
-export function normalizeInputs(inputs: Inputs): Inputs {
+function boundFor(key: NumericInputKey, inputs: Inputs, table: Record<NumericInputKey, NumericBound>): NumericBound {
+  if (key === 'bsuYearlyContribution') {
+    return { min: 0, max: BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1) }
+  }
+  return table[key]
+}
+
+function applyBounds(inputs: Inputs, table: Record<NumericInputKey, NumericBound>): Inputs {
   const next = { ...inputs }
   for (const key of Object.keys(next) as (keyof Inputs)[]) {
     const value = next[key]
     if (typeof value === 'number') {
-      (next as Record<keyof Inputs, number | boolean>)[key] = finiteOr(value, 0)
+      ;(next as Record<keyof Inputs, number | boolean>)[key] = finiteOr(value, 0)
     }
   }
-  const nonNegative = [
-    'monthlyRent', 'purchasePrice', 'downPayment', 'monthlyHoaFee', 'stampDuty', 'brokerSellingFee',
-    'contentsInsurance', 'electricity', 'internet', 'parking', 'otherClosingCosts', 'sharedDebt',
-    'municipalFees', 'renovationPct', 'homeInsurance', 'propertyTax', 'mortgageRate', 'sharedDebtRate',
-    'savingsAccountBalance', 'askBalance', 'askShieldingRate', 'bsuYearlyContribution',
-    'mortgageRateAfterChange', 'householdIncome', 'otherDebt', 'rentalIncome',
-  ] as const
-  for (const key of nonNegative) next[key] = Math.max(0, next[key])
-
-  next.years = Math.min(MAX_HORIZON_YEARS, Math.max(1, Math.round(next.years)))
-  next.loanTermYears = Math.max(1, Math.round(next.loanTermYears))
-  next.interestOnlyYears = Math.max(0, Math.round(next.interestOnlyYears))
-  next.sharedDebtTermYears = Math.max(0, Math.round(next.sharedDebtTermYears))
-  next.mortgageRateChangeYear = Math.max(0, Math.round(next.mortgageRateChangeYear))
+  const integers = new Set<string>(INTEGER_INPUT_KEYS)
+  for (const key of Object.keys(table) as NumericInputKey[]) {
+    const value = integers.has(key) ? Math.round(next[key]) : next[key]
+    const { min, max } = boundFor(key, next, table)
+    next[key] = Math.min(max, Math.max(min, value))
+  }
   return next
+}
+
+// Safety net for every caller, including the sensitivity grid and breakeven search.
+export function normalizeInputs(inputs: Inputs): Inputs {
+  return applyBounds(inputs, MODEL_BOUNDS)
+}
+
+// Form limits. Anything a person entered, saved, or shared goes through this.
+export function clampInputs(inputs: Inputs): Inputs {
+  return applyBounds(inputs, INPUT_BOUNDS)
 }
 
 function monthlyFromAnnual(annualPct: number): number {
@@ -90,7 +107,7 @@ function monthlyFromAnnual(annualPct: number): number {
 export function annuityPayment(principal: number, monthlyRate: number, months: number): number {
   if (months <= 0 || principal <= 0) return 0
   if (monthlyRate <= 0) return principal / months
-  return principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -months))
+  return (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months))
 }
 
 // Clears floating-point residue below one øre so repaid loans read as exactly zero.
@@ -111,16 +128,34 @@ export function stampDutyForMode(inputs: Inputs, mode: Mode): number {
 
 function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
   const {
-    purchasePrice, downPayment, mortgageRate, loanTermYears,
-    otherClosingCosts, interestOnlyYears, monthlyRent, investmentReturn,
-    savingsAccountBalance, askBalance, savingsAccountRate, askRate,
-    bsuActive, bsuYearlyContribution, contentsInsurance, electricity,
-    internet, parking, municipalFees, homeInsurance, propertyTax,
-    sharedDebtRate, sharedDebtTermYears,
+    purchasePrice,
+    downPayment,
+    mortgageRate,
+    loanTermYears,
+    otherClosingCosts,
+    interestOnlyYears,
+    monthlyRent,
+    investmentReturn,
+    savingsAccountBalance,
+    askBalance,
+    savingsAccountRate,
+    askRate,
+    bsuActive,
+    bsuYearlyContribution,
+    contentsInsurance,
+    electricity,
+    internet,
+    parking,
+    municipalFees,
+    homeInsurance,
+    propertyTax,
+    sharedDebtRate,
+    sharedDebtTermYears,
   } = inputs
 
   const loanAmount = Math.max(0, purchasePrice - downPayment)
-  const closingCosts = stampDutyForMode(inputs, isAdvanced ? 'advanced' : 'quick') + (isAdvanced ? otherClosingCosts : 0)
+  const closingCosts =
+    stampDutyForMode(inputs, isAdvanced ? 'advanced' : 'quick') + (isAdvanced ? otherClosingCosts : 0)
   const bsuCap = BSU_MAX_CONTRIBUTION * (inputs.isCouple ? 2 : 1)
   const bsuYearly = isAdvanced && bsuActive ? Math.min(bsuYearlyContribution, bsuCap) : 0
   const monthlyRate = mortgageRate / 100 / 12
@@ -149,7 +184,7 @@ function computeSimParams(inputs: Inputs, isAdvanced: boolean): SimParams {
     askInitial: isAdvanced ? askBalance : 0,
     cashMonthlyReturn: monthlyFromAnnual((isAdvanced ? savingsAccountRate : investmentReturn) * (1 - SAVINGS_TAX_RATE)),
     askMonthlyReturn: monthlyFromAnnual(askRate),
-    bsuMonthlySaving: bsuYearly * BSU_TAX_DEDUCTION_RATE / 12,
+    bsuMonthlySaving: (bsuYearly * BSU_TAX_DEDUCTION_RATE) / 12,
     bsuMonthlyContribution: bsuYearly / 12,
     livingCostsMonthly: isAdvanced ? (contentsInsurance + electricity + internet + parking * 12) / 12 : 0,
     municipalFeesBase: isAdvanced ? municipalFees / 12 : 0,
@@ -192,10 +227,9 @@ export function computeStressTest(rawInputs: Inputs, mode: Mode): StressTest {
   const stressedPayment = annuityPayment(loanAmount, ratePct / 100 / 12, months)
 
   const sharedDebt = effectiveSharedDebt(inputs, mode === 'advanced')
-  const sharedDebtExtra =
-    sharedDebt * (stressTestRate(inputs.sharedDebtRate) - inputs.sharedDebtRate) / 100 / 12
+  const sharedDebtExtra = (sharedDebt * (stressTestRate(inputs.sharedDebtRate) - inputs.sharedDebtRate)) / 100 / 12
   // Other debt has no rate of its own, so it is priced as interest-only at the stress rate.
-  const otherDebtMonthly = (mode === 'advanced' ? inputs.otherDebt : 0) * (ratePct / 100) / 12
+  const otherDebtMonthly = ((mode === 'advanced' ? inputs.otherDebt : 0) * (ratePct / 100)) / 12
   const debtPayment = stressedPayment + sharedDebtExtra + otherDebtMonthly
 
   return {
@@ -281,10 +315,7 @@ export function findBreakevenYear(yearlyData: YearlyDataPoint[]): number | null 
   for (let i = 1; i < yearlyData.length; i++) {
     const prev = yearlyData[i - 1]
     const curr = yearlyData[i]
-    if (
-      (prev.buyerNetWorth >= prev.renterNetWorth) !==
-      (curr.buyerNetWorth >= curr.renterNetWorth)
-    ) {
+    if (prev.buyerNetWorth >= prev.renterNetWorth !== curr.buyerNetWorth >= curr.renterNetWorth) {
       return curr.year
     }
   }
@@ -293,15 +324,23 @@ export function findBreakevenYear(yearlyData: YearlyDataPoint[]): number | null 
 
 function emptyBuyerCosts(): BuyerCostBreakdown {
   return {
-    mortgage: 0, hoaFee: 0, utilities: 0, maintenance: 0, municipalFees: 0,
-    insurance: 0, propertyTax: 0, interestDeduction: 0, rentalIncome: 0, total: 0,
+    mortgage: 0,
+    hoaFee: 0,
+    utilities: 0,
+    maintenance: 0,
+    municipalFees: 0,
+    insurance: 0,
+    propertyTax: 0,
+    interestDeduction: 0,
+    rentalIncome: 0,
+    total: 0,
   }
 }
 
 function averageOverYear<T extends object>(sums: T): T {
   const out = { ...sums }
   for (const key of Object.keys(out) as (keyof T)[]) {
-    (out[key] as number) = (out[key] as number) / 12
+    ;(out[key] as number) = (out[key] as number) / 12
   }
   return out
 }
@@ -320,12 +359,7 @@ interface SummaryExtras {
   stressTest: StressTest
 }
 
-function buildSummary(
-  p: SimParams,
-  inputs: Inputs,
-  yearlyData: YearlyDataPoint[],
-  extras: SummaryExtras,
-): Summary {
+function buildSummary(p: SimParams, inputs: Inputs, yearlyData: YearlyDataPoint[], extras: SummaryExtras): Summary {
   const finalYear = yearlyData[yearlyData.length - 1]
   const initialMonthlyMortgage = p.ioYears > 0 ? p.loanAmount * p.monthlyRate : p.monthlyAmortizingPayment
 
@@ -419,13 +453,17 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     const inflationMultiplier = Math.pow(1 + inputs.inflation / 100, year - 1)
     const maintenanceMonthly = isAdvanced
-      ? (inputs.purchasePrice * inputs.renovationPct / 100 / 12) * inflationMultiplier
+      ? ((inputs.purchasePrice * inputs.renovationPct) / 100 / 12) * inflationMultiplier
       : 0
     const municipalFeesMonthly = p.municipalFeesBase * inflationMultiplier
 
     for (let month = 0; month < 12; month++) {
-      const { effectiveMortgage, principalPayment, interestPayment } =
-        computeMonthlyMortgage(remainingMortgage, monthlyRate, monthlyPayment, isInterestOnly)
+      const { effectiveMortgage, principalPayment, interestPayment } = computeMonthlyMortgage(
+        remainingMortgage,
+        monthlyRate,
+        monthlyPayment,
+        isInterestOnly,
+      )
 
       const sharedDebtInterest = remainingSharedDebt * p.sharedDebtMonthlyRate
       const sharedDebtPrincipal = Math.max(0, Math.min(p.sharedDebtPayment - sharedDebtInterest, remainingSharedDebt))
@@ -436,8 +474,12 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
         : 0
 
       const buyerMonthlyCost =
-        effectiveMortgage + currentHoaFee + p.livingCostsMonthly + advancedBuyerMonthly
-        - taxDeductionMonthly - currentRentalIncome
+        effectiveMortgage +
+        currentHoaFee +
+        p.livingCostsMonthly +
+        advancedBuyerMonthly -
+        taxDeductionMonthly -
+        currentRentalIncome
       const renterMonthlyCost = currentMonthlyRent + p.livingCostsMonthly - p.bsuMonthlySaving
       const monthlyDiff = buyerMonthlyCost - renterMonthlyCost
 
@@ -487,7 +529,9 @@ export function calculate(rawInputs: Inputs, mode: Mode): CalculationResult {
 
     if (isAdvanced) {
       const { buyerWealthTax, renterWealthTax } = computeAnnualWealthTax(
-        homeValue, remainingMortgage, remainingSharedDebt,
+        homeValue,
+        remainingMortgage,
+        remainingSharedDebt,
         buyer,
         { savings: renter.savings + depositBalance + bsuBalance, ask: renter.ask },
         p.isCouple,

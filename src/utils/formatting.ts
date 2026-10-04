@@ -24,16 +24,22 @@ export function parseInputNum(raw: string): number {
   return isNaN(v) ? 0 : v
 }
 
+function compactScaled(value: number, divisor: number, locale: string, suffix: string): string {
+  const n = (value / divisor).toFixed(1)
+  const num = locale.startsWith('en') ? n : n.replace('.', ',')
+  return `${num}${suffix}`
+}
+
 export function formatNOK(value: number, compact = false, locale = 'nb-NO'): string {
   if (compact) {
-    if (Math.abs(value) >= 1_000_000) {
-      const n = (value / 1_000_000).toFixed(1)
-      const num = locale.startsWith('en') ? n : n.replace('.', ',')
-      return locale.startsWith('en') ? `${num}m NOK` : `${num} mill. kr`
-    }
-    if (Math.abs(value) >= 1_000) {
+    const en = locale.startsWith('en')
+    const abs = Math.abs(value)
+    if (abs >= 1_000_000_000_000) return compactScaled(value, 1_000_000_000_000, locale, en ? 'tn NOK' : ' bill. kr')
+    if (abs >= 1_000_000_000) return compactScaled(value, 1_000_000_000, locale, en ? 'bn NOK' : ' mrd. kr')
+    if (abs >= 1_000_000) return compactScaled(value, 1_000_000, locale, en ? 'm NOK' : ' mill. kr')
+    if (abs >= 1_000) {
       const k = Math.round(value / 1_000)
-      return locale.startsWith('en') ? `${k}k NOK` : `${k} 000 kr`
+      return en ? `${k}k NOK` : `${k} 000 kr`
     }
   }
   return new Intl.NumberFormat(locale, {
@@ -63,7 +69,11 @@ export function formatDecimal(value: number, locale = 'nb-NO', decimals = 3): st
 
 export function formatChartNOK(value: number, locale = 'nb-NO'): string {
   const dec = locale.startsWith('en') ? '.' : ','
-  if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace('.', dec)}M`
-  if (Math.abs(value) >= 1_000) return `${Math.round(value / 1_000)}k`
+  const abs = Math.abs(value)
+  const scaled = (divisor: number, suffix: string) => `${(value / divisor).toFixed(1).replace('.', dec)}${suffix}`
+  if (abs >= 1_000_000_000_000) return scaled(1_000_000_000_000, 'T')
+  if (abs >= 1_000_000_000) return scaled(1_000_000_000, 'B')
+  if (abs >= 1_000_000) return scaled(1_000_000, 'M')
+  if (abs >= 1_000) return `${Math.round(value / 1_000)}k`
   return `${value}`
 }

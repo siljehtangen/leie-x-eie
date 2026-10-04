@@ -23,16 +23,26 @@ interface Row {
   saved?: SavedScenario
 }
 
-export default function ScenarioCompare({ current, currentResult, saved, onSave, onLoad, onDelete }: ScenarioCompareProps) {
+export default function ScenarioCompare({
+  current,
+  currentResult,
+  saved,
+  onSave,
+  onLoad,
+  onDelete,
+}: ScenarioCompareProps) {
   const { t } = useTranslation()
   const formatKr = useFormatNOK()
   const [name, setName] = useState('')
   const atLimit = saved.length >= MAX_SAVED_SCENARIOS
 
-  const rows = useMemo<Row[]>(() => [
-    { key: 'current', name: t('scenarios.current'), scenario: current, result: currentResult },
-    ...saved.map(s => ({ key: s.id, name: s.name, scenario: s, result: calculate(s.inputs, s.mode), saved: s })),
-  ], [t, current, currentResult, saved])
+  const rows = useMemo<Row[]>(
+    () => [
+      { key: 'current', name: t('scenarios.current'), scenario: current, result: currentResult },
+      ...saved.map(s => ({ key: s.id, name: s.name, scenario: s, result: calculate(s.inputs, s.mode), saved: s })),
+    ],
+    [t, current, currentResult, saved],
+  )
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -45,7 +55,9 @@ export default function ScenarioCompare({ current, currentResult, saved, onSave,
     <section className="scenarios" aria-labelledby="scenarios-title">
       <div className="scenarios-head">
         <div>
-          <h3 id="scenarios-title" className="scenarios-title">{t('scenarios.title')}</h3>
+          <h3 id="scenarios-title" className="scenarios-title">
+            {t('scenarios.title')}
+          </h3>
           <p className="scenarios-subtitle">{t('scenarios.subtitle')}</p>
         </div>
         <form className="scenarios-form" onSubmit={handleSubmit}>
@@ -72,11 +84,21 @@ export default function ScenarioCompare({ current, currentResult, saved, onSave,
             <tr>
               <th scope="col">{t('scenarios.colScenario')}</th>
               <th scope="col">{t('scenarios.colWinner')}</th>
-              <th scope="col" className="num">{t('scenarios.colAdvantage')}</th>
-              <th scope="col" className="num">{t('scenarios.colBreakeven')}</th>
-              <th scope="col" className="num">{t('scenarios.colBuyMonthly')}</th>
-              <th scope="col" className="num">{t('scenarios.colRentMonthly')}</th>
-              <th scope="col"><span className="visually-hidden">{t('scenarios.colActions')}</span></th>
+              <th scope="col" className="num">
+                {t('scenarios.colAdvantage')}
+              </th>
+              <th scope="col" className="num">
+                {t('scenarios.colBreakeven')}
+              </th>
+              <th scope="col" className="num">
+                {t('scenarios.colBuyMonthly')}
+              </th>
+              <th scope="col" className="num">
+                {t('scenarios.colRentMonthly')}
+              </th>
+              <th scope="col">
+                <span className="visually-hidden">{t('scenarios.colActions')}</span>
+              </th>
             </tr>
           </thead>
           <tbody>

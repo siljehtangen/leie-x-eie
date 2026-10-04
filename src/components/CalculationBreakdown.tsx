@@ -47,7 +47,13 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
       {open && (
         <div className="breakdown-panel" role="region" aria-label={t('breakdown.title')}>
           <div className="breakdown-download-row">
-            <Suspense fallback={<span className="breakdown-download-btn" aria-busy>{t('breakdown.generating')}</span>}>
+            <Suspense
+              fallback={
+                <span className="breakdown-download-btn" aria-busy>
+                  {t('breakdown.generating')}
+                </span>
+              }
+            >
               <PdfDownload results={results} inputs={inputs} model={model} rules={rules} locale={locale} />
             </Suspense>
           </div>
@@ -71,9 +77,7 @@ export default function CalculationBreakdown({ results, inputs, mode }: Calculat
                 [t('inputs.inflation'), pct(inputs.inflation)],
                 ...(isAdvanced ? [] : [[t('inputs.investmentReturn'), pct(inputs.investmentReturn)]]),
                 [t('inputs.brokerSellingFee'), formatKr(inputs.brokerSellingFee)],
-                ...(model.mortgage.ioYears > 0
-                  ? [[t('inputs.interestOnlyYears'), years(model.mortgage.ioYears)]]
-                  : []),
+                ...(model.mortgage.ioYears > 0 ? [[t('inputs.interestOnlyYears'), years(model.mortgage.ioYears)]] : []),
                 ...(inputs.householdIncome > 0
                   ? [[t('inputs.householdIncome'), `${formatKr(inputs.householdIncome)}${perYear}`]]
                   : []),

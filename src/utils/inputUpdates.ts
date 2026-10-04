@@ -4,7 +4,8 @@ import type { Inputs } from '../types'
 
 export function applyInputChange(prev: Inputs, name: keyof Inputs, value: number | boolean): Inputs {
   const next: Inputs = { ...prev, [name]: value }
-  const autoStampDuty = (inputs: Inputs) => inputs.isBorettslag ? 0 : Math.round(inputs.purchasePrice * STAMP_DUTY_RATE)
+  const autoStampDuty = (inputs: Inputs) =>
+    inputs.isBorettslag ? 0 : Math.round(inputs.purchasePrice * STAMP_DUTY_RATE)
   const stampDutyWasAuto = prev.stampDuty === autoStampDuty(prev)
 
   if (name === 'purchasePrice' && typeof value === 'number') {

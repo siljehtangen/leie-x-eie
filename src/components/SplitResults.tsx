@@ -23,7 +23,9 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
     <section className="results-block" aria-labelledby="split-heading">
       <div className="results-block-head">
         <div>
-          <h3 id="split-heading" className="results-block-title">{t('results.splitTitle')}</h3>
+          <h3 id="split-heading" className="results-block-title">
+            {t('results.splitTitle')}
+          </h3>
           <p className="results-block-subtitle">{t('results.unitsNote')}</p>
         </div>
       </div>
@@ -46,7 +48,9 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
           <div className="split-card-sub">{t('results.monthlyRentLabel')}</div>
           <div className="split-card-stats">
             <div className="stat-row">
-              <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>
+              <span className="stat-label">
+                {t('results.totalPaid')} ({years} {t('results.years')})
+              </span>
               <AnimatedNOK value={summary.totalRenterPaid} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
@@ -56,7 +60,9 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
           </div>
         </div>
 
-        <div className="vs-badge-center" aria-hidden>VS</div>
+        <div className="vs-badge-center" aria-hidden>
+          VS
+        </div>
 
         <div className="split-card buy">
           {recommendation === 'buy' && (
@@ -90,7 +96,9 @@ export default function SplitResults({ results, years }: SplitResultsProps) {
               </span>
             </div>
             <div className="stat-row">
-              <span className="stat-label">{t('results.totalPaid')} ({years} {t('results.years')})</span>
+              <span className="stat-label">
+                {t('results.totalPaid')} ({years} {t('results.years')})
+              </span>
               <AnimatedNOK value={summary.totalBuyerPaid} trigger={results} locale={locale} />
             </div>
             <div className="stat-row">
